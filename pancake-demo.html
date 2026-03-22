@@ -175,10 +175,24 @@ h1 { font-size: 26px; color: #5d4037; margin: 10px 0; text-align: center; }
 .flame:nth-child(3) { animation-delay: 0.2s; }
 @keyframes flicker { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.1) rotate(3deg); } }
 
+/* 双栏容器 */
+.main-layout {
+  display: flex; gap: 20px; width: 100%; max-width: 1100px;
+  align-items: flex-start; justify-content: center;
+}
+@media (max-width: 860px) {
+  .main-layout { flex-direction: column; align-items: center; }
+}
+
 .narration-panel {
   background: #fff; border-radius: 16px; padding: 16px 20px;
-  margin: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-  max-width: 600px; width: 100%;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  width: 320px; min-width: 260px; flex-shrink: 0;
+  max-height: 520px; overflow-y: auto;
+  position: sticky; top: 20px;
+}
+@media (max-width: 860px) {
+  .narration-panel { width: 100%; max-width: 600px; max-height: none; position: static; }
 }
 .narration-title { font-size: 15px; font-weight: bold; color: #5d4037; margin-bottom: 10px; text-align: center; }
 .narration-step {
@@ -196,8 +210,8 @@ h1 { font-size: 26px; color: #5d4037; margin: 10px 0; text-align: center; }
 
 .formula-card {
   background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-  border-radius: 16px; padding: 18px; margin: 15px 0;
-  text-align: center; border: 2px solid #90caf9; max-width: 600px; width: 100%;
+  border-radius: 16px; padding: 18px; margin: 15px auto;
+  text-align: center; border: 2px solid #90caf9; max-width: 1100px; width: 100%;
 }
 .formula { font-size: 18px; font-weight: bold; color: #1565c0; }
 
@@ -230,6 +244,7 @@ h1 { font-size: 26px; color: #5d4037; margin: 10px 0; text-align: center; }
 
 <div class="method-tabs" id="methodTabs"></div>
 
+<div class="main-layout">
 <div class="scene">
   <div class="info-panel">
     <div class="step-text" id="stepText">点击「开始演示」，边看边听老师讲解 🍳</div>
@@ -254,9 +269,10 @@ h1 { font-size: 26px; color: #5d4037; margin: 10px 0; text-align: center; }
     <button class="btn primary" id="startBtn" onclick="startAnimation()">▶️ 开始演示</button>
     <button class="btn secondary" onclick="resetAll()">🔄 重新开始</button>
   </div>
-</div>
+</div><!-- /scene -->
 
 <div class="narration-panel" id="narrationPanel"></div>
+</div><!-- /main-layout -->
 
 <div class="formula-card" id="formulaCard"></div>
 
