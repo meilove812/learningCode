@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🥞 煎饼问题动画演示</title>
+<title>🥞 煎饼问题 · 有声动画演示</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { 
@@ -13,7 +13,29 @@ body {
   padding: 20px;
 }
 h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
-.subtitle { color: #8d6e63; margin-bottom: 20px; font-size: 16px; }
+.subtitle { color: #8d6e63; margin-bottom: 10px; font-size: 16px; }
+
+/* 语音控制 */
+.voice-bar {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin: 10px 0; flex-wrap: wrap;
+}
+.voice-toggle {
+  padding: 8px 20px; border-radius: 20px; border: 2px solid #ff6f00;
+  background: #ff6f00; color: #fff; font-weight: bold; font-size: 14px;
+  cursor: pointer; transition: all 0.3s;
+}
+.voice-toggle.muted { background: #fff; color: #ff6f00; }
+.voice-select {
+  padding: 6px 10px; border-radius: 12px; border: 2px solid #e0e0e0;
+  font-size: 13px; max-width: 200px; background: #fff;
+}
+.voice-preview {
+  padding: 6px 14px; border-radius: 15px; border: 2px solid #8d6e63;
+  background: #fff; color: #5d4037; font-weight: bold; cursor: pointer;
+  font-size: 13px; transition: all 0.2s;
+}
+.voice-preview:hover { background: #efebe9; }
 
 .scene { 
   position: relative; width: 100%; max-width: 600px; 
@@ -21,7 +43,6 @@ h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
   box-shadow: 0 10px 40px rgba(0,0,0,0.15); margin-bottom: 20px;
 }
 
-/* 平底锅 */
 .pan { 
   width: 320px; height: 60px; margin: 0 auto;
   background: linear-gradient(180deg, #616161 0%, #424242 100%);
@@ -38,7 +59,6 @@ h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
   font-size: 14px; color: #888; font-weight: bold;
 }
 
-/* 饼 */
 .pancake {
   width: 110px; height: 36px; border-radius: 18px;
   display: flex; align-items: center; justify-content: center;
@@ -50,18 +70,11 @@ h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
 .pancake.p2 { background: linear-gradient(135deg, #1e88e5, #42a5f5); }
 .pancake.p3 { background: linear-gradient(135deg, #43a047, #66bb6a); }
 
-/* 等待区 */
 .waiting-area {
   display: flex; justify-content: center; gap: 20px;
   margin: 30px 0 20px; min-height: 60px; align-items: center;
 }
-.wait-slot {
-  width: 120px; height: 50px; border: 3px dashed #ccc; border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; color: #bbb;
-}
 
-/* 完成区 */
 .done-area {
   display: flex; justify-content: center; gap: 15px;
   margin: 15px 0; min-height: 50px; align-items: center;
@@ -77,7 +90,6 @@ h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
 .done-pancake.p2 { background: linear-gradient(135deg, #1565c0, #0d47a1); }
 .done-pancake.p3 { background: linear-gradient(135deg, #2e7d32, #1b5e20); }
 
-/* 状态信息 */
 .info-panel {
   background: #fff; border-radius: 16px; padding: 20px;
   margin: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
@@ -92,7 +104,6 @@ h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
 }
 .timer span { font-size: 20px; color: #999; }
 
-/* 进度条 */
 .progress-bar {
   width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px;
   margin: 15px 0; overflow: hidden;
@@ -102,7 +113,6 @@ h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
   border-radius: 4px; transition: width 0.3s ease; width: 0%;
 }
 
-/* 表格对比 */
 .compare { 
   display: flex; gap: 20px; margin-top: 15px; justify-content: center;
   flex-wrap: wrap;
@@ -118,7 +128,6 @@ h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
 .method.bad .time { color: #c62828; }
 .method.good .time { color: #2e7d32; }
 
-/* 状态追踪 */
 .status-grid {
   display: flex; justify-content: center; gap: 15px; margin: 15px 0;
 }
@@ -134,13 +143,9 @@ h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
 .face-icon.waiting { background: #e0e0e0; }
 
 @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.3); } }
-@keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 @keyframes flip { 0% { transform: rotateX(0); } 50% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
-
 .pancake.flipping { animation: flip 0.6s ease; }
-.pancake.bouncing { animation: bounce 0.5s ease; }
 
-/* 按钮 */
 .controls { display: flex; gap: 12px; justify-content: center; margin: 15px 0; flex-wrap: wrap; }
 .btn {
   padding: 12px 28px; border: none; border-radius: 25px;
@@ -153,24 +158,17 @@ h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
 .btn.secondary { background: linear-gradient(135deg, #78909c, #90a4ae); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-/* 标签区 */
 .section-label {
   font-size: 13px; color: #999; text-align: center; margin: 5px 0;
   text-transform: uppercase; letter-spacing: 2px;
 }
 
-/* 火焰动画 */
-.flames {
-  display: flex; justify-content: center; gap: 5px; margin-top: 8px;
-}
-.flame {
-  font-size: 20px; animation: flicker 0.3s infinite alternate;
-}
+.flames { display: flex; justify-content: center; gap: 5px; margin-top: 8px; }
+.flame { font-size: 20px; animation: flicker 0.3s infinite alternate; }
 .flame:nth-child(2) { animation-delay: 0.1s; }
 .flame:nth-child(3) { animation-delay: 0.2s; }
 @keyframes flicker { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.1) rotate(3deg); } }
 
-/* 公式卡 */
 .formula-card {
   background: linear-gradient(135deg, #e3f2fd, #bbdefb);
   border-radius: 16px; padding: 20px; margin: 15px 0;
@@ -178,7 +176,6 @@ h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
 }
 .formula { font-size: 20px; font-weight: bold; color: #1565c0; }
 
-/* Tab 切换 */
 .tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
 .tab {
   padding: 10px 24px; border-radius: 20px; border: 2px solid #ff6f00;
@@ -186,12 +183,40 @@ h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
   cursor: pointer; transition: all 0.3s;
 }
 .tab.active { background: #ff6f00; color: #fff; }
+
+/* 讲解面板 */
+.narration-panel {
+  background: #fff; border-radius: 16px; padding: 16px 20px;
+  margin: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  max-width: 600px; width: 100%;
+}
+.narration-title { font-size: 16px; font-weight: bold; color: #5d4037; margin-bottom: 10px; text-align: center; }
+.narration-step {
+  padding: 10px 14px; margin: 6px 0; border-radius: 12px;
+  background: #f5f5f5; cursor: pointer; transition: all 0.3s;
+  font-size: 14px; color: #555; line-height: 1.6;
+}
+.narration-step:hover { background: #fff3e0; }
+.narration-step.active { background: #fff3e0; border-left: 4px solid #ff6f00; color: #5d4037; font-weight: 500; }
+.narration-step .step-num {
+  display: inline-block; width: 24px; height: 24px; line-height: 24px;
+  text-align: center; background: #ff6f00; color: #fff; border-radius: 50%;
+  font-size: 12px; font-weight: bold; margin-right: 8px;
+}
+.narration-step.active .speaker { display: inline; }
+.speaker { display: none; margin-left: 6px; }
 </style>
 </head>
 <body>
 
-<h1>🥞 煎饼问题 · 动画演示</h1>
+<h1>🥞 煎饼问题 · 有声动画演示</h1>
 <p class="subtitle">锅一次放2张饼，每面4分钟，煎3张饼最少几分钟？</p>
+
+<div class="voice-bar">
+  <button class="voice-toggle" id="voiceToggle" onclick="toggleVoice()">🔊 语音讲解：开</button>
+  <select class="voice-select" id="cnVoiceSelect" onchange="selectVoice()"></select>
+  <button class="voice-preview" onclick="previewVoice()">试听</button>
+</div>
 
 <div class="tabs">
   <button class="tab active" onclick="switchTab('smart')">✅ 聪明办法 (12分钟)</button>
@@ -200,7 +225,7 @@ h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
 
 <div class="scene">
   <div class="info-panel">
-    <div class="step-text" id="stepText">点击「开始演示」看看怎么煎饼 🍳</div>
+    <div class="step-text" id="stepText">点击「开始演示」，边看边听老师讲解 🍳</div>
     <div class="timer" id="timer">0 <span>分钟</span></div>
     <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
   </div>
@@ -248,14 +273,16 @@ h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
   </div>
 </div>
 
+<!-- 讲解步骤面板 -->
+<div class="narration-panel" id="narrationPanel"></div>
+
 <div class="formula-card">
   <div>🧮 万能公式</div>
-  <div class="formula" style="margin:10px 0">
-    总面数 ÷ 锅容量 = 最少轮数
-  </div>
+  <div class="formula" style="margin:10px 0">总面数 ÷ 锅容量 = 最少轮数</div>
   <div style="font-size:16px; color:#1976d2">
     3饼 × 2面 = 6面 → 6 ÷ 2 = 3轮 → 3 × 4分钟 = <strong>12分钟</strong> 🎉
   </div>
+  <button class="voice-preview" style="margin-top:10px" onclick="speakFormula()">🔊 听公式讲解</button>
 </div>
 
 <div class="compare">
@@ -276,11 +303,98 @@ h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
 </p>
 
 <script>
-let currentMode = 'smart';
-let animating = false;
-let currentTimeout = null;
-let timeouts = [];
+// ===== 语音引擎 =====
+let voiceEnabled = true;
+let selectedCnVoice = null;
 
+const cnVoicePreference = [
+  'Tingting', 'Sinji', 'Meijia',
+  'Google 普通话', 'Google 中文',
+  'Microsoft Xiaoxiao', 'Microsoft Yunxi',
+  'Chinese (Enhanced)', 'Chinese (Premium)', 'Natural',
+];
+
+function scoreVoice(voice) {
+  const name = voice.name;
+  for (let i = 0; i < cnVoicePreference.length; i++) {
+    if (name.includes(cnVoicePreference[i])) return cnVoicePreference.length - i + 100;
+  }
+  let score = 0;
+  if (/enhanced|premium|natural/i.test(name)) score += 50;
+  if (/compact/i.test(name)) score -= 20;
+  return score;
+}
+
+function populateVoices() {
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return;
+  const cnVoices = voices.filter(v => /^zh|^cmn/i.test(v.lang));
+  cnVoices.sort((a, b) => scoreVoice(b) - scoreVoice(a));
+  
+  const sel = document.getElementById('cnVoiceSelect');
+  sel.innerHTML = cnVoices.map((v, i) =>
+    `<option value="${v.name}" ${i===0?'selected':''}>${v.name} (${v.lang})</option>`
+  ).join('');
+  if (cnVoices.length) selectedCnVoice = cnVoices[0];
+}
+
+function selectVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  const name = document.getElementById('cnVoiceSelect').value;
+  selectedCnVoice = voices.find(v => v.name === name);
+}
+
+function toggleVoice() {
+  voiceEnabled = !voiceEnabled;
+  const btn = document.getElementById('voiceToggle');
+  btn.textContent = voiceEnabled ? '🔊 语音讲解：开' : '🔇 语音讲解：关';
+  btn.classList.toggle('muted', !voiceEnabled);
+  if (!voiceEnabled) window.speechSynthesis.cancel();
+}
+
+function speak(text, callback) {
+  if (!voiceEnabled) { if (callback) callback(); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-CN';
+  u.rate = 0.9;
+  u.pitch = 1.0;
+  if (selectedCnVoice) u.voice = selectedCnVoice;
+  if (callback) u.onend = callback;
+  u.onerror = () => { if (callback) callback(); };
+  window.speechSynthesis.speak(u);
+}
+
+function previewVoice() {
+  speak('同学们好！今天我们来学煎饼问题，记住，别让锅闲着！');
+}
+
+function speakFormula() {
+  speak('万能公式：总面数 除以 锅的容量，等于最少轮数。三张饼，乘以两面，等于六个面。六除以二等于三轮。三轮乘以四分钟，等于十二分钟！');
+}
+
+// ===== 语音旁白数据 =====
+const smartNarration = [
+  { text: '同学们看好了！我们有三张饼，锅里一次只能放两张。先把饼一和饼二放进锅里，煎正面。', short: '把饼①和饼②放进锅，煎正面' },
+  { text: '四分钟到！饼一和饼二的正面都煎好了。接下来是关键一步！', short: '4分钟到，正面煎好了' },
+  { text: '注意！我们不是直接翻面，而是把饼一先拿出来，让饼三进锅！锅里现在是饼二的反面和饼三的正面，一个位子都不浪费！', short: '关键！饼①出锅，饼③进锅，锅不空' },
+  { text: '又过了四分钟！饼二两面都煎好了，可以出锅了！饼三的正面也煎好了。', short: '又4分钟，饼②完成出锅' },
+  { text: '最后一轮！把饼一请回锅里煎反面，饼三也翻面煎反面。锅里还是满满两张！', short: '饼①回锅煎反面，饼③翻面' },
+  { text: '最后四分钟到！三张饼全部煎好了！一共只用了十二分钟！因为我们每一轮都让锅满满的，一个位子都没浪费！太棒了！', short: '12分钟全部完成！锅从没空过！' },
+];
+
+const dumbNarration = [
+  { text: '来看看普通的方法。先把饼一和饼二放进锅里煎正面。', short: '饼①和饼②进锅煎正面' },
+  { text: '四分钟到，翻面。', short: '4分钟到，翻面' },
+  { text: '继续煎饼一和饼二的反面。', short: '煎饼①和饼②的反面' },
+  { text: '又四分钟，饼一和饼二都好了。可是饼三还没开始呢！', short: '8分钟了，饼③还没开始' },
+  { text: '现在把饼三放进锅里，可是锅里只有一张饼，另一个位子空着呢！好浪费呀！', short: '饼③进锅，但锅空了一半！浪费！' },
+  { text: '四分钟，翻面。锅里还是只有一张饼。', short: '翻面，锅还是半空' },
+  { text: '饼三的反面也要煎，锅里依然空着一个位子。', short: '煎反面，还是半空' },
+  { text: '终于好了！但是花了整整十六分钟！比聪明办法多了四分钟。就是因为最后两轮锅里有空位，浪费了时间！', short: '16分钟！比聪明办法多了4分钟' },
+];
+
+// ===== 动画步骤数据 =====
 const smartSteps = [
   { text: '第1轮：放入 🔴饼① 和 🔵饼② 煎正面', time: 0, pan: ['①正','②正'], panClass: ['p1','p2'], wait: ['w3'], status: [[0,'cooking'],[1,'cooking'],[],[]], panLabel: '🔴正 + 🔵正' },
   { text: '⏰ 4分钟到！正面煎好了~', time: 4, pan: ['①正✓','②正✓'], panClass: ['p1','p2'], wait: ['w3'], status: [[0,'done'],[1,'done'],[],[]], flip: true, panLabel: '翻面...' },
@@ -301,6 +415,12 @@ const dumbSteps = [
   { text: '⏰ 终于好了...但花了16分钟 😩', time: 16, pan: [], panClass: [], wait: [], done: ['d1','d2','d3'], status: [[0,'done','done'],[1,'done','done'],[2,'done','done'],[]], panLabel: '空锅' },
 ];
 
+// ===== 状态 =====
+let currentMode = 'smart';
+let animating = false;
+let timeouts = [];
+let currentNarrationIdx = -1;
+
 function switchTab(mode) {
   currentMode = mode;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -308,32 +428,61 @@ function switchTab(mode) {
   resetAnimation();
 }
 
-function getSteps() {
-  return currentMode === 'smart' ? smartSteps : dumbSteps;
+function getNarration() { return currentMode === 'smart' ? smartNarration : dumbNarration; }
+function getSteps() { return currentMode === 'smart' ? smartSteps : dumbSteps; }
+
+// ===== 渲染讲解面板 =====
+function renderNarrationPanel() {
+  const narration = getNarration();
+  const panel = document.getElementById('narrationPanel');
+  panel.innerHTML = `
+    <div class="narration-title">📢 老师讲解（点击任意步骤朗读）</div>
+    ${narration.map((n, i) => `
+      <div class="narration-step" id="narr-${i}" onclick="speakNarration(${i})">
+        <span class="step-num">${i + 1}</span>${n.short}
+        <span class="speaker">🔊</span>
+      </div>
+    `).join('')}
+  `;
 }
 
+function highlightNarration(idx) {
+  document.querySelectorAll('.narration-step').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('narr-' + idx);
+  if (el) {
+    el.classList.add('active');
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function speakNarration(idx) {
+  const narration = getNarration();
+  highlightNarration(idx);
+  speak(narration[idx].text);
+}
+
+// ===== 动画 =====
 function resetAnimation() {
   timeouts.forEach(t => clearTimeout(t));
   timeouts = [];
   animating = false;
+  window.speechSynthesis.cancel();
+  currentNarrationIdx = -1;
   document.getElementById('startBtn').disabled = false;
-  document.getElementById('stepText').textContent = '点击「开始演示」看看怎么煎饼 🍳';
+  document.getElementById('stepText').textContent = '点击「开始演示」，边看边听老师讲解 🍳';
   document.getElementById('timer').innerHTML = '0 <span>分钟</span>';
   document.getElementById('progress').style.width = '0%';
   document.getElementById('flames').style.opacity = '0';
 
-  const pan = document.getElementById('pan');
-  pan.innerHTML = '<div class="pan-label">空锅</div>';
-
+  document.getElementById('pan').innerHTML = '<div class="pan-label">空锅</div>';
   ['w1','w2','w3'].forEach(id => {
     document.getElementById(id).style.display = 'flex';
-    document.getElementById(id).classList.remove('flipping','bouncing');
   });
   ['d1','d2','d3'].forEach(id => {
     document.getElementById(id).classList.remove('show');
   });
-
-  updateStatusAll([[],[], [], []]);
+  updateStatusAll([[],[],[],[]]);
+  renderNarrationPanel();
 }
 
 function updateStatusAll(statuses) {
@@ -341,39 +490,37 @@ function updateStatusAll(statuses) {
   const colors = ['#e53935','#1e88e5','#43a047'];
   const names = ['饼①','饼②','饼③'];
   const emojis = ['🔴','🔵','🟢'];
-  
   grid.innerHTML = statuses.slice(0,3).map((s, i) => {
-    const frontClass = s[0] === 'done' ? 'done' : s[0] === 'cooking' ? 'cooking' : 'waiting';
-    const backClass = s[1] === 'done' ? 'done' : s[1] === 'cooking' ? 'cooking' : 'waiting';
+    const fc = s[0]==='done'?'done':s[0]==='cooking'?'cooking':'waiting';
+    const bc = s[1]==='done'?'done':s[1]==='cooking'?'cooking':'waiting';
     return `<div class="pancake-status">
       <div class="name" style="color:${colors[i]}">${emojis[i]} ${names[i]}</div>
-      <div class="face">正 <span class="face-icon ${frontClass}"></span> 反 <span class="face-icon ${backClass}"></span></div>
+      <div class="face">正 <span class="face-icon ${fc}"></span> 反 <span class="face-icon ${bc}"></span></div>
     </div>`;
   }).join('');
 }
 
-function animateStep(step) {
+function animateStep(step, narrationIdx) {
   const { text, time, pan: panItems, panClass, wait, done, status, flip, panLabel } = step;
   const maxTime = currentMode === 'smart' ? 12 : 16;
   
   if (text) document.getElementById('stepText').textContent = text;
   if (time !== undefined) {
     document.getElementById('timer').innerHTML = `${time} <span>分钟</span>`;
-    document.getElementById('progress').style.width = `${(time / maxTime) * 100}%`;
+    document.getElementById('progress').style.width = `${(time/maxTime)*100}%`;
   }
-  
   if (status) updateStatusAll(status);
 
   if (panItems) {
     const panEl = document.getElementById('pan');
-    panEl.innerHTML = `<div class="pan-label">${panLabel || ''}</div>`;
+    panEl.innerHTML = `<div class="pan-label">${panLabel||''}</div>`;
     panItems.forEach((item, idx) => {
       const div = document.createElement('div');
       if (panClass && panClass[idx] === 'empty') {
         div.style.cssText = 'width:110px;height:36px;border:3px dashed rgba(255,255,255,0.3);border-radius:18px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);font-size:24px;';
         div.textContent = '✕';
       } else {
-        div.className = `pancake ${panClass ? panClass[idx] : ''} ${flip ? 'flipping' : ''}`;
+        div.className = `pancake ${panClass?panClass[idx]:''} ${flip?'flipping':''}`;
         div.textContent = item;
       }
       panEl.appendChild(div);
@@ -381,20 +528,22 @@ function animateStep(step) {
     document.getElementById('flames').style.opacity = panItems.length > 0 ? '1' : '0';
   }
 
-  // 隐藏在锅里的饼
   ['w1','w2','w3'].forEach(id => document.getElementById(id).style.display = 'flex');
   if (wait) {
     ['w1','w2','w3'].forEach(id => {
       document.getElementById(id).style.display = wait.includes(id) ? 'flex' : 'none';
     });
-    // 如果都不在等待区也不在锅里
     if (panItems && panItems.length === 0 && (!wait || wait.length === 0)) {
       ['w1','w2','w3'].forEach(id => document.getElementById(id).style.display = 'none');
     }
   }
-  
-  if (done) {
-    done.forEach(id => document.getElementById(id).classList.add('show'));
+  if (done) done.forEach(id => document.getElementById(id).classList.add('show'));
+
+  // 语音旁白
+  if (narrationIdx !== undefined && narrationIdx >= 0) {
+    highlightNarration(narrationIdx);
+    const narration = getNarration();
+    if (narration[narrationIdx]) speak(narration[narrationIdx].text);
   }
 }
 
@@ -404,24 +553,58 @@ function startAnimation() {
   document.getElementById('startBtn').disabled = true;
   
   const steps = getSteps();
-  const delay = 2500;
+  const narration = getNarration();
   
-  steps.forEach((step, i) => {
-    const t = setTimeout(() => animateStep(step), i * delay);
+  // 开场白
+  speak('同学们，今天我们来学习煎饼问题。' + (currentMode === 'smart' ? '看看聪明的办法怎么只用十二分钟！' : '先看看普通的方法，需要多少时间。'), () => {
+    // 根据语音时长动态安排步骤
+    let stepIdx = 0;
+    function runNextStep() {
+      if (stepIdx >= steps.length) {
+        animating = false;
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('stepText').textContent = 
+          currentMode === 'smart' 
+            ? '🎉 只用了12分钟！每轮锅都满满的！' 
+            : '😢 花了16分钟...因为锅有空位浪费了';
+        return;
+      }
+      
+      const narrIdx = stepIdx;
+      animateStep(steps[stepIdx], narrIdx < narration.length ? narrIdx : -1);
+      stepIdx++;
+      
+      if (narrIdx < narration.length && voiceEnabled) {
+        // 等语音读完再进入下一步（加1秒停顿）
+        const checkDone = setInterval(() => {
+          if (!window.speechSynthesis.speaking) {
+            clearInterval(checkDone);
+            const t = setTimeout(runNextStep, 1000);
+            timeouts.push(t);
+          }
+        }, 200);
+      } else {
+        const t = setTimeout(runNextStep, 2500);
+        timeouts.push(t);
+      }
+    }
+    
+    const t = setTimeout(runNextStep, 500);
     timeouts.push(t);
   });
-
-  // 最后的庆祝
-  const finalT = setTimeout(() => {
-    document.getElementById('stepText').textContent = 
-      currentMode === 'smart' 
-        ? '🎉 只用了12分钟！每轮锅都满满的！' 
-        : '😢 花了16分钟...因为锅有空位浪费了';
-    animating = false;
-    document.getElementById('startBtn').disabled = false;
-  }, steps.length * delay);
-  timeouts.push(finalT);
 }
+
+// ===== 初始化 =====
+function initVoices() {
+  populateVoices();
+  if (window.speechSynthesis.getVoices().length === 0) {
+    window.speechSynthesis.addEventListener('voiceschanged', populateVoices, { once: true });
+  }
+}
+initVoices();
+setTimeout(initVoices, 500);
+setTimeout(initVoices, 1500);
+renderNarrationPanel();
 </script>
 </body>
 </html>
