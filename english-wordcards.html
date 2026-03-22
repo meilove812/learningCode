@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🌈 Coco English Word Cards - 北京版预备级下册</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --pink: #FF6B9D;
+    --purple: #C44EFF;
+    --blue: #4ECAFF;
+    --green: #5CE08E;
+    --yellow: #FFD93D;
+    --orange: #FF8C42;
+    --red: #FF5757;
+    --bg: #FFF8F0;
+    --card-radius: 20px;
+  }
+
+  body {
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: #333;
+  }
+
+  /* ===== Floating background decorations ===== */
+  .bg-deco {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .bg-deco span {
+    position: absolute; font-size: 2rem; opacity: 0.12;
+    animation: floaty 12s ease-in-out infinite;
+  }
+  @keyframes floaty {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-30px) rotate(15deg); }
+  }
+
+  /* ===== Header ===== */
+  .header {
+    background: linear-gradient(135deg, var(--pink), var(--purple), var(--blue));
+    color: white;
+    text-align: center;
+    padding: 24px 16px 20px;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 4px 20px rgba(196, 78, 255, 0.3);
+  }
+  .header h1 {
+    font-size: 1.6rem; font-weight: 900;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.15);
+    margin-bottom: 4px;
+  }
+  .header p { font-size: 0.85rem; opacity: 0.9; }
+
+  /* ===== Mode Tabs ===== */
+  .mode-tabs {
+    display: flex; justify-content: center; gap: 8px;
+    padding: 16px 12px 8px;
+    position: sticky; top: 0; z-index: 20;
+    background: var(--bg);
+  }
+  .mode-tab {
+    padding: 10px 18px;
+    border-radius: 30px;
+    border: 2.5px solid #ddd;
+    background: white;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .mode-tab.active {
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    color: white;
+    border-color: transparent;
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(196, 78, 255, 0.4);
+  }
+
+  /* ===== Unit Selector ===== */
+  .unit-selector {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+    padding: 10px 12px 14px;
+  }
+  .unit-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+  }
+  .unit-btn.active {
+    transform: scale(1.1);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+    border-color: white;
+  }
+
+  /* ===== Card Grid (Browse mode) ===== */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 14px;
+    padding: 6px 14px 100px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* ===== Flip Card ===== */
+  .flip-card {
+    perspective: 800px;
+    height: 190px;
+    cursor: pointer;
+  }
+  .flip-card-inner {
+    position: relative;
+    width: 100%; height: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+
+  .flip-front, .flip-back {
+    position: absolute; width: 100%; height: 100%;
+    backface-visibility: hidden;
+    border-radius: var(--card-radius);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 14px 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+  .flip-front {
+    background: white;
+    border: 3px solid #eee;
+  }
+  .flip-front .emoji { font-size: 2.8rem; margin-bottom: 8px; }
+  .flip-front .word {
+    font-size: 1.3rem; font-weight: 800; color: #333;
+    text-align: center; line-height: 1.2;
+  }
+
+  .flip-back {
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    color: white;
+    transform: rotateY(180deg);
+  }
+  .flip-back .chinese {
+    font-size: 1.5rem; font-weight: 800;
+    margin-bottom: 10px; text-align: center;
+  }
+  .flip-back .phonetic {
+    font-size: 0.8rem; opacity: 0.85; margin-bottom: 12px;
+  }
+
+  .speak-btn {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.2);
+    color: white;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .speak-btn:hover, .speak-btn:active {
+    background: rgba(255,255,255,0.4);
+    transform: scale(1.15);
+  }
+
+  /* ===== Quiz Mode ===== */
+  .quiz-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px 16px 100px;
+    text-align: center;
+  }
+  .quiz-progress {
+    display: flex; gap: 4px; margin-bottom: 16px; justify-content: center; flex-wrap: wrap;
+  }
+  .quiz-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #e0e0e0; transition: all 0.3s;
+  }
+  .quiz-dot.correct { background: var(--green); transform: scale(1.15); }
+  .quiz-dot.wrong { background: var(--red); }
+  .quiz-dot.current { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
+
+  .quiz-question-card {
+    background: white;
+    border-radius: var(--card-radius);
+    padding: 30px 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+  }
+  .quiz-emoji { font-size: 3.5rem; margin-bottom: 10px; }
+  .quiz-prompt {
+    font-size: 1.8rem; font-weight: 800;
+    color: #333; margin-bottom: 6px;
+  }
+  .quiz-hint { font-size: 0.85rem; color: #999; margin-bottom: 0; }
+
+  .quiz-options {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  .quiz-option {
+    padding: 16px 10px;
+    border-radius: 16px;
+    border: 3px solid #eee;
+    background: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+    color: #333;
+  }
+  .quiz-option:hover { border-color: var(--blue); background: #f0f8ff; }
+  .quiz-option:active { transform: scale(0.96); }
+  .quiz-option.correct {
+    background: #e8ffe8; border-color: var(--green); color: var(--green);
+    animation: popCorrect 0.5s;
+  }
+  .quiz-option.wrong {
+    background: #ffe8e8; border-color: var(--red); color: var(--red);
+    animation: shake 0.4s;
+  }
+  @keyframes popCorrect {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  .quiz-result {
+    background: white;
+    border-radius: var(--card-radius);
+    padding: 30px 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+  .quiz-result .big-emoji { font-size: 4rem; margin-bottom: 12px; }
+  .quiz-result h2 { font-size: 1.5rem; margin-bottom: 8px; }
+  .quiz-result .score { font-size: 2.5rem; font-weight: 900; color: var(--purple); }
+  .quiz-result .message { font-size: 1rem; color: #666; margin: 10px 0 20px; }
+
+  .restart-btn {
+    padding: 14px 36px;
+    border-radius: 30px;
+    border: none;
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 4px 15px rgba(196, 78, 255, 0.4);
+    transition: all 0.3s;
+  }
+  .restart-btn:hover { transform: scale(1.05); }
+
+  /* Quiz type toggle */
+  .quiz-type-toggle {
+    display: flex; justify-content: center; gap: 8px; margin-bottom: 16px;
+  }
+  .quiz-type-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 2px solid #ddd;
+    background: white;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+  }
+  .quiz-type-btn.active {
+    background: var(--yellow);
+    border-color: var(--orange);
+    color: #333;
+  }
+
+  /* ===== Star burst animation ===== */
+  .star-burst {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1000;
+    font-size: 2rem;
+    animation: starPop 0.8s forwards;
+  }
+  @keyframes starPop {
+    0% { transform: scale(0) rotate(0deg); opacity: 1; }
+    50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
+    100% { transform: scale(0) rotate(360deg); opacity: 0; }
+  }
+
+  /* ===== Confetti ===== */
+  .confetti {
+    position: fixed; top: -10px;
+    width: 10px; height: 10px;
+    z-index: 999; pointer-events: none;
+    animation: confettiFall 2s forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ===== Scroll to top ===== */
+  .scroll-top {
+    position: fixed; bottom: 24px; right: 24px; z-index: 50;
+    width: 50px; height: 50px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--green));
+    color: white; border: none; font-size: 1.5rem;
+    cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: none; align-items: center; justify-content: center;
+    transition: all 0.3s;
+  }
+  .scroll-top.visible { display: flex; }
+
+  /* ===== Stats bar ===== */
+  .stats-bar {
+    display: flex; justify-content: center; gap: 20px;
+    padding: 8px 16px 4px;
+    font-size: 0.8rem; color: #999; font-weight: 600;
+  }
+  .stats-bar span { display: flex; align-items: center; gap: 4px; }
+
+  /* ===== Hidden ===== */
+  .hidden { display: none !important; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 400px) {
+    .header h1 { font-size: 1.3rem; }
+    .card-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 6px 10px 100px; }
+    .flip-card { height: 170px; }
+    .flip-front .word { font-size: 1.1rem; }
+    .flip-front .emoji { font-size: 2.2rem; }
+    .mode-tab { padding: 8px 14px; font-size: 0.85rem; }
+  }
+
+  /* ===== Entrance animation ===== */
+  .card-enter {
+    animation: cardPop 0.4s ease-out backwards;
+  }
+  @keyframes cardPop {
+    from { opacity: 0; transform: scale(0.7) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-deco" id="bgDeco"></div>
+
+<div class="header">
+  <h1>🌈 Coco English Word Cards</h1>
+  <p>北京版 · 预备级英语下册 · 一年级</p>
+</div>
+
+<div class="mode-tabs">
+  <button class="mode-tab active" data-mode="browse" onclick="switchMode('browse')">📚 学单词</button>
+  <button class="mode-tab" data-mode="quiz" onclick="switchMode('quiz')">🎮 小测验</button>
+</div>
+
+<!-- Browse Mode -->
+<div id="browseMode">
+  <div class="unit-selector" id="unitSelector"></div>
+  <div class="stats-bar" id="statsBar">
+    <span>📖 共 <b id="wordCount">0</b> 个单词</span>
+    <span>👆 点击翻转卡片</span>
+  </div>
+  <div class="card-grid" id="cardGrid"></div>
+</div>
+
+<!-- Quiz Mode -->
+<div id="quizMode" class="hidden">
+  <div class="quiz-container">
+    <div class="quiz-type-toggle">
+      <button class="quiz-type-btn active" data-type="cn2en" onclick="setQuizType('cn2en')">🇨🇳→🇬🇧 看中选英</button>
+      <button class="quiz-type-btn" data-type="en2cn" onclick="setQuizType('en2cn')">🇬🇧→🇨🇳 看英选中</button>
+    </div>
+    <div class="quiz-progress" id="quizProgress"></div>
+    <div id="quizContent"></div>
+  </div>
+</div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️</button>
+
+<script>
+// ===== Word Data: 北京版预备级英语下册 =====
+const UNITS = [
+  {
+    id: 'all',
+    name: '🌟 全部',
+    color: 'linear-gradient(135deg, #FF6B9D, #C44EFF)',
+    words: [] // populated dynamically
+  },
+  {
+    id: 'unit1',
+    name: '🔢 数字',
+    color: 'linear-gradient(135deg, #FF5757, #FF8C42)',
+    words: [
+      { en: 'one', cn: '一', emoji: '1️⃣' },
+      { en: 'two', cn: '二', emoji: '2️⃣' },
+      { en: 'three', cn: '三', emoji: '3️⃣' },
+      { en: 'four', cn: '四', emoji: '4️⃣' },
+      { en: 'five', cn: '五', emoji: '5️⃣' },
+      { en: 'six', cn: '六', emoji: '6️⃣' },
+      { en: 'seven', cn: '七', emoji: '7️⃣' },
+      { en: 'eight', cn: '八', emoji: '8️⃣' },
+      { en: 'nine', cn: '九', emoji: '9️⃣' },
+      { en: 'ten', cn: '十', emoji: '🔟' },
+    ]
+  },
+  {
+    id: 'unit2',
+    name: '🎨 颜色',
+    color: 'linear-gradient(135deg, #C44EFF, #4ECAFF)',
+    words: [
+      { en: 'red', cn: '红色', emoji: '🔴' },
+      { en: 'yellow', cn: '黄色', emoji: '🟡' },
+      { en: 'blue', cn: '蓝色', emoji: '🔵' },
+      { en: 'green', cn: '绿色', emoji: '🟢' },
+      { en: 'white', cn: '白色', emoji: '⚪' },
+      { en: 'black', cn: '黑色', emoji: '⚫' },
+      { en: 'orange', cn: '橙色', emoji: '🟠' },
+      { en: 'pink', cn: '粉色', emoji: '🩷' },
+      { en: 'purple', cn: '紫色', emoji: '🟣' },
+      { en: 'brown', cn: '棕色', emoji: '🟤' },
+    ]
+  },
+  {
+    id: 'unit3',
+    name: '🐾 动物',
+    color: 'linear-gradient(135deg, #5CE08E, #4ECAFF)',
+    words: [
+      { en: 'cat', cn: '猫', emoji: '🐱' },
+      { en: 'dog', cn: '狗', emoji: '🐶' },
+      { en: 'fish', cn: '鱼', emoji: '🐟' },
+      { en: 'bird', cn: '鸟', emoji: '🐦' },
+      { en: 'rabbit', cn: '兔子', emoji: '🐰' },
+      { en: 'duck', cn: '鸭子', emoji: '🦆' },
+      { en: 'pig', cn: '猪', emoji: '🐷' },
+      { en: 'hen', cn: '母鸡', emoji: '🐔' },
+      { en: 'frog', cn: '青蛙', emoji: '🐸' },
+      { en: 'bee', cn: '蜜蜂', emoji: '🐝' },
+    ]
+  },
+  {
+    id: 'unit4',
+    name: '🍎 水果',
+    color: 'linear-gradient(135deg, #FFD93D, #FF8C42)',
+    words: [
+      { en: 'apple', cn: '苹果', emoji: '🍎' },
+      { en: 'banana', cn: '香蕉', emoji: '🍌' },
+      { en: 'orange', cn: '橘子', emoji: '🍊' },
+      { en: 'pear', cn: '梨', emoji: '🍐' },
+      { en: 'peach', cn: '桃子', emoji: '🍑' },
+      { en: 'grape', cn: '葡萄', emoji: '🍇' },
+      { en: 'watermelon', cn: '西瓜', emoji: '🍉' },
+      { en: 'strawberry', cn: '草莓', emoji: '🍓' },
+      { en: 'mango', cn: '芒果', emoji: '🥭' },
+      { en: 'lemon', cn: '柠檬', emoji: '🍋' },
+    ]
+  },
+  {
+    id: 'unit5',
+    name: '👤 身体',
+    color: 'linear-gradient(135deg, #FF6B9D, #FF5757)',
+    words: [
+      { en: 'head', cn: '头', emoji: '🗣️' },
+      { en: 'eye', cn: '眼睛', emoji: '👁️' },
+      { en: 'ear', cn: '耳朵', emoji: '👂' },
+      { en: 'nose', cn: '鼻子', emoji: '👃' },
+      { en: 'mouth', cn: '嘴巴', emoji: '👄' },
+      { en: 'hand', cn: '手', emoji: '✋' },
+      { en: 'foot', cn: '脚', emoji: '🦶' },
+      { en: 'arm', cn: '胳膊', emoji: '💪' },
+      { en: 'leg', cn: '腿', emoji: '🦵' },
+      { en: 'face', cn: '脸', emoji: '😊' },
+    ]
+  },
+  {
+    id: 'unit6',
+    name: '👨‍👩‍👧 家庭',
+    color: 'linear-gradient(135deg, #4ECAFF, #C44EFF)',
+    words: [
+      { en: 'father', cn: '爸爸', emoji: '👨' },
+      { en: 'mother', cn: '妈妈', emoji: '👩' },
+      { en: 'brother', cn: '哥哥/弟弟', emoji: '👦' },
+      { en: 'sister', cn: '姐姐/妹妹', emoji: '👧' },
+      { en: 'grandpa', cn: '爷爷/外公', emoji: '👴' },
+      { en: 'grandma', cn: '奶奶/外婆', emoji: '👵' },
+      { en: 'baby', cn: '宝宝', emoji: '👶' },
+      { en: 'friend', cn: '朋友', emoji: '🤝' },
+      { en: 'boy', cn: '男孩', emoji: '👦' },
+      { en: 'girl', cn: '女孩', emoji: '👧' },
+    ]
+  },
+  {
+    id: 'unit7',
+    name: '🍔 食物',
+    color: 'linear-gradient(135deg, #FF8C42, #FFD93D)',
+    words: [
+      { en: 'rice', cn: '米饭', emoji: '🍚' },
+      { en: 'bread', cn: '面包', emoji: '🍞' },
+      { en: 'egg', cn: '鸡蛋', emoji: '🥚' },
+      { en: 'cake', cn: '蛋糕', emoji: '🎂' },
+      { en: 'milk', cn: '牛奶', emoji: '🥛' },
+      { en: 'water', cn: '水', emoji: '💧' },
+      { en: 'juice', cn: '果汁', emoji: '🧃' },
+      { en: 'candy', cn: '糖果', emoji: '🍬' },
+      { en: 'cookie', cn: '饼干', emoji: '🍪' },
+      { en: 'ice cream', cn: '冰淇淋', emoji: '🍦' },
+    ]
+  },
+  {
+    id: 'unit8',
+    name: '🏫 学校',
+    color: 'linear-gradient(135deg, #5CE08E, #FFD93D)',
+    words: [
+      { en: 'book', cn: '书', emoji: '📖' },
+      { en: 'pen', cn: '钢笔', emoji: '🖊️' },
+      { en: 'pencil', cn: '铅笔', emoji: '✏️' },
+      { en: 'ruler', cn: '尺子', emoji: '📏' },
+      { en: 'bag', cn: '书包', emoji: '🎒' },
+      { en: 'desk', cn: '课桌', emoji: '🪑' },
+      { en: 'chair', cn: '椅子', emoji: '💺' },
+      { en: 'teacher', cn: '老师', emoji: '👩‍🏫' },
+      { en: 'school', cn: '学校', emoji: '🏫' },
+      { en: 'class', cn: '课/班级', emoji: '📝' },
+    ]
+  },
+];
+
+// Populate "all"
+UNITS[0].words = UNITS.slice(1).flatMap(u => u.words);
+
+// ===== State =====
+let currentMode = 'browse';
+let currentUnit = 'all';
+let quizType = 'cn2en'; // cn2en or en2cn
+let quizWords = [];
+let quizIndex = 0;
+let quizScore = 0;
+let quizAnswers = [];
+const QUIZ_COUNT = 10;
+
+// ===== Init =====
+window.addEventListener('DOMContentLoaded', () => {
+  createBgDeco();
+  renderUnitButtons();
+  renderCards();
+  setupScrollTop();
+});
+
+// ===== Background decoration =====
+function createBgDeco() {
+  const emojis = ['⭐','🌈','🦋','🌸','🎵','💫','🌻','🎀','✨','🍀','🎈','🌙'];
+  const container = document.getElementById('bgDeco');
+  for (let i = 0; i < 20; i++) {
+    const span = document.createElement('span');
+    span.textContent = emojis[i % emojis.length];
+    span.style.left = Math.random() * 100 + '%';
+    span.style.top = Math.random() * 100 + '%';
+    span.style.animationDelay = Math.random() * 10 + 's';
+    span.style.animationDuration = (10 + Math.random() * 8) + 's';
+    container.appendChild(span);
+  }
+}
+
+// ===== Mode Switching =====
+function switchMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+  document.getElementById('browseMode').classList.toggle('hidden', mode !== 'browse');
+  document.getElementById('quizMode').classList.toggle('hidden', mode !== 'quiz');
+  if (mode === 'quiz') startQuiz();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== Unit Buttons =====
+function renderUnitButtons() {
+  const container = document.getElementById('unitSelector');
+  container.innerHTML = '';
+  UNITS.forEach(unit => {
+    const btn = document.createElement('button');
+    btn.className = 'unit-btn' + (unit.id === currentUnit ? ' active' : '');
+    btn.style.background = unit.color;
+    btn.textContent = unit.name;
+    btn.onclick = () => {
+      currentUnit = unit.id;
+      document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderCards();
+    };
+    container.appendChild(btn);
+  });
+}
+
+// ===== Render Cards =====
+function renderCards() {
+  const unit = UNITS.find(u => u.id === currentUnit);
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML = '';
+  document.getElementById('wordCount').textContent = unit.words.length;
+
+  unit.words.forEach((word, i) => {
+    const card = document.createElement('div');
+    card.className = 'flip-card card-enter';
+    card.style.animationDelay = (i * 0.05) + 's';
+    card.innerHTML = `
+      <div class="flip-card-inner">
+        <div class="flip-front">
+          <div class="emoji">${word.emoji}</div>
+          <div class="word">${word.en}</div>
+        </div>
+        <div class="flip-back">
+          <div class="chinese">${word.cn}</div>
+          <button class="speak-btn" onclick="event.stopPropagation(); speak('${word.en.replace(/'/g, "\\'")}')">🔊</button>
+        </div>
+      </div>
+    `;
+    card.addEventListener('click', () => {
+      card.classList.toggle('flipped');
+    });
+    grid.appendChild(card);
+  });
+}
+
+// ===== Speech =====
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-US';
+  utter.rate = 0.8;
+  utter.pitch = 1.1;
+  // Try to get a good English voice
+  const voices = window.speechSynthesis.getVoices();
+  const enVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Female'))
+    || voices.find(v => v.lang.startsWith('en-US'))
+    || voices.find(v => v.lang.startsWith('en'));
+  if (enVoice) utter.voice = enVoice;
+  window.speechSynthesis.speak(utter);
+}
+// Preload voices
+if ('speechSynthesis' in window) {
+  speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+}
+
+// ===== Quiz =====
+function setQuizType(type) {
+  quizType = type;
+  document.querySelectorAll('.quiz-type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === type));
+  startQuiz();
+}
+
+function startQuiz() {
+  const unit = UNITS.find(u => u.id === currentUnit);
+  const pool = [...unit.words];
+  // Shuffle and pick
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  quizWords = pool.slice(0, Math.min(QUIZ_COUNT, pool.length));
+  quizIndex = 0;
+  quizScore = 0;
+  quizAnswers = [];
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const content = document.getElementById('quizContent');
+  const progress = document.getElementById('quizProgress');
+
+  // Progress dots
+  progress.innerHTML = '';
+  for (let i = 0; i < quizWords.length; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'quiz-dot';
+    if (i < quizIndex) dot.classList.add(quizAnswers[i] ? 'correct' : 'wrong');
+    if (i === quizIndex) dot.classList.add('current');
+    progress.appendChild(dot);
+  }
+
+  if (quizIndex >= quizWords.length) {
+    renderQuizResult();
+    return;
+  }
+
+  const word = quizWords[quizIndex];
+  const allWords = UNITS[0].words;
+
+  // Generate options
+  const isCn2En = quizType === 'cn2en';
+  const correctAnswer = isCn2En ? word.en : word.cn;
+  const options = [correctAnswer];
+
+  while (options.length < 4) {
+    const rw = allWords[Math.floor(Math.random() * allWords.length)];
+    const opt = isCn2En ? rw.en : rw.cn;
+    if (!options.includes(opt)) options.push(opt);
+  }
+
+  // Shuffle options
+  for (let i = options.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [options[i], options[j]] = [options[j], options[i]];
+  }
+
+  const promptText = isCn2En ? word.cn : word.en;
+  const hintText = isCn2En ? '选出正确的英文单词 👇' : '选出正确的中文意思 👇';
+
+  content.innerHTML = `
+    <div class="quiz-question-card">
+      <div class="quiz-emoji">${word.emoji}</div>
+      <div class="quiz-prompt">${promptText}</div>
+      <div class="quiz-hint">${hintText}</div>
+    </div>
+    <div class="quiz-options">
+      ${options.map((opt, i) => `
+        <button class="quiz-option" data-answer="${opt}" onclick="checkAnswer(this, '${correctAnswer.replace(/'/g, "\\'")}', '${word.en.replace(/'/g, "\\'")}')">${opt}</button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function checkAnswer(btn, correct, enWord) {
+  const allBtns = document.querySelectorAll('.quiz-option');
+  const isCorrect = btn.dataset.answer === correct;
+
+  allBtns.forEach(b => {
+    b.onclick = null;
+    b.style.pointerEvents = 'none';
+    if (b.dataset.answer === correct) b.classList.add('correct');
+  });
+
+  if (isCorrect) {
+    quizScore++;
+    quizAnswers.push(true);
+    createStarBurst(btn);
+    speak(enWord);
+  } else {
+    btn.classList.add('wrong');
+    quizAnswers.push(false);
+  }
+
+  setTimeout(() => {
+    quizIndex++;
+    renderQuiz();
+  }, isCorrect ? 800 : 1200);
+}
+
+function renderQuizResult() {
+  const content = document.getElementById('quizContent');
+  const total = quizWords.length;
+  const pct = Math.round(quizScore / total * 100);
+  let emoji, message;
+
+  if (pct === 100) {
+    emoji = '🏆'; message = '太棒了！全部正确！你是英语小天才！🎉';
+    launchConfetti();
+  } else if (pct >= 80) {
+    emoji = '🌟'; message = '非常棒！继续加油哦！💪';
+    launchConfetti();
+  } else if (pct >= 60) {
+    emoji = '😊'; message = '不错哦！再练习一下会更好！📚';
+  } else {
+    emoji = '💪'; message = '别灰心！多练习几次就能记住啦！🌈';
+  }
+
+  content.innerHTML = `
+    <div class="quiz-result">
+      <div class="big-emoji">${emoji}</div>
+      <h2>测验结束！</h2>
+      <div class="score">${quizScore} / ${total}</div>
+      <div class="message">${message}</div>
+      <button class="restart-btn" onclick="startQuiz()">🔄 再来一次</button>
+    </div>
+  `;
+}
+
+// ===== Effects =====
+function createStarBurst(el) {
+  const rect = el.getBoundingClientRect();
+  const stars = ['⭐','🌟','✨','💫','🎉'];
+  for (let i = 0; i < 5; i++) {
+    const star = document.createElement('div');
+    star.className = 'star-burst';
+    star.textContent = stars[i % stars.length];
+    star.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 80) + 'px';
+    star.style.top = (rect.top + rect.height / 2 + (Math.random() - 0.5) * 80) + 'px';
+    star.style.animationDelay = (i * 0.1) + 's';
+    document.body.appendChild(star);
+    setTimeout(() => star.remove(), 1000);
+  }
+}
+
+function launchConfetti() {
+  const colors = ['#FF6B9D','#C44EFF','#4ECAFF','#5CE08E','#FFD93D','#FF8C42'];
+  for (let i = 0; i < 40; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    confetti.style.width = (6 + Math.random() * 8) + 'px';
+    confetti.style.height = (6 + Math.random() * 8) + 'px';
+    confetti.style.animationDelay = (Math.random() * 0.5) + 's';
+    confetti.style.animationDuration = (1.5 + Math.random() * 1) + 's';
+    document.body.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 3000);
+  }
+}
+
+// ===== Scroll top button =====
+function setupScrollTop() {
+  const btn = document.getElementById('scrollTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 300);
+  });
+}
+</script>
+</body>
+</html>
