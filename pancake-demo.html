@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🥞 煎饼问题动画演示</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+  padding: 20px;
+}
+h1 { font-size: 28px; color: #5d4037; margin: 10px 0; text-align: center; }
+.subtitle { color: #8d6e63; margin-bottom: 20px; font-size: 16px; }
+
+.scene { 
+  position: relative; width: 100%; max-width: 600px; 
+  background: #fffde7; border-radius: 20px; padding: 30px 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15); margin-bottom: 20px;
+}
+
+/* 平底锅 */
+.pan { 
+  width: 320px; height: 60px; margin: 0 auto;
+  background: linear-gradient(180deg, #616161 0%, #424242 100%);
+  border-radius: 0 0 30px 30px; position: relative;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  display: flex; justify-content: center; gap: 30px; align-items: center;
+}
+.pan::before {
+  content: ''; position: absolute; top: -6px; left: -20px; right: -20px;
+  height: 12px; background: #757575; border-radius: 6px;
+}
+.pan-label { 
+  position: absolute; top: -32px; left: 50%; transform: translateX(-50%);
+  font-size: 14px; color: #888; font-weight: bold;
+}
+
+/* 饼 */
+.pancake {
+  width: 110px; height: 36px; border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: bold; color: #fff;
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+.pancake.p1 { background: linear-gradient(135deg, #e53935, #ef5350); }
+.pancake.p2 { background: linear-gradient(135deg, #1e88e5, #42a5f5); }
+.pancake.p3 { background: linear-gradient(135deg, #43a047, #66bb6a); }
+
+/* 等待区 */
+.waiting-area {
+  display: flex; justify-content: center; gap: 20px;
+  margin: 30px 0 20px; min-height: 60px; align-items: center;
+}
+.wait-slot {
+  width: 120px; height: 50px; border: 3px dashed #ccc; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: #bbb;
+}
+
+/* 完成区 */
+.done-area {
+  display: flex; justify-content: center; gap: 15px;
+  margin: 15px 0; min-height: 50px; align-items: center;
+}
+.done-pancake {
+  width: 100px; height: 34px; border-radius: 17px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: bold; color: #fff; opacity: 0;
+  transition: all 0.5s ease; transform: scale(0.5);
+}
+.done-pancake.show { opacity: 1; transform: scale(1); }
+.done-pancake.p1 { background: linear-gradient(135deg, #c62828, #b71c1c); }
+.done-pancake.p2 { background: linear-gradient(135deg, #1565c0, #0d47a1); }
+.done-pancake.p3 { background: linear-gradient(135deg, #2e7d32, #1b5e20); }
+
+/* 状态信息 */
+.info-panel {
+  background: #fff; border-radius: 16px; padding: 20px;
+  margin: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+.step-text { 
+  font-size: 18px; color: #5d4037; text-align: center; 
+  min-height: 30px; font-weight: 500;
+}
+.timer { 
+  font-size: 48px; font-weight: 800; color: #ff6f00; text-align: center;
+  margin: 10px 0;
+}
+.timer span { font-size: 20px; color: #999; }
+
+/* 进度条 */
+.progress-bar {
+  width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px;
+  margin: 15px 0; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; background: linear-gradient(90deg, #ff6f00, #ffa726);
+  border-radius: 4px; transition: width 0.3s ease; width: 0%;
+}
+
+/* 表格对比 */
+.compare { 
+  display: flex; gap: 20px; margin-top: 15px; justify-content: center;
+  flex-wrap: wrap;
+}
+.method { 
+  flex: 1; min-width: 200px; max-width: 260px; padding: 15px; 
+  border-radius: 12px; text-align: center;
+}
+.method.bad { background: #ffebee; border: 2px solid #ef9a9a; }
+.method.good { background: #e8f5e9; border: 2px solid #a5d6a7; }
+.method h3 { font-size: 15px; margin-bottom: 8px; }
+.method .time { font-size: 32px; font-weight: 800; }
+.method.bad .time { color: #c62828; }
+.method.good .time { color: #2e7d32; }
+
+/* 状态追踪 */
+.status-grid {
+  display: flex; justify-content: center; gap: 15px; margin: 15px 0;
+}
+.pancake-status {
+  text-align: center; padding: 8px 12px; border-radius: 10px;
+  background: #f5f5f5; min-width: 90px;
+}
+.pancake-status .name { font-weight: bold; font-size: 14px; margin-bottom: 4px; }
+.pancake-status .face { font-size: 12px; color: #666; }
+.face-icon { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin: 0 2px; vertical-align: middle; }
+.face-icon.done { background: #4caf50; }
+.face-icon.cooking { background: #ff9800; animation: pulse 0.8s infinite; }
+.face-icon.waiting { background: #e0e0e0; }
+
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+@keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes flip { 0% { transform: rotateX(0); } 50% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
+
+.pancake.flipping { animation: flip 0.6s ease; }
+.pancake.bouncing { animation: bounce 0.5s ease; }
+
+/* 按钮 */
+.controls { display: flex; gap: 12px; justify-content: center; margin: 15px 0; flex-wrap: wrap; }
+.btn {
+  padding: 12px 28px; border: none; border-radius: 25px;
+  font-size: 16px; font-weight: bold; cursor: pointer;
+  transition: all 0.3s ease; color: #fff;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+.btn:active { transform: translateY(0); }
+.btn.primary { background: linear-gradient(135deg, #ff6f00, #ffa726); }
+.btn.secondary { background: linear-gradient(135deg, #78909c, #90a4ae); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* 标签区 */
+.section-label {
+  font-size: 13px; color: #999; text-align: center; margin: 5px 0;
+  text-transform: uppercase; letter-spacing: 2px;
+}
+
+/* 火焰动画 */
+.flames {
+  display: flex; justify-content: center; gap: 5px; margin-top: 8px;
+}
+.flame {
+  font-size: 20px; animation: flicker 0.3s infinite alternate;
+}
+.flame:nth-child(2) { animation-delay: 0.1s; }
+.flame:nth-child(3) { animation-delay: 0.2s; }
+@keyframes flicker { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.1) rotate(3deg); } }
+
+/* 公式卡 */
+.formula-card {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border-radius: 16px; padding: 20px; margin: 15px 0;
+  text-align: center; border: 2px solid #90caf9;
+}
+.formula { font-size: 20px; font-weight: bold; color: #1565c0; }
+
+/* Tab 切换 */
+.tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
+.tab {
+  padding: 10px 24px; border-radius: 20px; border: 2px solid #ff6f00;
+  background: transparent; color: #ff6f00; font-weight: bold; font-size: 15px;
+  cursor: pointer; transition: all 0.3s;
+}
+.tab.active { background: #ff6f00; color: #fff; }
+</style>
+</head>
+<body>
+
+<h1>🥞 煎饼问题 · 动画演示</h1>
+<p class="subtitle">锅一次放2张饼，每面4分钟，煎3张饼最少几分钟？</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('smart')">✅ 聪明办法 (12分钟)</button>
+  <button class="tab" onclick="switchTab('dumb')">❌ 笨办法 (16分钟)</button>
+</div>
+
+<div class="scene">
+  <div class="info-panel">
+    <div class="step-text" id="stepText">点击「开始演示」看看怎么煎饼 🍳</div>
+    <div class="timer" id="timer">0 <span>分钟</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+  </div>
+
+  <div class="status-grid" id="statusGrid">
+    <div class="pancake-status">
+      <div class="name" style="color:#e53935">🔴 饼①</div>
+      <div class="face">正面 <span class="face-icon waiting"></span> 反面 <span class="face-icon waiting"></span></div>
+    </div>
+    <div class="pancake-status">
+      <div class="name" style="color:#1e88e5">🔵 饼②</div>
+      <div class="face">正面 <span class="face-icon waiting"></span> 反面 <span class="face-icon waiting"></span></div>
+    </div>
+    <div class="pancake-status">
+      <div class="name" style="color:#43a047">🟢 饼③</div>
+      <div class="face">正面 <span class="face-icon waiting"></span> 反面 <span class="face-icon waiting"></span></div>
+    </div>
+  </div>
+
+  <div class="section-label">🍽️ 等待区</div>
+  <div class="waiting-area" id="waitingArea">
+    <div class="pancake p1" id="w1">🔴 饼①</div>
+    <div class="pancake p2" id="w2">🔵 饼②</div>
+    <div class="pancake p3" id="w3">🟢 饼③</div>
+  </div>
+
+  <div class="section-label">🔥 平底锅（最多2张）</div>
+  <div class="pan" id="pan">
+    <div class="pan-label">空锅</div>
+  </div>
+  <div class="flames" id="flames" style="opacity:0">
+    <span class="flame">🔥</span><span class="flame">🔥</span><span class="flame">🔥</span>
+  </div>
+
+  <div class="section-label" style="margin-top:20px">✅ 完成区</div>
+  <div class="done-area" id="doneArea">
+    <div class="done-pancake p1" id="d1">🔴 饼① ✓</div>
+    <div class="done-pancake p2" id="d2">🔵 饼② ✓</div>
+    <div class="done-pancake p3" id="d3">🟢 饼③ ✓</div>
+  </div>
+
+  <div class="controls">
+    <button class="btn primary" id="startBtn" onclick="startAnimation()">▶️ 开始演示</button>
+    <button class="btn secondary" onclick="resetAnimation()">🔄 重新开始</button>
+  </div>
+</div>
+
+<div class="formula-card">
+  <div>🧮 万能公式</div>
+  <div class="formula" style="margin:10px 0">
+    总面数 ÷ 锅容量 = 最少轮数
+  </div>
+  <div style="font-size:16px; color:#1976d2">
+    3饼 × 2面 = 6面 → 6 ÷ 2 = 3轮 → 3 × 4分钟 = <strong>12分钟</strong> 🎉
+  </div>
+</div>
+
+<div class="compare">
+  <div class="method bad">
+    <h3>❌ 笨办法</h3>
+    <div class="time">16分钟</div>
+    <div style="font-size:13px;color:#999;margin-top:5px">锅有空位，浪费了！</div>
+  </div>
+  <div class="method good">
+    <h3>✅ 聪明办法</h3>
+    <div class="time">12分钟</div>
+    <div style="font-size:13px;color:#999;margin-top:5px">锅每轮都满，不浪费！</div>
+  </div>
+</div>
+
+<p style="margin-top:20px;color:#8d6e63;font-size:14px;text-align:center">
+  🦎 核心秘诀：<strong>别让锅闲着！</strong>
+</p>
+
+<script>
+let currentMode = 'smart';
+let animating = false;
+let currentTimeout = null;
+let timeouts = [];
+
+const smartSteps = [
+  { text: '第1轮：放入 🔴饼① 和 🔵饼② 煎正面', time: 0, pan: ['①正','②正'], panClass: ['p1','p2'], wait: ['w3'], status: [[0,'cooking'],[1,'cooking'],[],[]], panLabel: '🔴正 + 🔵正' },
+  { text: '⏰ 4分钟到！正面煎好了~', time: 4, pan: ['①正✓','②正✓'], panClass: ['p1','p2'], wait: ['w3'], status: [[0,'done'],[1,'done'],[],[]], flip: true, panLabel: '翻面...' },
+  { text: '第2轮：🔴饼①先出锅等等，放🟢饼③进来！', time: 4, pan: ['②反','③正'], panClass: ['p2','p3'], wait: ['w1'], status: [[0,'done'],[1,'done','cooking'],[2,'cooking'],[]], panLabel: '🔵反 + 🟢正' },
+  { text: '⏰ 又4分钟！🔵饼②两面都好了！', time: 8, pan: ['②反✓','③正✓'], panClass: ['p2','p3'], wait: ['w1'], done: ['d2'], status: [[0,'done'],[1,'done','done'],[2,'done'],[]], flip: true, panLabel: '翻面...' },
+  { text: '第3轮：🔴饼①回锅煎反面，🟢饼③也翻面！', time: 8, pan: ['①反','③反'], panClass: ['p1','p3'], wait: [], status: [[0,'done','cooking'],[1,'done','done'],[2,'done','cooking'],[]], panLabel: '🔴反 + 🟢反' },
+  { text: '⏰ 最后4分钟！全部煎好啦！🎉', time: 12, pan: [], panClass: [], wait: [], done: ['d1','d2','d3'], status: [[0,'done','done'],[1,'done','done'],[2,'done','done'],[]], panLabel: '空锅' },
+];
+
+const dumbSteps = [
+  { text: '第1轮：放入 🔴饼① 和 🔵饼② 煎正面', time: 0, pan: ['①正','②正'], panClass: ['p1','p2'], wait: ['w3'], status: [[0,'cooking'],[1,'cooking'],[],[]], panLabel: '🔴正 + 🔵正' },
+  { text: '⏰ 4分钟到！翻面~', time: 4, flip: true, panLabel: '翻面...' },
+  { text: '第2轮：翻面继续煎 🔴饼①反 和 🔵饼②反', time: 4, pan: ['①反','②反'], panClass: ['p1','p2'], wait: ['w3'], status: [[0,'done','cooking'],[1,'done','cooking'],[],[]], panLabel: '🔴反 + 🔵反' },
+  { text: '⏰ 又4分钟！🔴①和🔵②好了', time: 8, done: ['d1','d2'], status: [[0,'done','done'],[1,'done','done'],[],[]], flip: true, panLabel: '出锅！' },
+  { text: '第3轮：只放 🟢饼③ 煎正面...锅空了一半😢', time: 8, pan: ['③正','❌空位'], panClass: ['p3','empty'], wait: [], status: [[0,'done','done'],[1,'done','done'],[2,'cooking'],[]], panLabel: '🟢正 + ❌空' },
+  { text: '⏰ 4分钟...翻面', time: 12, flip: true, panLabel: '翻面...' },
+  { text: '第4轮：🟢饼③反面...还是半空😢', time: 12, pan: ['③反','❌空位'], panClass: ['p3','empty'], wait: [], status: [[0,'done','done'],[1,'done','done'],[2,'done','cooking'],[]], panLabel: '🟢反 + ❌空' },
+  { text: '⏰ 终于好了...但花了16分钟 😩', time: 16, pan: [], panClass: [], wait: [], done: ['d1','d2','d3'], status: [[0,'done','done'],[1,'done','done'],[2,'done','done'],[]], panLabel: '空锅' },
+];
+
+function switchTab(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  resetAnimation();
+}
+
+function getSteps() {
+  return currentMode === 'smart' ? smartSteps : dumbSteps;
+}
+
+function resetAnimation() {
+  timeouts.forEach(t => clearTimeout(t));
+  timeouts = [];
+  animating = false;
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('stepText').textContent = '点击「开始演示」看看怎么煎饼 🍳';
+  document.getElementById('timer').innerHTML = '0 <span>分钟</span>';
+  document.getElementById('progress').style.width = '0%';
+  document.getElementById('flames').style.opacity = '0';
+
+  const pan = document.getElementById('pan');
+  pan.innerHTML = '<div class="pan-label">空锅</div>';
+
+  ['w1','w2','w3'].forEach(id => {
+    document.getElementById(id).style.display = 'flex';
+    document.getElementById(id).classList.remove('flipping','bouncing');
+  });
+  ['d1','d2','d3'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+  });
+
+  updateStatusAll([[],[], [], []]);
+}
+
+function updateStatusAll(statuses) {
+  const grid = document.getElementById('statusGrid');
+  const colors = ['#e53935','#1e88e5','#43a047'];
+  const names = ['饼①','饼②','饼③'];
+  const emojis = ['🔴','🔵','🟢'];
+  
+  grid.innerHTML = statuses.slice(0,3).map((s, i) => {
+    const frontClass = s[0] === 'done' ? 'done' : s[0] === 'cooking' ? 'cooking' : 'waiting';
+    const backClass = s[1] === 'done' ? 'done' : s[1] === 'cooking' ? 'cooking' : 'waiting';
+    return `<div class="pancake-status">
+      <div class="name" style="color:${colors[i]}">${emojis[i]} ${names[i]}</div>
+      <div class="face">正 <span class="face-icon ${frontClass}"></span> 反 <span class="face-icon ${backClass}"></span></div>
+    </div>`;
+  }).join('');
+}
+
+function animateStep(step) {
+  const { text, time, pan: panItems, panClass, wait, done, status, flip, panLabel } = step;
+  const maxTime = currentMode === 'smart' ? 12 : 16;
+  
+  if (text) document.getElementById('stepText').textContent = text;
+  if (time !== undefined) {
+    document.getElementById('timer').innerHTML = `${time} <span>分钟</span>`;
+    document.getElementById('progress').style.width = `${(time / maxTime) * 100}%`;
+  }
+  
+  if (status) updateStatusAll(status);
+
+  if (panItems) {
+    const panEl = document.getElementById('pan');
+    panEl.innerHTML = `<div class="pan-label">${panLabel || ''}</div>`;
+    panItems.forEach((item, idx) => {
+      const div = document.createElement('div');
+      if (panClass && panClass[idx] === 'empty') {
+        div.style.cssText = 'width:110px;height:36px;border:3px dashed rgba(255,255,255,0.3);border-radius:18px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);font-size:24px;';
+        div.textContent = '✕';
+      } else {
+        div.className = `pancake ${panClass ? panClass[idx] : ''} ${flip ? 'flipping' : ''}`;
+        div.textContent = item;
+      }
+      panEl.appendChild(div);
+    });
+    document.getElementById('flames').style.opacity = panItems.length > 0 ? '1' : '0';
+  }
+
+  // 隐藏在锅里的饼
+  ['w1','w2','w3'].forEach(id => document.getElementById(id).style.display = 'flex');
+  if (wait) {
+    ['w1','w2','w3'].forEach(id => {
+      document.getElementById(id).style.display = wait.includes(id) ? 'flex' : 'none';
+    });
+    // 如果都不在等待区也不在锅里
+    if (panItems && panItems.length === 0 && (!wait || wait.length === 0)) {
+      ['w1','w2','w3'].forEach(id => document.getElementById(id).style.display = 'none');
+    }
+  }
+  
+  if (done) {
+    done.forEach(id => document.getElementById(id).classList.add('show'));
+  }
+}
+
+function startAnimation() {
+  if (animating) return;
+  animating = true;
+  document.getElementById('startBtn').disabled = true;
+  
+  const steps = getSteps();
+  const delay = 2500;
+  
+  steps.forEach((step, i) => {
+    const t = setTimeout(() => animateStep(step), i * delay);
+    timeouts.push(t);
+  });
+
+  // 最后的庆祝
+  const finalT = setTimeout(() => {
+    document.getElementById('stepText').textContent = 
+      currentMode === 'smart' 
+        ? '🎉 只用了12分钟！每轮锅都满满的！' 
+        : '😢 花了16分钟...因为锅有空位浪费了';
+    animating = false;
+    document.getElementById('startBtn').disabled = false;
+  }, steps.length * delay);
+  timeouts.push(finalT);
+}
+</script>
+</body>
+</html>

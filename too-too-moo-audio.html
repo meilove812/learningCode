@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐉 Too-too-moo · 有声英语课</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: linear-gradient(180deg, #e8f5e9 0%, #fff8e1 100%);
+  min-height: 100vh; padding: 20px; padding-bottom: 100px;
+}
+
+.header {
+  text-align: center; padding: 20px 0;
+}
+.header h1 { font-size: 26px; color: #2e7d32; }
+.header p { color: #689f38; font-size: 14px; margin-top: 6px; }
+
+/* 控制面板 */
+.controls-panel {
+  background: #fff; border-radius: 16px; padding: 16px 20px;
+  max-width: 700px; margin: 15px auto; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+.control-row {
+  display: flex; align-items: center; gap: 10px; margin: 8px 0; flex-wrap: wrap;
+}
+.control-row label { font-size: 14px; color: #666; min-width: 70px; }
+.speed-btn {
+  padding: 6px 16px; border-radius: 15px; border: 2px solid #66bb6a;
+  background: #fff; color: #2e7d32; font-weight: bold; cursor: pointer;
+  font-size: 13px; transition: all 0.2s;
+}
+.speed-btn.active { background: #66bb6a; color: #fff; }
+.voice-select {
+  flex: 1; max-width: 300px; padding: 8px 12px; border-radius: 12px;
+  border: 2px solid #e0e0e0; font-size: 14px; color: #333;
+  background: #fafafa; cursor: pointer; transition: border-color 0.2s;
+}
+.voice-select:focus { border-color: #66bb6a; outline: none; }
+.voice-preview {
+  padding: 6px 14px; border-radius: 15px; border: 2px solid #42a5f5;
+  background: #fff; color: #1565c0; font-weight: bold; cursor: pointer;
+  font-size: 13px; transition: all 0.2s;
+}
+.voice-preview:hover { background: #e3f2fd; }
+
+/* Tab 导航 */
+.tabs {
+  display: flex; justify-content: center; gap: 8px; margin: 15px 0; flex-wrap: wrap;
+}
+.tab {
+  padding: 10px 20px; border-radius: 20px; border: 2px solid #66bb6a;
+  background: #fff; color: #2e7d32; font-weight: bold; font-size: 14px;
+  cursor: pointer; transition: all 0.3s;
+}
+.tab.active { background: #66bb6a; color: #fff; }
+
+/* 内容区 */
+.content-section { display: none; }
+.content-section.active { display: block; }
+
+/* 单词卡 */
+.word-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px; max-width: 900px; margin: 0 auto;
+}
+.word-card {
+  background: #fff; border-radius: 16px; padding: 16px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08); cursor: pointer;
+  transition: all 0.3s; border-left: 5px solid #66bb6a;
+  position: relative;
+}
+.word-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+.word-card:active { transform: scale(0.98); }
+.word-card .en { font-size: 22px; font-weight: 800; color: #2e7d32; }
+.word-card .phonetic { font-size: 13px; color: #999; margin: 3px 0; }
+.word-card .cn { font-size: 15px; color: #555; margin: 4px 0; }
+.word-card .example { font-size: 13px; color: #888; font-style: italic; margin-top: 6px; border-top: 1px solid #eee; padding-top: 6px; }
+.word-card .speaker-icon {
+  position: absolute; top: 12px; right: 12px; font-size: 22px; opacity: 0.5;
+}
+.word-card.playing { border-left-color: #ff9800; background: #fff8e1; }
+.word-card.playing .speaker-icon { opacity: 1; animation: pulse 0.8s infinite; }
+
+/* 故事句子 */
+.story-container { max-width: 800px; margin: 0 auto; }
+.scene-title {
+  font-size: 20px; font-weight: 800; color: #5d4037; text-align: center;
+  margin: 25px 0 15px; padding: 10px; background: #efebe9; border-radius: 12px;
+}
+.sentence-card {
+  background: #fff; border-radius: 16px; padding: 18px 20px;
+  margin: 10px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  cursor: pointer; transition: all 0.3s; border-left: 5px solid #42a5f5;
+}
+.sentence-card:hover { transform: translateX(5px); }
+.sentence-card:active { transform: scale(0.99); }
+.sentence-card.playing { border-left-color: #ff9800; background: #fff8e1; }
+.sentence-card .en-text { font-size: 18px; color: #1565c0; font-weight: 600; line-height: 1.6; }
+.sentence-card .cn-text { font-size: 15px; color: #666; margin-top: 6px; line-height: 1.5; }
+.sentence-card .word-hints {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+}
+.word-hint {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; background: #e3f2fd; border-radius: 10px;
+  font-size: 12px; color: #1976d2; cursor: pointer; transition: all 0.2s;
+}
+.word-hint:hover { background: #bbdefb; }
+.word-hint .hw { font-weight: bold; }
+
+.sentence-num {
+  display: inline-block; width: 28px; height: 28px; line-height: 28px;
+  text-align: center; background: #42a5f5; color: #fff; border-radius: 50%;
+  font-size: 13px; font-weight: bold; margin-right: 8px; flex-shrink: 0;
+}
+
+/* 播放全部按钮 */
+.play-all-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+  padding: 12px 20px; box-shadow: 0 -3px 15px rgba(0,0,0,0.1);
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  z-index: 100;
+}
+.play-btn {
+  padding: 12px 30px; border: none; border-radius: 25px;
+  font-size: 16px; font-weight: bold; cursor: pointer; color: #fff;
+  transition: all 0.3s;
+}
+.play-btn.primary { background: linear-gradient(135deg, #43a047, #66bb6a); }
+.play-btn.stop { background: linear-gradient(135deg, #ef5350, #e53935); }
+.play-btn.secondary { background: linear-gradient(135deg, #42a5f5, #1e88e5); }
+.play-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+.play-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.progress-text { font-size: 14px; color: #666; min-width: 80px; text-align: center; }
+
+/* 复习模式 */
+.quiz-container { max-width: 600px; margin: 0 auto; }
+.quiz-card {
+  background: #fff; border-radius: 20px; padding: 30px;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.1); text-align: center;
+  margin: 20px 0;
+}
+.quiz-card .question { font-size: 20px; color: #333; margin-bottom: 20px; }
+.quiz-card .listen-btn {
+  width: 80px; height: 80px; border-radius: 50%; border: none;
+  background: linear-gradient(135deg, #66bb6a, #43a047);
+  color: #fff; font-size: 36px; cursor: pointer; margin: 15px 0;
+  transition: all 0.3s; box-shadow: 0 4px 15px rgba(76,175,80,0.4);
+}
+.quiz-card .listen-btn:hover { transform: scale(1.1); }
+.quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+.quiz-option {
+  padding: 14px; border: 3px solid #e0e0e0; border-radius: 14px;
+  background: #fff; font-size: 16px; cursor: pointer; transition: all 0.3s;
+  font-weight: 500;
+}
+.quiz-option:hover { border-color: #66bb6a; background: #f1f8e9; }
+.quiz-option.correct { border-color: #43a047; background: #e8f5e9; color: #2e7d32; }
+.quiz-option.wrong { border-color: #e53935; background: #ffebee; color: #c62828; }
+.quiz-score {
+  font-size: 18px; color: #ff6f00; font-weight: bold; margin: 10px 0;
+}
+
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+
+/* 响应式 */
+@media (max-width: 500px) {
+  .word-grid { grid-template-columns: 1fr; }
+  .quiz-options { grid-template-columns: 1fr; }
+  .sentence-card .en-text { font-size: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🐉 Too-too-moo and the Komodo Dragon</h1>
+  <p>点击任意卡片听发音 · 点底部按钮连续播放</p>
+</div>
+
+<div class="controls-panel">
+  <div class="control-row">
+    <label>🗣️ 语速：</label>
+    <button class="speed-btn" onclick="setSpeed(0.6)" data-speed="0.6">🐢 慢速</button>
+    <button class="speed-btn active" onclick="setSpeed(0.8)" data-speed="0.8">🚶 适中</button>
+    <button class="speed-btn" onclick="setSpeed(1)" data-speed="1.0">🏃 正常</button>
+  </div>
+  <div class="control-row">
+    <label>🇬🇧 英文：</label>
+    <select class="voice-select" id="enVoiceSelect" onchange="selectVoice('en')"></select>
+    <button class="voice-preview" onclick="previewVoice('en')">试听</button>
+  </div>
+  <div class="control-row">
+    <label>🇨🇳 中文：</label>
+    <select class="voice-select" id="cnVoiceSelect" onchange="selectVoice('cn')"></select>
+    <button class="voice-preview" onclick="previewVoice('cn')">试听</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchSection('words')">📝 重点单词</button>
+  <button class="tab" onclick="switchSection('story')">📖 逐句精读</button>
+  <button class="tab" onclick="switchSection('quiz')">🎯 听力测验</button>
+</div>
+
+<!-- ====== 单词区 ====== -->
+<div class="content-section active" id="sec-words">
+  <div class="word-grid" id="wordGrid"></div>
+</div>
+
+<!-- ====== 故事区 ====== -->
+<div class="content-section" id="sec-story">
+  <div class="story-container" id="storyContainer"></div>
+</div>
+
+<!-- ====== 测验区 ====== -->
+<div class="content-section" id="sec-quiz">
+  <div class="quiz-container" id="quizContainer"></div>
+</div>
+
+<!-- 底部播放栏 -->
+<div class="play-all-bar">
+  <button class="play-btn primary" id="playAllBtn" onclick="playAll()">▶️ 连续播放</button>
+  <button class="play-btn stop" id="stopBtn" onclick="stopAll()" style="display:none">⏹ 停止</button>
+  <div class="progress-text" id="progressText"></div>
+</div>
+
+<script>
+// ===== 数据 =====
+const words = [
+  { en: 'dragon', phonetic: '/ˈdræɡən/', cn: '龙', example: 'The Komodo dragon is very big. 科莫多龙非常大。' },
+  { en: 'porridge', phonetic: '/ˈpɒrɪdʒ/', cn: '粥', example: 'She made porridge for breakfast. 她做了粥当早餐。' },
+  { en: 'poor', phonetic: '/pɔːr/', cn: '贫穷的', example: 'They were very poor. 他们非常穷。' },
+  { en: 'firewood', phonetic: '/ˈfaɪəwʊd/', cn: '柴火', example: 'Her mother sold firewood. 她妈妈卖柴火。' },
+  { en: 'roar', phonetic: '/rɔːr/', cn: '吼叫', example: 'The dragon roared loudly. 龙大声吼叫。' },
+  { en: 'knock', phonetic: '/nɒk/', cn: '敲门', example: 'Someone knocked on the door. 有人敲门。' },
+  { en: 'wild', phonetic: '/waɪld/', cn: '野生的', example: 'It is a wild animal. 它是一种野生动物。' },
+  { en: 'angry', phonetic: '/ˈæŋɡri/', cn: '生气的', example: 'The dragon was very angry. 龙非常生气。' },
+  { en: 'hungry', phonetic: '/ˈhʌŋɡri/', cn: '饥饿的', example: 'He was not greedy, he was hungry. 他不是贪吃，他是饿了。' },
+  { en: 'greedy', phonetic: '/ˈɡriːdi/', cn: '贪吃的；贪婪的', example: 'The greedy dragon ate all the porridge. 贪吃的龙把粥全吃了。' },
+  { en: 'dangerous', phonetic: '/ˈdeɪndʒərəs/', cn: '危险的', example: 'Wild animals are dangerous. 野生动物是危险的。' },
+  { en: 'friend', phonetic: '/frend/', cn: '朋友', example: 'The dragon is my friend. 那条龙是我的朋友。' },
+  { en: 'stomach-ache', phonetic: '/ˈstʌmək eɪk/', cn: '肚子疼', example: 'The dragon had a stomach-ache. 龙肚子疼。' },
+  { en: 'market', phonetic: '/ˈmɑːrkɪt/', cn: '市场', example: 'She went to the market. 她去了市场。' },
+  { en: 'forest', phonetic: '/ˈfɒrɪst/', cn: '森林', example: 'The dragon lives in the forest. 龙住在森林里。' },
+];
+
+const story = [
+  { scene: 'SCENE ONE · 第一幕' },
+  { en: "Too-too-moo and her mother were poor.", cn: "Too-too-moo 和她的妈妈很穷。", hints: [['poor','穷']] },
+  { en: "They ate rice every day.", cn: "她们每天吃米饭。", hints: [['rice','米饭']] },
+  { en: "Her mother made porridge for the Komodo dragon every morning.", cn: "她妈妈每天早上给科莫多龙做粥。", hints: [['porridge','粥'],['every morning','每天早上']] },
+  { en: "The dragon ate all the porridge.", cn: "龙把粥全吃光了。", hints: [['all','全部']] },
+  { en: "\"The dragon is my friend,\" said Too-too-moo.", cn: "\"龙是我的朋友,\" Too-too-moo 说。", hints: [['friend','朋友']] },
+  { en: "\"He is the biggest dragon in the world!\"", cn: "\"他是世界上最大的龙！\"", hints: [['biggest','最大的'],['world','世界']] },
+  { en: "\"Be careful!\" said her mother. \"He is a wild animal.\"", cn: "\"小心！\" 妈妈说，\"他是一种野生动物。\"", hints: [['careful','小心'],['wild','野生的']] },
+  { en: "Her mother went to get firewood to sell at the market.", cn: "妈妈去捡柴火到市场上卖。", hints: [['firewood','柴火'],['market','市场']] },
+
+  { scene: 'SCENE TWO · 第二幕' },
+  { en: "Knock, knock, knock! Someone was at the door.", cn: "咚咚咚！有人在敲门。", hints: [['knock','敲门']] },
+  { en: "It was the dragon!", cn: "是那条龙！", hints: [] },
+  { en: "\"I want my porridge!\" roared the dragon.", cn: "\"我要我的粥！\" 龙吼叫道。", hints: [['roared','吼叫']] },
+  { en: "Too-too-moo gave the porridge to the dragon.", cn: "Too-too-moo 把粥给了龙。", hints: [['gave','给了(give的过去式)']] },
+  { en: "The dragon roared and went away with the porridge.", cn: "龙吼了一声，带着粥走了。", hints: [['went away','走了']] },
+
+  { scene: 'SCENE THREE · 第三幕' },
+  { en: "The weather got very hot.", cn: "天气变得非常热。", hints: [['weather','天气'],['hot','热']] },
+  { en: "Nobody wanted to buy firewood.", cn: "没人想买柴火了。", hints: [['nobody','没有人']] },
+  { en: "The family got poorer and poorer.", cn: "这家人越来越穷。", hints: [['poorer and poorer','越来越穷']] },
+  { en: "There was no food.", cn: "没有食物了。", hints: [['no food','没有食物']] },
+  { en: "But the dragon came back. He had a stomach-ache. He was hungry.", cn: "但龙又回来了。它肚子疼。它很饿。", hints: [['stomach-ache','肚子疼'],['hungry','饿']] },
+  { en: "\"There isn't any porridge,\" said Too-too-moo.", cn: "\"没有粥了,\" Too-too-moo 说。", hints: [['isn\'t any','没有任何']] },
+  { en: "The dragon was angry! He pushed Too-too-moo.", cn: "龙生气了！它推了 Too-too-moo。", hints: [['angry','生气'],['pushed','推了']] },
+  { en: "He showed his terrible teeth and roared.", cn: "它露出可怕的牙齿，大声吼叫。", hints: [['terrible','可怕的'],['teeth','牙齿']] },
+  { en: "\"Too-too-moo, you aren't my friend any more!\"", cn: "\"Too-too-moo，你不再是我的朋友了！\"", hints: [['not...any more','不再']] },
+
+  { scene: 'SCENE FOUR · 第四幕' },
+  { en: "The weather got cold again.", cn: "天气又变冷了。", hints: [['cold','冷'],['again','又']] },
+  { en: "People came to buy firewood.", cn: "人们来买柴火了。", hints: [['people','人们']] },
+  { en: "Her mother brought home rice and porridge.", cn: "妈妈带回了米和粥。", hints: [['brought','带回(bring的过去式)']] },
+  { en: "\"That greedy dragon isn't coming back. Good!\" said her mother.", cn: "\"那条贪吃的龙不来了。太好了！\" 妈妈说。", hints: [['greedy','贪吃的']] },
+  { en: "\"He wasn't greedy. He was hungry,\" said Too-too-moo.", cn: "\"它不是贪吃。它是饿了,\" Too-too-moo 说。", hints: [['wasn\'t','不是(过去式)']] },
+  { en: "\"He is a dangerous wild animal. He should stay in the forest,\" said her mother.", cn: "\"它是危险的野生动物。它应该待在森林里,\" 妈妈说。", hints: [['dangerous','危险的'],['forest','森林']] },
+  { en: "The dragon never came back.", cn: "龙再也没有回来。", hints: [['never','从不；再也不']] },
+  { en: "But Too-too-moo often left a bowl of porridge in the forest for the dragon.", cn: "但 Too-too-moo 经常在森林里放一碗粥给龙吃。", hints: [['often','经常'],['bowl','碗']] },
+];
+
+// ===== 语音引擎 =====
+let speechRate = 0.8;
+let isPlayingAll = false;
+let currentPlayIndex = 0;
+let playQueue = [];
+let selectedEnVoice = null;
+let selectedCnVoice = null;
+
+// 声音优先级排序（越靠前越优先）
+const enVoicePreference = [
+  'Samantha', 'Karen', 'Daniel', 'Moira', 'Tessa', 'Fiona',
+  'Google UK English Female', 'Google US English',
+  'Microsoft Zira', 'Microsoft Libby', 'Microsoft Aria',
+  'English (Enhanced)', 'English (Premium)', 'Natural',
+];
+const cnVoicePreference = [
+  'Tingting', 'Sinji', 'Meijia',
+  'Google 普通话', 'Google 中文',
+  'Microsoft Xiaoxiao', 'Microsoft Yunxi',
+  'Chinese (Enhanced)', 'Chinese (Premium)', 'Natural',
+];
+
+function scoreVoice(voice, prefs) {
+  const name = voice.name;
+  for (let i = 0; i < prefs.length; i++) {
+    if (name.includes(prefs[i])) return prefs.length - i + 100;
+  }
+  // Prefer non-compact, enhanced, premium, natural voices
+  let score = 0;
+  if (/enhanced|premium|natural/i.test(name)) score += 50;
+  if (/compact/i.test(name)) score -= 20;
+  if (/online/i.test(name)) score += 30;
+  return score;
+}
+
+function populateVoices() {
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return;
+
+  const enVoices = voices.filter(v => /^en/i.test(v.lang));
+  const cnVoices = voices.filter(v => /^zh|^cmn/i.test(v.lang));
+
+  // Sort by preference score
+  enVoices.sort((a, b) => scoreVoice(b, enVoicePreference) - scoreVoice(a, enVoicePreference));
+  cnVoices.sort((a, b) => scoreVoice(b, cnVoicePreference) - scoreVoice(a, cnVoicePreference));
+
+  const enSelect = document.getElementById('enVoiceSelect');
+  const cnSelect = document.getElementById('cnVoiceSelect');
+
+  enSelect.innerHTML = enVoices.map((v, i) =>
+    `<option value="${v.name}" ${i===0?'selected':''}>${v.name} (${v.lang})</option>`
+  ).join('');
+
+  cnSelect.innerHTML = cnVoices.map((v, i) =>
+    `<option value="${v.name}" ${i===0?'selected':''}>${v.name} (${v.lang})</option>`
+  ).join('');
+
+  // Auto-select best
+  if (enVoices.length) selectedEnVoice = enVoices[0];
+  if (cnVoices.length) selectedCnVoice = cnVoices[0];
+
+  console.log('🔊 English voice:', selectedEnVoice?.name);
+  console.log('🔊 Chinese voice:', selectedCnVoice?.name);
+}
+
+function selectVoice(lang) {
+  const voices = window.speechSynthesis.getVoices();
+  if (lang === 'en') {
+    const name = document.getElementById('enVoiceSelect').value;
+    selectedEnVoice = voices.find(v => v.name === name);
+  } else {
+    const name = document.getElementById('cnVoiceSelect').value;
+    selectedCnVoice = voices.find(v => v.name === name);
+  }
+}
+
+function previewVoice(lang) {
+  window.speechSynthesis.cancel();
+  if (lang === 'en') {
+    speak('The dragon is my friend.', 'en-US');
+  } else {
+    speak('龙是我的朋友。', 'zh-CN');
+  }
+}
+
+function speak(text, lang = 'en-US', callback) {
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang;
+  u.rate = lang.startsWith('zh') ? Math.min(speechRate + 0.1, 1.0) : speechRate;
+  u.pitch = 1.0;
+
+  // Use selected voice
+  if (lang.startsWith('en') && selectedEnVoice) {
+    u.voice = selectedEnVoice;
+  } else if (lang.startsWith('zh') && selectedCnVoice) {
+    u.voice = selectedCnVoice;
+  }
+
+  if (callback) u.onend = callback;
+  u.onerror = () => { if (callback) callback(); };
+  window.speechSynthesis.speak(u);
+}
+
+function speakWordCard(idx) {
+  const w = words[idx];
+  document.querySelectorAll('.word-card').forEach(c => c.classList.remove('playing'));
+  const card = document.querySelectorAll('.word-card')[idx];
+  card.classList.add('playing');
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  speak(w.en, 'en-US', () => {
+    setTimeout(() => {
+      speak(w.cn, 'zh-CN', () => {
+        setTimeout(() => {
+          speak(w.en, 'en-US', () => {
+            card.classList.remove('playing');
+          });
+        }, 300);
+      });
+    }, 400);
+  });
+}
+
+function speakSentence(idx) {
+  const sentences = story.filter(s => !s.scene);
+  const s = sentences[idx];
+  document.querySelectorAll('.sentence-card').forEach(c => c.classList.remove('playing'));
+  const card = document.querySelectorAll('.sentence-card')[idx];
+  card.classList.add('playing');
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  speak(s.en, 'en-US', () => {
+    setTimeout(() => {
+      speak(s.cn, 'zh-CN', () => {
+        card.classList.remove('playing');
+        if (isPlayingAll) {
+          currentPlayIndex++;
+          playNext();
+        }
+      });
+    }, 500);
+  });
+}
+
+function speakWord(word) {
+  speak(word, 'en-US');
+}
+
+// ===== 连续播放 =====
+function playAll() {
+  const section = document.querySelector('.content-section.active').id;
+  if (section === 'sec-words') {
+    isPlayingAll = true;
+    currentPlayIndex = 0;
+    playQueue = words.map((_, i) => i);
+    document.getElementById('playAllBtn').style.display = 'none';
+    document.getElementById('stopBtn').style.display = 'inline-flex';
+    playNextWord();
+  } else if (section === 'sec-story') {
+    isPlayingAll = true;
+    currentPlayIndex = 0;
+    const sentences = story.filter(s => !s.scene);
+    playQueue = sentences.map((_, i) => i);
+    document.getElementById('playAllBtn').style.display = 'none';
+    document.getElementById('stopBtn').style.display = 'inline-flex';
+    playNext();
+  }
+}
+
+function playNextWord() {
+  if (!isPlayingAll || currentPlayIndex >= playQueue.length) {
+    stopAll(); return;
+  }
+  document.getElementById('progressText').textContent = `${currentPlayIndex + 1} / ${playQueue.length}`;
+  const idx = playQueue[currentPlayIndex];
+  const w = words[idx];
+  document.querySelectorAll('.word-card').forEach(c => c.classList.remove('playing'));
+  const card = document.querySelectorAll('.word-card')[idx];
+  card.classList.add('playing');
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  speak(w.en, 'en-US', () => {
+    setTimeout(() => {
+      speak(w.cn, 'zh-CN', () => {
+        setTimeout(() => {
+          speak(w.en, 'en-US', () => {
+            card.classList.remove('playing');
+            currentPlayIndex++;
+            setTimeout(() => playNextWord(), 600);
+          });
+        }, 300);
+      });
+    }, 400);
+  });
+}
+
+function playNext() {
+  if (!isPlayingAll || currentPlayIndex >= playQueue.length) {
+    stopAll(); return;
+  }
+  document.getElementById('progressText').textContent = `${currentPlayIndex + 1} / ${playQueue.length}`;
+  speakSentence(playQueue[currentPlayIndex]);
+}
+
+function stopAll() {
+  isPlayingAll = false;
+  window.speechSynthesis.cancel();
+  document.querySelectorAll('.word-card, .sentence-card').forEach(c => c.classList.remove('playing'));
+  document.getElementById('playAllBtn').style.display = 'inline-flex';
+  document.getElementById('stopBtn').style.display = 'none';
+  document.getElementById('progressText').textContent = '';
+}
+
+// ===== 语速 =====
+function setSpeed(rate) {
+  speechRate = rate;
+  document.querySelectorAll('.speed-btn').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.dataset.speed) === rate);
+  });
+}
+
+// ===== Tab 切换 =====
+function switchSection(name) {
+  stopAll();
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('sec-' + name).classList.add('active');
+
+  if (name === 'quiz') initQuiz();
+}
+
+// ===== 渲染单词 =====
+function renderWords() {
+  const grid = document.getElementById('wordGrid');
+  grid.innerHTML = words.map((w, i) => `
+    <div class="word-card" onclick="speakWordCard(${i})">
+      <div class="speaker-icon">🔊</div>
+      <div class="en">${w.en}</div>
+      <div class="phonetic">${w.phonetic}</div>
+      <div class="cn">${w.cn}</div>
+      <div class="example">${w.example}</div>
+    </div>
+  `).join('');
+}
+
+// ===== 渲染故事 =====
+function renderStory() {
+  const container = document.getElementById('storyContainer');
+  let sentenceIdx = 0;
+  container.innerHTML = story.map(item => {
+    if (item.scene) {
+      return `<div class="scene-title">🎬 ${item.scene}</div>`;
+    }
+    const idx = sentenceIdx++;
+    const hintsHTML = item.hints.map(h =>
+      `<span class="word-hint" onclick="event.stopPropagation(); speakWord('${h[0]}')"><span class="hw">${h[0]}</span> ${h[1]}</span>`
+    ).join('');
+    return `
+      <div class="sentence-card" onclick="speakSentence(${idx})">
+        <div class="en-text"><span class="sentence-num">${idx + 1}</span>${item.en}</div>
+        <div class="cn-text">${item.cn}</div>
+        ${hintsHTML ? `<div class="word-hints">${hintsHTML}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+// ===== 听力测验 =====
+let quizData = [];
+let quizIndex = 0;
+let quizScore = 0;
+
+function initQuiz() {
+  quizData = [...words].sort(() => Math.random() - 0.5).slice(0, 8);
+  quizIndex = 0;
+  quizScore = 0;
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const container = document.getElementById('quizContainer');
+  if (quizIndex >= quizData.length) {
+    container.innerHTML = `
+      <div class="quiz-card">
+        <div style="font-size:60px;margin-bottom:15px">🎉</div>
+        <div class="question">测验完成！</div>
+        <div class="quiz-score">得分：${quizScore} / ${quizData.length}</div>
+        <div style="margin-top:15px">
+          <button class="play-btn primary" onclick="initQuiz()">🔄 再来一次</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const current = quizData[quizIndex];
+  // 生成3个干扰项
+  const otherWords = words.filter(w => w.en !== current.en).sort(() => Math.random() - 0.5).slice(0, 3);
+  const options = [...otherWords.map(w => ({ cn: w.cn, correct: false })), { cn: current.cn, correct: true }]
+    .sort(() => Math.random() - 0.5);
+
+  container.innerHTML = `
+    <div class="quiz-card">
+      <div class="quiz-score">第 ${quizIndex + 1} / ${quizData.length} 题 · 得分：${quizScore}</div>
+      <div class="question">听单词，选择正确的中文意思 👇</div>
+      <button class="listen-btn" onclick="speak('${current.en}', 'en-US')">🔊</button>
+      <div style="font-size:13px;color:#999;margin-bottom:10px">点击喇叭听发音</div>
+      <div class="quiz-options">
+        ${options.map((o, i) => `
+          <div class="quiz-option" id="opt-${i}" onclick="checkAnswer(${i}, ${o.correct}, '${current.en}')">${o.cn}</div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  // 自动播放
+  setTimeout(() => speak(current.en, 'en-US'), 500);
+}
+
+function checkAnswer(idx, correct, word) {
+  document.querySelectorAll('.quiz-option').forEach(o => {
+    o.style.pointerEvents = 'none';
+  });
+
+  const el = document.getElementById('opt-' + idx);
+  if (correct) {
+    el.classList.add('correct');
+    quizScore++;
+    speak('Correct!', 'en-US');
+  } else {
+    el.classList.add('wrong');
+    // 高亮正确答案
+    document.querySelectorAll('.quiz-option').forEach((o, i) => {
+      if (o.textContent === words.find(w => w.en === word).cn) {
+        o.classList.add('correct');
+      }
+    });
+    speak(word, 'en-US');
+  }
+
+  setTimeout(() => {
+    quizIndex++;
+    renderQuiz();
+  }, 1500);
+}
+
+// ===== 初始化 =====
+function initVoices() {
+  populateVoices();
+  if (window.speechSynthesis.getVoices().length === 0) {
+    window.speechSynthesis.addEventListener('voiceschanged', () => {
+      populateVoices();
+    }, { once: true });
+  }
+}
+// 有些浏览器需要延迟加载
+initVoices();
+setTimeout(initVoices, 500);
+setTimeout(initVoices, 1500);
+
+renderWords();
+renderStory();
+</script>
+</body>
+</html>

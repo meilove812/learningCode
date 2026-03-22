@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🌟 Power Up 3 单词卡 - Coco English Park</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --pink: #FF6B9D; --purple: #C084FC; --blue: #60A5FA; --green: #34D399;
+  --yellow: #FBBF24; --orange: #FB923C; --red: #F87171; --teal: #2DD4BF;
+  --sky: #38BDF8; --bg: #FFF7ED;
+}
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg); min-height: 100vh; overflow-x: hidden;
+}
+/* floating decorations */
+.bg-deco { position: fixed; pointer-events: none; z-index: 0; opacity: 0.15; font-size: 3rem; }
+.bg-deco:nth-child(1) { top: 5%; left: 3%; animation: float 6s ease-in-out infinite; }
+.bg-deco:nth-child(2) { top: 15%; right: 5%; animation: float 8s ease-in-out infinite 1s; }
+.bg-deco:nth-child(3) { bottom: 10%; left: 8%; animation: float 7s ease-in-out infinite 2s; }
+.bg-deco:nth-child(4) { bottom: 20%; right: 3%; animation: float 5s ease-in-out infinite 0.5s; }
+@keyframes float { 0%,100%{ transform: translateY(0) rotate(0deg); } 50%{ transform: translateY(-20px) rotate(10deg); } }
+
+/* header */
+.header {
+  background: linear-gradient(135deg, var(--pink), var(--purple), var(--blue));
+  color: white; text-align: center; padding: 1.2rem 1rem; position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+.header h1 { font-size: 1.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+.header p { font-size: 0.85rem; opacity: 0.9; margin-top: 0.3rem; }
+
+/* nav tabs */
+.nav { display: flex; gap: 0.5rem; padding: 0.8rem; overflow-x: auto; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch; position: sticky; top: 72px; z-index: 99;
+  background: rgba(255,247,237,0.95); backdrop-filter: blur(10px); }
+.nav::-webkit-scrollbar { display: none; }
+.nav-btn {
+  flex-shrink: 0; padding: 0.5rem 1rem; border-radius: 2rem; border: 2px solid transparent;
+  font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s;
+  white-space: nowrap; background: white; color: #555; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.nav-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+.nav-btn.active { color: white; border-color: transparent; transform: translateY(-2px); }
+.mode-toggle {
+  display: flex; gap: 0.5rem; justify-content: center; padding: 0.5rem 1rem;
+  background: rgba(255,247,237,0.95);
+}
+.mode-btn {
+  padding: 0.45rem 1.2rem; border-radius: 2rem; border: 2px solid var(--purple);
+  background: white; color: var(--purple); font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+}
+.mode-btn.active { background: var(--purple); color: white; }
+
+/* card grid */
+.card-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem; padding: 1rem; max-width: 900px; margin: 0 auto; position: relative; z-index: 1;
+}
+/* flip card */
+.card-wrapper { perspective: 800px; height: 200px; cursor: pointer; }
+.card {
+  width: 100%; height: 100%; position: relative; transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+.card.flipped { transform: rotateY(180deg); }
+.card-face {
+  position: absolute; inset: 0; border-radius: 1.2rem; backface-visibility: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 0.8rem; box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  border: 3px solid rgba(255,255,255,0.8);
+}
+.card-front { background: white; }
+.card-back { background: linear-gradient(135deg, #fef3c7, #fde68a); transform: rotateY(180deg); }
+.card-emoji { font-size: 2.8rem; margin-bottom: 0.3rem; }
+.card-word { font-size: 1.2rem; font-weight: 700; color: #1e293b; }
+.card-phonetic { font-size: 0.7rem; color: #94a3b8; margin-top: 0.1rem; }
+.card-zh { font-size: 1.1rem; font-weight: 700; color: #92400e; margin-bottom: 0.3rem; }
+.card-example { font-size: 0.65rem; color: #78350f; text-align: center; line-height: 1.3; padding: 0 0.3rem; }
+.card-example-zh { font-size: 0.6rem; color: #92400e; text-align: center; line-height: 1.3; padding: 0 0.3rem; opacity: 0.8; }
+.speak-btn {
+  position: absolute; top: 0.5rem; right: 0.5rem; width: 32px; height: 32px;
+  border-radius: 50%; border: none; background: rgba(96,165,250,0.15);
+  font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; z-index: 5;
+}
+.speak-btn:hover { background: rgba(96,165,250,0.3); transform: scale(1.15); }
+.speak-btn:active { transform: scale(0.95); }
+.card-num { position: absolute; top: 0.4rem; left: 0.6rem; font-size: 0.65rem; color: #cbd5e1; font-weight: 700; }
+
+/* quiz mode */
+.quiz-container {
+  max-width: 500px; margin: 0 auto; padding: 1.5rem; display: none; position: relative; z-index: 1;
+}
+.quiz-container.visible { display: block; }
+.quiz-header { text-align: center; margin-bottom: 1.5rem; }
+.quiz-progress { display: flex; gap: 0.3rem; justify-content: center; margin-bottom: 1rem; }
+.quiz-dot {
+  width: 12px; height: 12px; border-radius: 50%; background: #e2e8f0; transition: all 0.3s;
+}
+.quiz-dot.correct { background: var(--green); transform: scale(1.2); }
+.quiz-dot.wrong { background: var(--red); transform: scale(1.2); }
+.quiz-dot.current { background: var(--yellow); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.3); } }
+.quiz-score { font-size: 1.2rem; font-weight: 700; color: #6366f1; }
+.quiz-question {
+  background: white; border-radius: 1.5rem; padding: 2rem 1.5rem; text-align: center;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 1rem;
+  border: 3px solid rgba(99,102,241,0.15);
+}
+.quiz-prompt-emoji { font-size: 2rem; margin-bottom: 0.5rem; }
+.quiz-prompt { font-size: 1.4rem; font-weight: 700; color: #1e293b; margin-bottom: 0.3rem; }
+.quiz-prompt-sub { font-size: 0.8rem; color: #94a3b8; }
+.quiz-listen-btn {
+  width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--blue);
+  background: rgba(96,165,250,0.1); font-size: 1.8rem; cursor: pointer;
+  margin: 0.5rem auto; display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s;
+}
+.quiz-listen-btn:hover { background: rgba(96,165,250,0.25); transform: scale(1.1); }
+.quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+.quiz-opt {
+  padding: 1rem; border-radius: 1rem; border: 3px solid #e2e8f0; background: white;
+  font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  text-align: center; min-height: 56px; display: flex; align-items: center; justify-content: center;
+}
+.quiz-opt:hover { border-color: var(--purple); transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.quiz-opt.correct { border-color: var(--green); background: #d1fae5; color: #065f46;
+  animation: pop 0.3s; }
+.quiz-opt.wrong { border-color: var(--red); background: #fee2e2; color: #991b1b;
+  animation: shake 0.4s; }
+@keyframes pop { 0%{ transform: scale(1); } 50%{ transform: scale(1.08); } 100%{ transform: scale(1); } }
+@keyframes shake { 0%,100%{ transform: translateX(0); } 25%{ transform: translateX(-8px); } 75%{ transform: translateX(8px); } }
+
+/* quiz type selector */
+.quiz-type-sel {
+  display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap;
+}
+.qt-btn {
+  padding: 0.4rem 0.8rem; border-radius: 1.5rem; border: 2px solid var(--blue);
+  background: white; color: var(--blue); font-size: 0.75rem; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+}
+.qt-btn.active { background: var(--blue); color: white; }
+
+/* result screen */
+.quiz-result {
+  text-align: center; padding: 2rem; display: none;
+}
+.quiz-result.visible { display: block; }
+.result-score { font-size: 4rem; font-weight: 900; background: linear-gradient(135deg, var(--pink), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.result-msg { font-size: 1.3rem; font-weight: 600; margin: 0.5rem 0; color: #4b5563; }
+.result-stars { font-size: 2.5rem; margin: 0.5rem 0; }
+.result-btn {
+  margin-top: 1rem; padding: 0.8rem 2rem; border-radius: 2rem; border: none;
+  background: linear-gradient(135deg, var(--purple), var(--blue)); color: white;
+  font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s;
+}
+.result-btn:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+
+/* confetti */
+.confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 200; overflow: hidden; }
+.confetti {
+  position: absolute; width: 10px; height: 10px; top: -10px;
+  animation: confetti-fall 3s linear forwards;
+}
+@keyframes confetti-fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* unit info */
+.unit-info {
+  text-align: center; padding: 0.6rem; font-size: 0.85rem; color: #7c3aed; font-weight: 600;
+}
+
+/* responsive */
+@media (max-width: 400px) {
+  .card-grid { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; padding: 0.8rem; }
+  .card-wrapper { height: 180px; }
+  .card-emoji { font-size: 2.2rem; }
+  .card-word { font-size: 1rem; }
+  .header h1 { font-size: 1.2rem; }
+  .quiz-options { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .quiz-opt { font-size: 0.9rem; padding: 0.8rem; }
+}
+@media (min-width: 401px) and (max-width: 600px) {
+  .card-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+<div class="bg-deco">⭐</div><div class="bg-deco">🌈</div><div class="bg-deco">🦄</div><div class="bg-deco">🎈</div>
+
+<div class="header">
+  <h1>🌟 Power Up 3 单词卡 🌟</h1>
+  <p>Coco English Park · Cambridge A1→A2</p>
+</div>
+
+<div class="nav" id="nav"></div>
+<div class="mode-toggle">
+  <button class="mode-btn active" onclick="setMode('browse')">📖 浏览</button>
+  <button class="mode-btn" onclick="setMode('quiz')">🎯 测试</button>
+</div>
+
+<div class="unit-info" id="unitInfo"></div>
+
+<div class="card-grid" id="cardGrid"></div>
+
+<div class="quiz-container" id="quizContainer">
+  <div class="quiz-type-sel" id="quizTypeSel">
+    <button class="qt-btn active" data-type="zh2en" onclick="setQuizType('zh2en')">🇨🇳→🇬🇧 看中选英</button>
+    <button class="qt-btn" data-type="en2zh" onclick="setQuizType('en2zh')">🇬🇧→🇨🇳 看英选中</button>
+    <button class="qt-btn" data-type="listen" onclick="setQuizType('listen')">👂 听力选词</button>
+  </div>
+  <div class="quiz-header">
+    <div class="quiz-progress" id="quizProgress"></div>
+    <div class="quiz-score" id="quizScore">得分：0/0</div>
+  </div>
+  <div class="quiz-question" id="quizQuestion"></div>
+  <div class="quiz-options" id="quizOptions"></div>
+</div>
+
+<div class="quiz-result" id="quizResult">
+  <div class="result-stars" id="resultStars"></div>
+  <div class="result-score" id="resultScore"></div>
+  <div class="result-msg" id="resultMsg"></div>
+  <button class="result-btn" onclick="startQuiz()">🔄 再来一轮！</button>
+  <button class="result-btn" style="background:linear-gradient(135deg,var(--green),var(--teal));margin-left:0.5rem" onclick="setMode('browse')">📖 回去复习</button>
+</div>
+
+<div class="confetti-container" id="confettiBox"></div>
+
+<script>
+// ============== VOCABULARY DATA ==============
+const UNITS = [
+  {
+    id: 1, name: "My world", emoji: "🌍",
+    color: "linear-gradient(135deg, #FF6B9D, #FF8A65)",
+    words: [
+      { en: "family", zh: "家庭", em: "👨‍👩‍👧", ex: "I love my family.", exZh: "我爱我的家人。" },
+      { en: "parents", zh: "父母", em: "👫", ex: "My parents are kind.", exZh: "我的父母很善良。" },
+      { en: "grandfather", zh: "爷爷/外公", em: "👴", ex: "My grandfather tells stories.", exZh: "我的爷爷讲故事。" },
+      { en: "grandmother", zh: "奶奶/外婆", em: "👵", ex: "My grandmother makes cakes.", exZh: "我的奶奶做蛋糕。" },
+      { en: "cousin", zh: "堂/表兄妹", em: "🧒", ex: "My cousin lives in Beijing.", exZh: "我的表哥住在北京。" },
+      { en: "uncle", zh: "叔叔/舅舅", em: "👨", ex: "Uncle Tom is funny.", exZh: "汤姆叔叔很有趣。" },
+      { en: "aunt", zh: "阿姨/姑姑", em: "👩", ex: "My aunt has a cat.", exZh: "我的阿姨有一只猫。" },
+      { en: "country", zh: "国家", em: "🏳️", ex: "China is a big country.", exZh: "中国是一个大国。" },
+      { en: "city", zh: "城市", em: "🏙️", ex: "I live in a big city.", exZh: "我住在一个大城市。" },
+      { en: "nationality", zh: "国籍", em: "🌐", ex: "What's your nationality?", exZh: "你的国籍是什么？" },
+      { en: "address", zh: "地址", em: "📮", ex: "What's your address?", exZh: "你的地址是什么？" },
+      { en: "neighbour", zh: "邻居", em: "🏘️", ex: "Our neighbour is nice.", exZh: "我们的邻居很好。" },
+      { en: "friendly", zh: "友好的", em: "😊", ex: "She is very friendly.", exZh: "她非常友好。" },
+      { en: "language", zh: "语言", em: "🗣️", ex: "I speak two languages.", exZh: "我说两种语言。" },
+      { en: "together", zh: "一起", em: "🤝", ex: "We play together.", exZh: "我们一起玩。" },
+      { en: "different", zh: "不同的", em: "🔀", ex: "We are all different.", exZh: "我们都是不同的。" }
+    ]
+  },
+  {
+    id: 2, name: "Animals", emoji: "🐾",
+    color: "linear-gradient(135deg, #34D399, #60A5FA)",
+    words: [
+      { en: "dolphin", zh: "海豚", em: "🐬", ex: "Dolphins are smart.", exZh: "海豚很聪明。" },
+      { en: "whale", zh: "鲸鱼", em: "🐳", ex: "The whale is very big.", exZh: "鲸鱼非常大。" },
+      { en: "shark", zh: "鲨鱼", em: "🦈", ex: "Sharks live in the sea.", exZh: "鲨鱼生活在海里。" },
+      { en: "parrot", zh: "鹦鹉", em: "🦜", ex: "The parrot can talk.", exZh: "鹦鹉会说话。" },
+      { en: "penguin", zh: "企鹅", em: "🐧", ex: "Penguins love the cold.", exZh: "企鹅喜欢寒冷。" },
+      { en: "kangaroo", zh: "袋鼠", em: "🦘", ex: "Kangaroos can jump far.", exZh: "袋鼠能跳得很远。" },
+      { en: "giraffe", zh: "长颈鹿", em: "🦒", ex: "The giraffe has a long neck.", exZh: "长颈鹿有长脖子。" },
+      { en: "camel", zh: "骆驼", em: "🐫", ex: "Camels live in the desert.", exZh: "骆驼生活在沙漠里。" },
+      { en: "butterfly", zh: "蝴蝶", em: "🦋", ex: "The butterfly is beautiful.", exZh: "蝴蝶很漂亮。" },
+      { en: "feather", zh: "羽毛", em: "🪶", ex: "The bird has soft feathers.", exZh: "鸟有柔软的羽毛。" },
+      { en: "wing", zh: "翅膀", em: "🕊️", ex: "Birds have two wings.", exZh: "鸟有两只翅膀。" },
+      { en: "tail", zh: "尾巴", em: "🐕", ex: "The dog wags its tail.", exZh: "狗摇它的尾巴。" },
+      { en: "wild", zh: "野生的", em: "🌿", ex: "Wild animals live in forests.", exZh: "野生动物住在森林里。" },
+      { en: "pet", zh: "宠物", em: "🐾", ex: "My pet is a rabbit.", exZh: "我的宠物是一只兔子。" },
+      { en: "fur", zh: "毛皮", em: "🐻", ex: "The cat has soft fur.", exZh: "猫有柔软的毛。" },
+      { en: "dangerous", zh: "危险的", em: "⚠️", ex: "Some snakes are dangerous.", exZh: "有些蛇很危险。" }
+    ]
+  },
+  {
+    id: 3, name: "Food & drink", emoji: "🍕",
+    color: "linear-gradient(135deg, #FBBF24, #FB923C)",
+    words: [
+      { en: "pancake", zh: "煎饼/薄饼", em: "🥞", ex: "I like pancakes for breakfast.", exZh: "我早餐喜欢吃煎饼。" },
+      { en: "cereal", zh: "麦片", em: "🥣", ex: "I eat cereal with milk.", exZh: "我用牛奶泡麦片吃。" },
+      { en: "noodles", zh: "面条", em: "🍜", ex: "Noodles are yummy.", exZh: "面条很好吃。" },
+      { en: "yoghurt", zh: "酸奶", em: "🥛", ex: "I have yoghurt after lunch.", exZh: "我午饭后喝酸奶。" },
+      { en: "sauce", zh: "酱汁", em: "🫙", ex: "Put sauce on the pasta.", exZh: "在意面上放酱汁。" },
+      { en: "pepper", zh: "胡椒", em: "🌶️", ex: "Add some pepper, please.", exZh: "请加一些胡椒。" },
+      { en: "salt", zh: "盐", em: "🧂", ex: "Don't add too much salt.", exZh: "不要加太多盐。" },
+      { en: "flour", zh: "面粉", em: "🌾", ex: "We need flour for the cake.", exZh: "我们做蛋糕需要面粉。" },
+      { en: "recipe", zh: "食谱", em: "📋", ex: "Follow the recipe carefully.", exZh: "仔细按照食谱做。" },
+      { en: "delicious", zh: "美味的", em: "😋", ex: "This pizza is delicious!", exZh: "这个披萨太好吃了！" },
+      { en: "thirsty", zh: "口渴的", em: "💧", ex: "I'm thirsty. Can I have water?", exZh: "我渴了，能喝水吗？" },
+      { en: "hungry", zh: "饥饿的", em: "🤤", ex: "I'm hungry! Let's eat.", exZh: "我饿了！我们吃饭吧。" },
+      { en: "healthy", zh: "健康的", em: "💪", ex: "Fruit is healthy food.", exZh: "水果是健康食品。" },
+      { en: "taste", zh: "尝/味道", em: "👅", ex: "Taste this soup!", exZh: "尝尝这个汤！" },
+      { en: "sweet", zh: "甜的", em: "🍬", ex: "Chocolate is sweet.", exZh: "巧克力是甜的。" },
+      { en: "sour", zh: "酸的", em: "🍋", ex: "Lemons are sour.", exZh: "柠檬是酸的。" }
+    ]
+  },
+  {
+    id: 4, name: "My day", emoji: "⏰",
+    color: "linear-gradient(135deg, #C084FC, #818CF8)",
+    words: [
+      { en: "wake up", zh: "醒来", em: "⏰", ex: "I wake up at seven.", exZh: "我七点醒来。" },
+      { en: "get dressed", zh: "穿衣服", em: "👕", ex: "I get dressed for school.", exZh: "我穿好衣服去上学。" },
+      { en: "brush teeth", zh: "刷牙", em: "🪥", ex: "Brush your teeth twice a day.", exZh: "每天刷两次牙。" },
+      { en: "have breakfast", zh: "吃早餐", em: "🍳", ex: "I have breakfast at home.", exZh: "我在家吃早餐。" },
+      { en: "go to school", zh: "上学", em: "🏫", ex: "I go to school by bus.", exZh: "我坐公交去上学。" },
+      { en: "have lunch", zh: "吃午餐", em: "🥪", ex: "We have lunch at noon.", exZh: "我们中午吃午餐。" },
+      { en: "do homework", zh: "做作业", em: "📝", ex: "I do homework after school.", exZh: "我放学后做作业。" },
+      { en: "have dinner", zh: "吃晚餐", em: "🍽️", ex: "We have dinner together.", exZh: "我们一起吃晚餐。" },
+      { en: "go to bed", zh: "去睡觉", em: "🛏️", ex: "I go to bed at nine.", exZh: "我九点上床睡觉。" },
+      { en: "quarter", zh: "一刻钟", em: "🕐", ex: "It's quarter past three.", exZh: "三点十五分了。" },
+      { en: "half past", zh: "半点", em: "🕧", ex: "It's half past four.", exZh: "四点半了。" },
+      { en: "o'clock", zh: "…点钟", em: "🕐", ex: "It's eight o'clock.", exZh: "八点了。" },
+      { en: "early", zh: "早的", em: "🌅", ex: "I get up early.", exZh: "我起得很早。" },
+      { en: "late", zh: "晚的/迟的", em: "🌙", ex: "Don't be late for school!", exZh: "上学别迟到！" },
+      { en: "always", zh: "总是", em: "♾️", ex: "I always wash my hands.", exZh: "我总是洗手。" },
+      { en: "sometimes", zh: "有时候", em: "🔄", ex: "I sometimes read before bed.", exZh: "我有时候睡前看书。" }
+    ]
+  },
+  {
+    id: 5, name: "Sports & games", emoji: "⚽",
+    color: "linear-gradient(135deg, #60A5FA, #38BDF8)",
+    words: [
+      { en: "basketball", zh: "篮球", em: "🏀", ex: "Let's play basketball!", exZh: "我们打篮球吧！" },
+      { en: "tennis", zh: "网球", em: "🎾", ex: "She plays tennis well.", exZh: "她网球打得很好。" },
+      { en: "badminton", zh: "羽毛球", em: "🏸", ex: "Badminton is fun.", exZh: "羽毛球很好玩。" },
+      { en: "table tennis", zh: "乒乓球", em: "🏓", ex: "I like table tennis.", exZh: "我喜欢乒乓球。" },
+      { en: "cycling", zh: "骑自行车", em: "🚴", ex: "Cycling is good exercise.", exZh: "骑自行车是很好的运动。" },
+      { en: "skating", zh: "滑冰", em: "⛸️", ex: "I go skating in winter.", exZh: "我冬天去滑冰。" },
+      { en: "gymnastics", zh: "体操", em: "🤸", ex: "She does gymnastics.", exZh: "她做体操。" },
+      { en: "team", zh: "队伍/团队", em: "👥", ex: "Our team won the game!", exZh: "我们队赢了比赛！" },
+      { en: "score", zh: "得分", em: "🏆", ex: "The score is 3 to 1.", exZh: "比分是3比1。" },
+      { en: "winner", zh: "赢家", em: "🥇", ex: "The winner gets a prize.", exZh: "赢家获得奖品。" },
+      { en: "practice", zh: "练习", em: "💪", ex: "I practice every day.", exZh: "我每天练习。" },
+      { en: "race", zh: "比赛/赛跑", em: "🏃", ex: "I won the race!", exZh: "我赢了比赛！" },
+      { en: "throw", zh: "扔/投", em: "🤾", ex: "Throw the ball to me!", exZh: "把球扔给我！" },
+      { en: "catch", zh: "接住", em: "🧤", ex: "Catch the ball!", exZh: "接住球！" },
+      { en: "kick", zh: "踢", em: "🦵", ex: "Kick the ball hard!", exZh: "用力踢球！" },
+      { en: "hit", zh: "打/击", em: "🏏", ex: "Hit the ball with the bat.", exZh: "用球拍打球。" }
+    ]
+  },
+  {
+    id: 6, name: "Clothes & weather", emoji: "👗",
+    color: "linear-gradient(135deg, #F472B6, #FB923C)",
+    words: [
+      { en: "coat", zh: "外套/大衣", em: "🧥", ex: "Wear your coat. It's cold.", exZh: "穿上外套，天冷了。" },
+      { en: "scarf", zh: "围巾", em: "🧣", ex: "I love my red scarf.", exZh: "我喜欢我的红围巾。" },
+      { en: "gloves", zh: "手套", em: "🧤", ex: "Put on your gloves.", exZh: "戴上手套。" },
+      { en: "boots", zh: "靴子", em: "👢", ex: "I wear boots in the rain.", exZh: "下雨天我穿靴子。" },
+      { en: "uniform", zh: "校服/制服", em: "👔", ex: "We wear a school uniform.", exZh: "我们穿校服。" },
+      { en: "trainers", zh: "运动鞋", em: "👟", ex: "I run in my trainers.", exZh: "我穿运动鞋跑步。" },
+      { en: "sunglasses", zh: "太阳镜", em: "🕶️", ex: "Wear sunglasses in summer.", exZh: "夏天戴太阳镜。" },
+      { en: "umbrella", zh: "雨伞", em: "☂️", ex: "Take your umbrella.", exZh: "带上雨伞。" },
+      { en: "cloudy", zh: "多云的", em: "☁️", ex: "It's cloudy today.", exZh: "今天多云。" },
+      { en: "windy", zh: "有风的", em: "💨", ex: "It's very windy outside.", exZh: "外面风很大。" },
+      { en: "foggy", zh: "有雾的", em: "🌫️", ex: "Be careful, it's foggy.", exZh: "小心，有雾。" },
+      { en: "storm", zh: "暴风雨", em: "⛈️", ex: "There was a big storm.", exZh: "有一场大暴风雨。" },
+      { en: "temperature", zh: "温度", em: "🌡️", ex: "The temperature is 30°C.", exZh: "温度是30度。" },
+      { en: "season", zh: "季节", em: "🍂", ex: "Spring is my favourite season.", exZh: "春天是我最喜欢的季节。" },
+      { en: "warm", zh: "温暖的", em: "☀️", ex: "It's warm and sunny.", exZh: "天气温暖又晴朗。" },
+      { en: "freezing", zh: "极冷的", em: "🥶", ex: "It's freezing outside!", exZh: "外面冷极了！" }
+    ]
+  },
+  {
+    id: 7, name: "Around town", emoji: "🏘️",
+    color: "linear-gradient(135deg, #2DD4BF, #34D399)",
+    words: [
+      { en: "library", zh: "图书馆", em: "📚", ex: "I read books in the library.", exZh: "我在图书馆看书。" },
+      { en: "museum", zh: "博物馆", em: "🏛️", ex: "The museum is interesting.", exZh: "博物馆很有趣。" },
+      { en: "hospital", zh: "医院", em: "🏥", ex: "The hospital helps sick people.", exZh: "医院帮助生病的人。" },
+      { en: "pharmacy", zh: "药店", em: "💊", ex: "Buy medicine at the pharmacy.", exZh: "在药店买药。" },
+      { en: "supermarket", zh: "超市", em: "🛒", ex: "We shop at the supermarket.", exZh: "我们在超市购物。" },
+      { en: "police station", zh: "警察局", em: "👮", ex: "The police station is nearby.", exZh: "警察局在附近。" },
+      { en: "post office", zh: "邮局", em: "📮", ex: "Send letters at the post office.", exZh: "在邮局寄信。" },
+      { en: "bridge", zh: "桥", em: "🌉", ex: "Walk across the bridge.", exZh: "走过那座桥。" },
+      { en: "corner", zh: "拐角", em: "↪️", ex: "Turn at the corner.", exZh: "在拐角处转弯。" },
+      { en: "straight", zh: "直走", em: "⬆️", ex: "Go straight ahead.", exZh: "一直往前走。" },
+      { en: "turn left", zh: "左转", em: "⬅️", ex: "Turn left at the traffic lights.", exZh: "在红绿灯处左转。" },
+      { en: "turn right", zh: "右转", em: "➡️", ex: "Turn right at the cinema.", exZh: "在电影院处右转。" },
+      { en: "opposite", zh: "对面", em: "🔄", ex: "The park is opposite the school.", exZh: "公园在学校对面。" },
+      { en: "between", zh: "在…之间", em: "↔️", ex: "The shop is between the bank and the café.", exZh: "商店在银行和咖啡馆之间。" },
+      { en: "next to", zh: "在…旁边", em: "👉", ex: "The library is next to the park.", exZh: "图书馆在公园旁边。" },
+      { en: "far", zh: "远的", em: "🛤️", ex: "Is the station far from here?", exZh: "车站离这里远吗？" }
+    ]
+  },
+  {
+    id: 8, name: "Health", emoji: "🏥",
+    color: "linear-gradient(135deg, #F87171, #FBBF24)",
+    words: [
+      { en: "headache", zh: "头痛", em: "🤕", ex: "I have a headache.", exZh: "我头痛。" },
+      { en: "stomachache", zh: "肚子痛", em: "🤢", ex: "I have a stomachache.", exZh: "我肚子痛。" },
+      { en: "toothache", zh: "牙痛", em: "🦷", ex: "I have a toothache.", exZh: "我牙痛。" },
+      { en: "earache", zh: "耳朵痛", em: "👂", ex: "He has an earache.", exZh: "他耳朵痛。" },
+      { en: "cough", zh: "咳嗽", em: "🤧", ex: "I have a bad cough.", exZh: "我咳嗽得厉害。" },
+      { en: "fever", zh: "发烧", em: "🤒", ex: "She has a fever.", exZh: "她发烧了。" },
+      { en: "cold", zh: "感冒", em: "🤧", ex: "I've got a cold.", exZh: "我感冒了。" },
+      { en: "sore throat", zh: "嗓子痛", em: "😷", ex: "I have a sore throat.", exZh: "我嗓子痛。" },
+      { en: "medicine", zh: "药", em: "💊", ex: "Take your medicine.", exZh: "吃药。" },
+      { en: "dentist", zh: "牙医", em: "🦷", ex: "I go to the dentist.", exZh: "我去看牙医。" },
+      { en: "rest", zh: "休息", em: "😴", ex: "You need to rest.", exZh: "你需要休息。" },
+      { en: "exercise", zh: "锻炼", em: "🏃", ex: "Exercise keeps you healthy.", exZh: "运动让你保持健康。" },
+      { en: "shoulder", zh: "肩膀", em: "💪", ex: "My shoulder hurts.", exZh: "我肩膀痛。" },
+      { en: "elbow", zh: "手肘", em: "🦾", ex: "Don't put elbows on the table.", exZh: "不要把手肘放在桌上。" },
+      { en: "knee", zh: "膝盖", em: "🦵", ex: "I fell and hurt my knee.", exZh: "我摔倒了，伤了膝盖。" },
+      { en: "ankle", zh: "脚踝", em: "🦶", ex: "She twisted her ankle.", exZh: "她扭了脚踝。" }
+    ]
+  },
+  {
+    id: 9, name: "Holidays", emoji: "✈️",
+    color: "linear-gradient(135deg, #818CF8, #C084FC)",
+    words: [
+      { en: "airport", zh: "机场", em: "✈️", ex: "We went to the airport.", exZh: "我们去了机场。" },
+      { en: "passport", zh: "护照", em: "📕", ex: "Don't forget your passport.", exZh: "别忘了护照。" },
+      { en: "suitcase", zh: "行李箱", em: "🧳", ex: "Pack your suitcase.", exZh: "收拾你的行李箱。" },
+      { en: "ticket", zh: "票", em: "🎫", ex: "I bought a train ticket.", exZh: "我买了一张火车票。" },
+      { en: "hotel", zh: "酒店", em: "🏨", ex: "We stayed at a hotel.", exZh: "我们住在酒店。" },
+      { en: "beach", zh: "海滩", em: "🏖️", ex: "Let's go to the beach!", exZh: "我们去海滩吧！" },
+      { en: "mountain", zh: "山", em: "⛰️", ex: "The mountain is very high.", exZh: "山很高。" },
+      { en: "island", zh: "岛屿", em: "🏝️", ex: "We visited a small island.", exZh: "我们去了一个小岛。" },
+      { en: "map", zh: "地图", em: "🗺️", ex: "Look at the map.", exZh: "看地图。" },
+      { en: "camera", zh: "相机", em: "📷", ex: "Take a photo with the camera.", exZh: "用相机拍照。" },
+      { en: "souvenir", zh: "纪念品", em: "🎁", ex: "I bought a souvenir.", exZh: "我买了一个纪念品。" },
+      { en: "postcard", zh: "明信片", em: "💌", ex: "I sent a postcard to grandma.", exZh: "我给奶奶寄了明信片。" },
+      { en: "explore", zh: "探索", em: "🧭", ex: "Let's explore the city!", exZh: "我们去探索这座城市吧！" },
+      { en: "journey", zh: "旅程", em: "🚂", ex: "It was a long journey.", exZh: "这是一段很长的旅程。" },
+      { en: "exciting", zh: "令人兴奋的", em: "🎉", ex: "The trip was exciting!", exZh: "这次旅行很刺激！" },
+      { en: "adventure", zh: "冒险", em: "🗻", ex: "It was a great adventure.", exZh: "这是一次很棒的冒险。" }
+    ]
+  }
+];
+
+// ============== STATE ==============
+let currentUnit = 0; // 0 = all
+let currentMode = 'browse'; // browse | quiz
+let quizType = 'zh2en';
+let quizQuestions = [];
+let quizIndex = 0;
+let quizCorrect = 0;
+let quizAnswered = false;
+
+// ============== SPEECH ==============
+let voicesReady = false;
+let cachedVoices = { en: null, zh: null };
+
+function loadVoices() {
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) return;
+  voicesReady = true;
+
+  // --- 英文语音优先级 ---
+  // 1. Safari/iOS 系统原生英文 (Samantha, Daniel, Karen 等)
+  // 2. Chrome "Google UK English Female" (高质量)
+  // 3. 任何 localService 的 en 语音
+  // 4. 任何 en 语音
+  const enVoices = voices.filter(v => v.lang.startsWith('en'));
+  const enPreferred = [
+    // Safari 高质量
+    enVoices.find(v => v.name === 'Samantha'),
+    enVoices.find(v => v.name === 'Daniel'),
+    enVoices.find(v => v.name === 'Karen'),
+    // Chrome 高质量
+    enVoices.find(v => v.name === 'Google UK English Female'),
+    enVoices.find(v => v.name === 'Google US English'),
+    // 系统原生优先
+    enVoices.find(v => v.localService === true),
+    // 兜底
+    enVoices[0]
+  ];
+  cachedVoices.en = enPreferred.find(v => v) || null;
+
+  // --- 中文语音优先级 ---
+  // 1. Safari/iOS/macOS 系统原生中文 (Ting-Ting, Mei-Jia 等)
+  // 2. 任何 localService 的 zh 语音（避免 Chrome 低质量在线语音）
+  // 3. 任何 zh 语音
+  const zhVoices = voices.filter(v => v.lang.startsWith('zh') || v.lang.startsWith('cmn'));
+  const zhPreferred = [
+    zhVoices.find(v => v.name === 'Ting-Ting'),
+    zhVoices.find(v => v.name === 'Mei-Jia'),
+    zhVoices.find(v => /Tingting|Xiaoxiao|Xiaoyi|Huihui/i.test(v.name)),
+    zhVoices.find(v => v.localService === true),
+    zhVoices[0]
+  ];
+  cachedVoices.zh = zhPreferred.find(v => v) || null;
+
+  console.log('[TTS] EN voice:', cachedVoices.en?.name, '| ZH voice:', cachedVoices.zh?.name);
+}
+
+// Chrome 异步加载 voices，Safari 同步
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+function speak(text, lang) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+
+  // 自动检测语言：含中文字符用 zh，否则用 en
+  const isZh = lang === 'zh' || (!lang && /[\u4e00-\u9fff]/.test(text));
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = isZh ? 'zh-CN' : 'en-US';
+  u.rate = isZh ? 0.9 : 0.8;
+  u.pitch = 1.0;
+
+  // 使用缓存的最佳语音
+  const voice = isZh ? cachedVoices.zh : cachedVoices.en;
+  if (voice) u.voice = voice;
+
+  speechSynthesis.speak(u);
+}
+
+// ============== NAVIGATION ==============
+function buildNav() {
+  const nav = document.getElementById('nav');
+  let html = `<button class="nav-btn active" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white" onclick="selectUnit(0)">🌈 全部</button>`;
+  UNITS.forEach(u => {
+    html += `<button class="nav-btn" data-unit="${u.id}" onclick="selectUnit(${u.id})">${u.emoji} U${u.id}</button>`;
+  });
+  nav.innerHTML = html;
+}
+
+function selectUnit(id) {
+  currentUnit = id;
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = 'white'; b.style.color = '#555';
+  });
+  if (id === 0) {
+    const b = document.querySelector('.nav-btn');
+    b.classList.add('active');
+    b.style.background = 'linear-gradient(135deg,#6366f1,#8b5cf6)'; b.style.color = 'white';
+  } else {
+    const b = document.querySelector(`.nav-btn[data-unit="${id}"]`);
+    const u = UNITS.find(u => u.id === id);
+    b.classList.add('active');
+    b.style.background = u.color; b.style.color = 'white';
+  }
+  if (currentMode === 'browse') renderCards();
+  updateUnitInfo();
+}
+
+function updateUnitInfo() {
+  const info = document.getElementById('unitInfo');
+  if (currentUnit === 0) {
+    const total = UNITS.reduce((s, u) => s + u.words.length, 0);
+    info.textContent = `🌈 全部单词 · 共 ${total} 个`;
+  } else {
+    const u = UNITS.find(u => u.id === currentUnit);
+    info.textContent = `${u.emoji} Unit ${u.id}: ${u.name} · ${u.words.length} 个单词`;
+  }
+}
+
+// ============== BROWSE MODE ==============
+function getWords() {
+  if (currentUnit === 0) {
+    let all = [];
+    UNITS.forEach(u => u.words.forEach(w => all.push({ ...w, unit: u.id, unitColor: u.color })));
+    return all;
+  }
+  const u = UNITS.find(u => u.id === currentUnit);
+  return u.words.map(w => ({ ...w, unit: u.id, unitColor: u.color }));
+}
+
+function renderCards() {
+  const grid = document.getElementById('cardGrid');
+  const words = getWords();
+  grid.innerHTML = words.map((w, i) => `
+    <div class="card-wrapper" onclick="flipCard(this)">
+      <div class="card">
+        <div class="card-face card-front" style="border-color:${getUnitBorderColor(w.unit)}">
+          <span class="card-num">U${w.unit}-${i+1}</span>
+          <button class="speak-btn" onclick="event.stopPropagation();speak('${w.en}')" title="发音">🔊</button>
+          <span class="card-emoji">${w.em}</span>
+          <span class="card-word">${w.en}</span>
+        </div>
+        <div class="card-face card-back">
+          <span class="card-zh">${w.zh}</span>
+          <span class="card-word" style="font-size:0.9rem;color:#92400e">${w.en}</span>
+          <span class="card-example">${w.ex}</span>
+          <span class="card-example-zh">${w.exZh}</span>
+          <button class="speak-btn" onclick="event.stopPropagation();speak('${w.ex}')" title="朗读例句" style="top:auto;bottom:0.5rem;right:0.5rem">🔊</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  grid.style.display = 'grid';
+}
+
+function getUnitBorderColor(uid) {
+  const colors = ['', '#FF6B9D', '#34D399', '#FBBF24', '#C084FC', '#60A5FA', '#F472B6', '#2DD4BF', '#F87171', '#818CF8'];
+  return colors[uid] || '#e2e8f0';
+}
+
+function flipCard(el) { el.querySelector('.card').classList.toggle('flipped'); }
+
+// ============== MODE ==============
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.mode-btn[onclick="setMode('${mode}')"]`).classList.add('active');
+  const grid = document.getElementById('cardGrid');
+  const quiz = document.getElementById('quizContainer');
+  const result = document.getElementById('quizResult');
+  if (mode === 'browse') {
+    grid.style.display = 'grid'; quiz.classList.remove('visible'); result.classList.remove('visible');
+    renderCards();
+  } else {
+    grid.style.display = 'none'; result.classList.remove('visible');
+    quiz.classList.add('visible');
+    startQuiz();
+  }
+}
+
+// ============== QUIZ ==============
+function setQuizType(type) {
+  quizType = type;
+  document.querySelectorAll('.qt-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.qt-btn[data-type="${type}"]`).classList.add('active');
+  startQuiz();
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  document.getElementById('quizResult').classList.remove('visible');
+  document.getElementById('quizContainer').classList.add('visible');
+  const words = getWords();
+  if (words.length < 4) { alert('单词太少，请选择更多单元！'); return; }
+  const pool = shuffle(words).slice(0, 10);
+  quizQuestions = pool.map(correct => {
+    let opts = shuffle(words.filter(w => w.en !== correct.en)).slice(0, 3);
+    opts.push(correct);
+    opts = shuffle(opts);
+    return { correct, options: opts };
+  });
+  quizIndex = 0; quizCorrect = 0; quizAnswered = false;
+  renderProgress(); renderQuestion();
+}
+
+function renderProgress() {
+  const p = document.getElementById('quizProgress');
+  p.innerHTML = quizQuestions.map((_, i) => {
+    let cls = '';
+    if (i < quizIndex) cls = quizQuestions[i].result ? 'correct' : 'wrong';
+    else if (i === quizIndex) cls = 'current';
+    return `<div class="quiz-dot ${cls}"></div>`;
+  }).join('');
+  document.getElementById('quizScore').textContent = `得分：${quizCorrect}/${quizIndex}`;
+}
+
+function renderQuestion() {
+  if (quizIndex >= quizQuestions.length) { showResult(); return; }
+  quizAnswered = false;
+  const q = quizQuestions[quizIndex];
+  const qBox = document.getElementById('quizQuestion');
+  const oBox = document.getElementById('quizOptions');
+
+  if (quizType === 'zh2en') {
+    qBox.innerHTML = `<div class="quiz-prompt-emoji">${q.correct.em}</div>
+      <div class="quiz-prompt">${q.correct.zh}</div>
+      <div class="quiz-prompt-sub">选出正确的英文单词</div>`;
+    oBox.innerHTML = q.options.map((o, i) =>
+      `<button class="quiz-opt" onclick="answer(${i})" data-idx="${i}">${o.en}</button>`
+    ).join('');
+  } else if (quizType === 'en2zh') {
+    qBox.innerHTML = `<div class="quiz-prompt-emoji">${q.correct.em}</div>
+      <div class="quiz-prompt">${q.correct.en}</div>
+      <div class="quiz-prompt-sub">选出正确的中文意思</div>`;
+    oBox.innerHTML = q.options.map((o, i) =>
+      `<button class="quiz-opt" onclick="answer(${i})" data-idx="${i}">${o.zh}</button>`
+    ).join('');
+  } else {
+    // listen mode
+    qBox.innerHTML = `<div class="quiz-prompt-sub">听一听，选出正确的单词</div>
+      <button class="quiz-listen-btn" onclick="speak('${q.correct.en}')">🔊</button>
+      <div class="quiz-prompt-sub">点击喇叭再听一遍</div>`;
+    oBox.innerHTML = q.options.map((o, i) =>
+      `<button class="quiz-opt" onclick="answer(${i})" data-idx="${i}">${o.em} ${o.en}</button>`
+    ).join('');
+    setTimeout(() => speak(q.correct.en), 300);
+  }
+  renderProgress();
+}
+
+function answer(idx) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = quizQuestions[quizIndex];
+  const isCorrect = q.options[idx].en === q.correct.en;
+  q.result = isCorrect;
+  if (isCorrect) quizCorrect++;
+
+  const btns = document.querySelectorAll('.quiz-opt');
+  btns.forEach((b, i) => {
+    if (q.options[i].en === q.correct.en) b.classList.add('correct');
+    else if (i === idx) b.classList.add('wrong');
+    b.style.pointerEvents = 'none';
+  });
+
+  if (isCorrect) speak("Great!");
+
+  setTimeout(() => { quizIndex++; renderQuestion(); }, 1200);
+}
+
+function showResult() {
+  document.getElementById('quizContainer').classList.remove('visible');
+  const r = document.getElementById('quizResult');
+  r.classList.add('visible');
+  const pct = quizCorrect / quizQuestions.length;
+  document.getElementById('resultScore').textContent = `${quizCorrect} / ${quizQuestions.length}`;
+
+  let msg, stars;
+  if (pct === 1) { msg = '🎉 太棒了！满分！你是单词小天才！'; stars = '⭐⭐⭐⭐⭐'; fireConfetti(); }
+  else if (pct >= 0.8) { msg = '👏 非常好！继续加油哦！'; stars = '⭐⭐⭐⭐'; fireConfetti(); }
+  else if (pct >= 0.6) { msg = '😊 不错呀！再练练会更好！'; stars = '⭐⭐⭐'; }
+  else if (pct >= 0.4) { msg = '💪 加油！多复习一下吧！'; stars = '⭐⭐'; }
+  else { msg = '📖 没关系！回去看看单词卡再来！'; stars = '⭐'; }
+
+  document.getElementById('resultMsg').textContent = msg;
+  document.getElementById('resultStars').textContent = stars;
+  renderProgress();
+}
+
+// ============== CONFETTI ==============
+function fireConfetti() {
+  const box = document.getElementById('confettiBox');
+  box.innerHTML = '';
+  const colors = ['#FF6B9D','#C084FC','#60A5FA','#34D399','#FBBF24','#FB923C','#F87171'];
+  const shapes = ['circle','square','triangle'];
+  for (let i = 0; i < 60; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    const c = colors[Math.floor(Math.random() * colors.length)];
+    const s = shapes[Math.floor(Math.random() * shapes.length)];
+    el.style.left = Math.random() * 100 + '%';
+    el.style.animationDelay = Math.random() * 1.5 + 's';
+    el.style.animationDuration = (2 + Math.random() * 2) + 's';
+    if (s === 'circle') {
+      el.style.borderRadius = '50%'; el.style.background = c;
+    } else if (s === 'square') {
+      el.style.background = c; el.style.borderRadius = '2px';
+    } else {
+      el.style.width = '0'; el.style.height = '0'; el.style.background = 'transparent';
+      el.style.borderLeft = '6px solid transparent'; el.style.borderRight = '6px solid transparent';
+      el.style.borderBottom = '12px solid ' + c;
+    }
+    box.appendChild(el);
+  }
+  setTimeout(() => box.innerHTML = '', 4000);
+}
+
+// ============== INIT ==============
+buildNav();
+selectUnit(0);
+renderCards();
+updateUnitInfo();
+</script>
+</body>
+</html>
