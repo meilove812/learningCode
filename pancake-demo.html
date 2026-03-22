@@ -61,28 +61,51 @@ h1 { font-size: 26px; color: #5d4037; margin: 10px 0; text-align: center; }
   box-shadow: 0 10px 40px rgba(0,0,0,0.15); margin-bottom: 20px;
 }
 
-.pan { 
-  width: 320px; height: 60px; margin: 0 auto;
-  background: linear-gradient(180deg, #616161 0%, #424242 100%);
-  border-radius: 0 0 30px 30px; position: relative;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-  display: flex; justify-content: center; gap: 30px; align-items: center;
+/* 平底锅 — 拟物风格 */
+.pan-wrapper { 
+  position: relative; width: 360px; margin: 0 auto; padding-top: 40px;
+}
+.pan-label {
+  text-align: center; font-size: 13px; color: #888; font-weight: bold;
+  margin-bottom: 8px; min-height: 20px;
+}
+.pan-handle {
+  width: 20px; height: 80px; background: linear-gradient(180deg, #8d6e63, #6d4c41);
+  border-radius: 10px; position: absolute; right: -30px; top: 60px;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+}
+.pan-handle::after {
+  content: ''; position: absolute; top: -6px; left: 3px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #5d4037; border: 2px solid #4e342e;
+}
+.pan {
+  width: 320px; height: 80px; margin: 0 auto;
+  background: radial-gradient(ellipse at center, #555 0%, #333 60%, #222 100%);
+  border-radius: 50%; position: relative;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4), inset 0 -4px 10px rgba(0,0,0,0.3), inset 0 4px 8px rgba(255,255,255,0.05);
+  display: flex; justify-content: center; gap: 20px; align-items: center;
+  border: 4px solid #444;
 }
 .pan::before {
-  content: ''; position: absolute; top: -6px; left: -20px; right: -20px;
-  height: 12px; background: #757575; border-radius: 6px;
+  content: ''; position: absolute; top: 8px; left: 15%; right: 15%;
+  height: 60%; border-radius: 50%;
+  background: radial-gradient(ellipse at 40% 30%, rgba(255,255,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
 }
-.pan-label { 
-  position: absolute; top: -32px; left: 50%; transform: translateX(-50%);
-  font-size: 13px; color: #888; font-weight: bold; white-space: nowrap;
+.pan::after {
+  content: ''; position: absolute; bottom: -12px; left: 10%; right: 10%;
+  height: 12px; background: radial-gradient(ellipse, rgba(0,0,0,0.25) 0%, transparent 70%);
+  border-radius: 50%;
 }
 
 .item {
-  width: 110px; height: 36px; border-radius: 18px;
+  width: 100px; height: 40px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: bold; color: #fff;
+  font-size: 13px; font-weight: bold; color: #fff;
   transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
 }
 .item.c1 { background: linear-gradient(135deg, #e53935, #ef5350); }
 .item.c2 { background: linear-gradient(135deg, #1e88e5, #42a5f5); }
@@ -146,8 +169,8 @@ h1 { font-size: 26px; color: #5d4037; margin: 10px 0; text-align: center; }
 
 .section-label { font-size: 12px; color: #999; text-align: center; margin: 4px 0; letter-spacing: 2px; }
 
-.flames { display: flex; justify-content: center; gap: 5px; margin-top: 8px; }
-.flame { font-size: 18px; animation: flicker 0.3s infinite alternate; }
+.flames { display: flex; justify-content: center; gap: 8px; margin-top: -5px; position: relative; z-index: -1; }
+.flame { font-size: 22px; animation: flicker 0.3s infinite alternate; }
 .flame:nth-child(2) { animation-delay: 0.1s; }
 .flame:nth-child(3) { animation-delay: 0.2s; }
 @keyframes flicker { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.1) rotate(3deg); } }
@@ -217,9 +240,13 @@ h1 { font-size: 26px; color: #5d4037; margin: 10px 0; text-align: center; }
   <div class="section-label">🍽️ 等待区</div>
   <div class="waiting-area" id="waitingArea"></div>
   <div class="section-label">🔥 平底锅（最多2个）</div>
-  <div class="pan" id="pan"><div class="pan-label">空锅</div></div>
+  <div class="pan-wrapper">
+    <div class="pan-label" id="panLabel">空锅</div>
+    <div class="pan" id="pan"></div>
+    <div class="pan-handle"></div>
+  </div>
   <div class="flames" id="flames" style="opacity:0">
-    <span class="flame">🔥</span><span class="flame">🔥</span><span class="flame">🔥</span>
+    <span class="flame">🔥</span><span class="flame">🔥</span><span class="flame">🔥</span><span class="flame">🔥</span><span class="flame">🔥</span>
   </div>
   <div class="section-label" style="margin-top:15px">✅ 完成区</div>
   <div class="done-area" id="doneArea"></div>
@@ -499,7 +526,8 @@ function resetAll() {
   document.getElementById('timer').innerHTML='0 <span>分钟</span>';
   document.getElementById('progress').style.width='0%';
   document.getElementById('flames').style.opacity='0';
-  document.getElementById('pan').innerHTML='<div class="pan-label">空锅</div>';
+  document.getElementById('pan').innerHTML='';
+  document.getElementById('panLabel').textContent='空锅';
   renderMethodTabs(); renderWaiting(); renderDone(); renderNarration(); renderFormula(); renderCompare();
   renderStatus(Array.from({length:p.count},()=>[]));
 }
@@ -515,11 +543,12 @@ function animateStep(step,narrIdx) {
   if(step.status) renderStatus(step.status);
   if(step.pan) {
     const panEl=document.getElementById('pan');
-    panEl.innerHTML=`<div class="pan-label">${step.label||''}</div>`;
+    panEl.innerHTML='';
+    document.getElementById('panLabel').textContent=step.label||'';
     step.pan.forEach((item,idx)=>{
       const div=document.createElement('div');
       if(step.pc&&step.pc[idx]==='empty'){
-        div.style.cssText='width:110px;height:36px;border:3px dashed rgba(255,255,255,0.3);border-radius:18px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);font-size:22px;';
+        div.style.cssText='width:100px;height:40px;border:3px dashed rgba(255,255,255,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);font-size:20px;';
         div.textContent='✕';
       } else {
         div.className=`item ${step.pc?step.pc[idx]:''} ${step.flip?'flipping':''}`;
