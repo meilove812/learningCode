@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🎴 Power Up 6 翻牌游戏 - Coco English Park</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --pink: #FF6B9D; --purple: #C084FC; --blue: #60A5FA; --green: #34D399; --yellow: #FBBF24; --orange: #FB923C; --red: #F87171; --teal: #2DD4BF; --bg: #F0F9FF; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); min-height: 100vh; overflow-x: hidden; }
+.header { background: linear-gradient(135deg, #7c3aed, #8b5cf6, #a78bfa); color: white; text-align: center; padding: 1.2rem 1rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+.header h1 { font-size: 1.4rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+.header p { font-size: 0.8rem; opacity: 0.9; margin-top: 0.3rem; }
+.nav { display: flex; gap: 0.5rem; padding: 0.8rem; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; position: sticky; top: 68px; z-index: 99; background: rgba(240,249,255,0.95); backdrop-filter: blur(10px); }
+.nav::-webkit-scrollbar { display: none; }
+.nav-btn { flex-shrink: 0; padding: 0.5rem 1rem; border-radius: 2rem; border: 2px solid transparent; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; white-space: nowrap; background: white; color: #555; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.nav-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+.nav-btn.active { color: white; border-color: transparent; transform: translateY(-2px); }
+.unit-info { text-align: center; padding: 0.6rem; font-size: 0.85rem; color: #7c3aed; font-weight: 600; }
+.controls { display: flex; gap: 0.5rem; justify-content: center; padding: 0.5rem 1rem; flex-wrap: wrap; }
+.ctrl-btn { padding: 0.4rem 1rem; border-radius: 2rem; border: 2px solid #8b5cf6; background: white; color: #8b5cf6; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+.ctrl-btn:hover { background: #8b5cf6; color: white; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 1rem; padding: 1rem; max-width: 1000px; margin: 0 auto; }
+.card-wrapper { perspective: 1000px; height: 220px; cursor: pointer; }
+.card { width: 100%; height: 100%; position: relative; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+.card.flipped { transform: rotateY(180deg); }
+.card-face { position: absolute; inset: 0; border-radius: 1.2rem; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem 0.8rem; box-shadow: 0 6px 20px rgba(0,0,0,0.1); border: 3px solid rgba(255,255,255,0.8); overflow: hidden; }
+.card-front { background: white; }
+.card-front .card-emoji { font-size: 2.5rem; margin-bottom: 0.4rem; }
+.card-front .card-word { font-size: 1.25rem; font-weight: 800; color: #1e293b; letter-spacing: 0.02em; }
+.card-front .card-phonetic { font-size: 0.78rem; color: #7c3aed; margin-top: 0.25rem; font-style: italic; }
+.card-front .card-hint { font-size: 0.6rem; color: #cbd5e1; margin-top: auto; padding-top: 0.3rem; }
+.card-back { transform: rotateY(180deg); background: linear-gradient(145deg, #ede9fe, #ddd6fe); }
+.card-back .card-zh { font-size: 1.2rem; font-weight: 800; color: #4c1d95; margin-bottom: 0.6rem; }
+.card-back .card-example { font-size: 0.75rem; color: #5b21b6; text-align: center; line-height: 1.5; background: rgba(255,255,255,0.5); border-radius: 0.8rem; padding: 0.5rem 0.6rem; }
+.card-back .card-example-zh { font-size: 0.7rem; color: #6d28d9; text-align: center; line-height: 1.4; margin-top: 0.3rem; }
+.speak-btn { position: absolute; top: 0.5rem; right: 0.5rem; width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(124,58,237,0.12); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 5; }
+.speak-btn:hover { background: rgba(124,58,237,0.25); transform: scale(1.15); }
+.card-num { position: absolute; top: 0.4rem; left: 0.6rem; font-size: 0.6rem; color: #cbd5e1; font-weight: 700; }
+.autoplay-bar { text-align: center; padding: 1rem; max-width: 1000px; margin: 0 auto; }
+.autoplay-btn { padding: 0.6rem 1.8rem; border-radius: 2rem; border: none; background: linear-gradient(135deg, #7c3aed, #8b5cf6); color: white; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(124,58,237,0.3); }
+.autoplay-btn:hover { transform: scale(1.05); }
+.autoplay-btn.playing { background: linear-gradient(135deg, var(--red), var(--orange)); }
+.bg-deco { position: fixed; pointer-events: none; z-index: 0; opacity: 0.12; font-size: 3rem; }
+.bg-deco:nth-child(1) { top: 5%; left: 3%; animation: float 6s ease-in-out infinite; }
+.bg-deco:nth-child(2) { top: 15%; right: 5%; animation: float 8s ease-in-out infinite 1s; }
+.bg-deco:nth-child(3) { bottom: 10%; left: 8%; animation: float 7s ease-in-out infinite 2s; }
+.bg-deco:nth-child(4) { bottom: 20%; right: 3%; animation: float 5s ease-in-out infinite 0.5s; }
+@keyframes float { 0%,100%{ transform: translateY(0) rotate(0deg); } 50%{ transform: translateY(-20px) rotate(10deg); } }
+@media (max-width: 420px) { .card-grid { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; padding: 0.8rem; } .card-wrapper { height: 200px; } .card-front .card-word { font-size: 1.1rem; } .card-front .card-emoji { font-size: 2rem; } .header h1 { font-size: 1.2rem; } }
+</style>
+</head>
+<body>
+<div class="bg-deco">🎴</div><div class="bg-deco">🌟</div><div class="bg-deco">📚</div><div class="bg-deco">🦎</div>
+<div class="header">
+  <h1>🎴 Power Up 6 翻牌游戏</h1>
+  <p>Coco English Park · Cambridge A2→B1 · 点击卡片翻转</p>
+</div>
+<div class="nav" id="nav"></div>
+<div class="unit-info" id="unitInfo"></div>
+<div class="controls">
+  <button class="ctrl-btn" onclick="flipAll(true)">🔄 全部翻开</button>
+  <button class="ctrl-btn" onclick="flipAll(false)">🔙 全部盖回</button>
+  <button class="ctrl-btn" onclick="shuffleCards()">🎲 随机打乱</button>
+</div>
+<div class="card-grid" id="cardGrid"></div>
+<div class="autoplay-bar">
+  <button class="autoplay-btn" id="autoplayBtn" onclick="toggleAutoplay()">▶️ 连续播放</button>
+</div>
+
+<script>
+const UNITS = [
+  {
+    id: 1, name: "Life experiences", emoji: "📖",
+    color: "linear-gradient(135deg, #FF6B9D, #FF8A65)",
+    words: [
+      { en:"biography", ph:"/baɪˈɒɡ.rə.fi/", zh:"传记", em:"📖", ex:"I read a biography of Einstein.", exZh:"我读了爱因斯坦的传记。" },
+      { en:"achievement", ph:"/əˈtʃiːv.mənt/", zh:"成就", em:"🏆", ex:"Winning the prize was a great achievement.", exZh:"获奖是一项伟大的成就。" },
+      { en:"experience", ph:"/ɪkˈspɪə.ri.əns/", zh:"经历/经验", em:"🌟", ex:"It was an amazing experience.", exZh:"那是一段奇妙的经历。" },
+      { en:"challenge", ph:"/ˈtʃæl.ɪndʒ/", zh:"挑战", em:"💪", ex:"Learning to swim was a challenge.", exZh:"学游泳是一个挑战。" },
+      { en:"opportunity", ph:"/ˌɒp.əˈtjuː.nə.ti/", zh:"机会", em:"🚪", ex:"This is a great opportunity.", exZh:"这是一个很好的机会。" },
+      { en:"confident", ph:"/ˈkɒn.fɪ.dənt/", zh:"自信的", em:"😊", ex:"She feels more confident now.", exZh:"她现在更自信了。" },
+      { en:"determined", ph:"/dɪˈtɜː.mɪnd/", zh:"坚定的", em:"🔥", ex:"He was determined to succeed.", exZh:"他决心要成功。" },
+      { en:"courage", ph:"/ˈkʌr.ɪdʒ/", zh:"勇气", em:"🦁", ex:"It takes courage to try new things.", exZh:"尝试新事物需要勇气。" },
+      { en:"inspire", ph:"/ɪnˈspaɪər/", zh:"激励/启发", em:"✨", ex:"Her story inspired many people.", exZh:"她的故事激励了很多人。" },
+      { en:"influence", ph:"/ˈɪn.flu.əns/", zh:"影响", em:"🌊", ex:"Music has a big influence on me.", exZh:"音乐对我有很大的影响。" },
+      { en:"overcome", ph:"/ˌəʊ.vəˈkʌm/", zh:"克服", em:"⛰️", ex:"She overcame many difficulties.", exZh:"她克服了许多困难。" },
+      { en:"passion", ph:"/ˈpæʃ.ən/", zh:"热情/热爱", em:"❤️", ex:"He has a passion for music.", exZh:"他热爱音乐。" },
+      { en:"ambitious", ph:"/æmˈbɪʃ.əs/", zh:"有雄心的", em:"🎯", ex:"She is very ambitious.", exZh:"她非常有雄心。" }
+    ]
+  },
+  {
+    id: 2, name: "The natural world", emoji: "🌍",
+    color: "linear-gradient(135deg, #34D399, #6EE7B7)",
+    words: [
+      { en:"ecosystem", ph:"/ˈiː.kəʊˌsɪs.təm/", zh:"生态系统", em:"🌿", ex:"The coral reef is a fragile ecosystem.", exZh:"珊瑚礁是一个脆弱的生态系统。" },
+      { en:"biodiversity", ph:"/ˌbaɪ.əʊ.daɪˈvɜː.sə.ti/", zh:"生物多样性", em:"🦋", ex:"Biodiversity is important for the planet.", exZh:"生物多样性对地球很重要。" },
+      { en:"endangered", ph:"/ɪnˈdeɪn.dʒəd/", zh:"濒危的", em:"🐼", ex:"Pandas are endangered animals.", exZh:"熊猫是濒危动物。" },
+      { en:"pollution", ph:"/pəˈluː.ʃən/", zh:"污染", em:"🏭", ex:"Air pollution is getting worse.", exZh:"空气污染越来越严重。" },
+      { en:"recycle", ph:"/ˌriːˈsaɪ.kəl/", zh:"回收/循环利用", em:"♻️", ex:"We should recycle plastic bottles.", exZh:"我们应该回收塑料瓶。" },
+      { en:"renewable", ph:"/rɪˈnjuː.ə.bəl/", zh:"可再生的", em:"☀️", ex:"Solar energy is renewable.", exZh:"太阳能是可再生的。" },
+      { en:"climate", ph:"/ˈklaɪ.mət/", zh:"气候", em:"🌤️", ex:"The climate is changing.", exZh:"气候正在变化。" },
+      { en:"carbon", ph:"/ˈkɑː.bən/", zh:"碳", em:"💨", ex:"We need to reduce carbon emissions.", exZh:"我们需要减少碳排放。" },
+      { en:"deforestation", ph:"/ˌdiːˌfɒr.ɪˈsteɪ.ʃən/", zh:"砍伐森林", em:"🪓", ex:"Deforestation destroys habitats.", exZh:"砍伐森林破坏栖息地。" },
+      { en:"atmosphere", ph:"/ˈæt.mə.sfɪər/", zh:"大气层", em:"🌐", ex:"The atmosphere protects the Earth.", exZh:"大气层保护地球。" },
+      { en:"sustainable", ph:"/səˈsteɪ.nə.bəl/", zh:"可持续的", em:"🌱", ex:"We need sustainable energy.", exZh:"我们需要可持续能源。" },
+      { en:"preserve", ph:"/prɪˈzɜːv/", zh:"保护/保存", em:"🛡️", ex:"We must preserve our forests.", exZh:"我们必须保护我们的森林。" },
+      { en:"organic", ph:"/ɔːˈɡæn.ɪk/", zh:"有机的", em:"🥬", ex:"Organic food is healthier.", exZh:"有机食品更健康。" }
+    ]
+  },
+  {
+    id: 3, name: "Science & technology", emoji: "🔬",
+    color: "linear-gradient(135deg, #60A5FA, #38BDF8)",
+    words: [
+      { en:"technology", ph:"/tekˈnɒl.ə.dʒi/", zh:"技术/科技", em:"💻", ex:"Technology changes our lives.", exZh:"科技改变了我们的生活。" },
+      { en:"artificial", ph:"/ˌɑː.tɪˈfɪʃ.əl/", zh:"人工的/人造的", em:"🤖", ex:"Artificial intelligence is everywhere.", exZh:"人工智能无处不在。" },
+      { en:"innovation", ph:"/ˌɪn.əˈveɪ.ʃən/", zh:"创新", em:"💡", ex:"Innovation drives progress.", exZh:"创新推动进步。" },
+      { en:"programme", ph:"/ˈprəʊ.ɡræm/", zh:"程序/编程", em:"👨‍💻", ex:"She learned to programme computers.", exZh:"她学会了编程。" },
+      { en:"satellite", ph:"/ˈsæt.əl.aɪt/", zh:"卫星", em:"🛰️", ex:"Satellites orbit the Earth.", exZh:"卫星绕地球运行。" },
+      { en:"robot", ph:"/ˈrəʊ.bɒt/", zh:"机器人", em:"🤖", ex:"Robots can help in factories.", exZh:"机器人可以在工厂帮忙。" },
+      { en:"virtual", ph:"/ˈvɜː.tʃu.əl/", zh:"虚拟的", em:"🥽", ex:"Virtual reality is amazing.", exZh:"虚拟现实很神奇。" },
+      { en:"digital", ph:"/ˈdɪdʒ.ɪ.təl/", zh:"数字的/数码的", em:"📱", ex:"We live in a digital age.", exZh:"我们生活在数字时代。" },
+      { en:"network", ph:"/ˈnet.wɜːk/", zh:"网络", em:"🌐", ex:"The internet is a global network.", exZh:"互联网是一个全球网络。" },
+      { en:"software", ph:"/ˈsɒft.weər/", zh:"软件", em:"💿", ex:"This software is very useful.", exZh:"这个软件非常有用。" },
+      { en:"algorithm", ph:"/ˈæl.ɡə.rɪð.əm/", zh:"算法", em:"🧮", ex:"The algorithm solves the problem.", exZh:"算法解决了这个问题。" },
+      { en:"database", ph:"/ˈdeɪ.tə.beɪs/", zh:"数据库", em:"🗄️", ex:"Information is stored in a database.", exZh:"信息存储在数据库中。" },
+      { en:"predict", ph:"/prɪˈdɪkt/", zh:"预测", em:"🔮", ex:"Scientists predict the weather.", exZh:"科学家预测天气。" }
+    ]
+  },
+  {
+    id: 4, name: "Art & culture", emoji: "🎨",
+    color: "linear-gradient(135deg, #FBBF24, #F59E0B)",
+    words: [
+      { en:"sculpture", ph:"/ˈskʌlp.tʃər/", zh:"雕塑", em:"🗿", ex:"The sculpture is made of marble.", exZh:"这座雕塑是大理石做的。" },
+      { en:"exhibition", ph:"/ˌek.sɪˈbɪʃ.ən/", zh:"展览", em:"🖼️", ex:"We visited an art exhibition.", exZh:"我们参观了一个艺术展览。" },
+      { en:"gallery", ph:"/ˈɡæl.ər.i/", zh:"画廊/美术馆", em:"🏛️", ex:"The gallery has famous paintings.", exZh:"画廊有名画。" },
+      { en:"masterpiece", ph:"/ˈmɑː.stə.piːs/", zh:"杰作", em:"🌟", ex:"The Mona Lisa is a masterpiece.", exZh:"蒙娜丽莎是一部杰作。" },
+      { en:"performance", ph:"/pəˈfɔː.məns/", zh:"表演/演出", em:"🎭", ex:"The performance was wonderful.", exZh:"演出太精彩了。" },
+      { en:"orchestra", ph:"/ˈɔː.kɪ.strə/", zh:"管弦乐队", em:"🎻", ex:"The orchestra played beautifully.", exZh:"管弦乐队演奏得很美。" },
+      { en:"portrait", ph:"/ˈpɔː.trət/", zh:"肖像", em:"👤", ex:"He painted a portrait of the queen.", exZh:"他画了女王的肖像。" },
+      { en:"literature", ph:"/ˈlɪt.rə.tʃər/", zh:"文学", em:"📚", ex:"English literature is fascinating.", exZh:"英国文学引人入胜。" },
+      { en:"compose", ph:"/kəmˈpəʊz/", zh:"作曲/创作", em:"🎵", ex:"Mozart composed many symphonies.", exZh:"莫扎特创作了许多交响曲。" },
+      { en:"creative", ph:"/kriˈeɪ.tɪv/", zh:"有创造力的", em:"🎨", ex:"She is very creative.", exZh:"她非常有创造力。" },
+      { en:"illustrate", ph:"/ˈɪl.ə.streɪt/", zh:"画插图/说明", em:"✏️", ex:"She illustrated a children's book.", exZh:"她为一本儿童书画了插图。" },
+      { en:"audience", ph:"/ˈɔː.di.əns/", zh:"观众", em:"👥", ex:"The audience clapped loudly.", exZh:"观众大声鼓掌。" }
+    ]
+  },
+  {
+    id: 5, name: "Travel & exploration", emoji: "✈️",
+    color: "linear-gradient(135deg, #818CF8, #6366F1)",
+    words: [
+      { en:"expedition", ph:"/ˌek.spɪˈdɪʃ.ən/", zh:"探险/远征", em:"🧭", ex:"They went on an Arctic expedition.", exZh:"他们去了一次北极探险。" },
+      { en:"destination", ph:"/ˌdes.tɪˈneɪ.ʃən/", zh:"目的地", em:"📍", ex:"Paris is a popular destination.", exZh:"巴黎是一个热门目的地。" },
+      { en:"accommodation", ph:"/əˌkɒm.əˈdeɪ.ʃən/", zh:"住宿", em:"🏨", ex:"We booked accommodation online.", exZh:"我们在网上预订了住宿。" },
+      { en:"itinerary", ph:"/aɪˈtɪn.ər.ər.i/", zh:"行程", em:"📋", ex:"Our itinerary includes three cities.", exZh:"我们的行程包括三个城市。" },
+      { en:"currency", ph:"/ˈkʌr.ən.si/", zh:"货币", em:"💱", ex:"What currency do they use?", exZh:"他们用什么货币？" },
+      { en:"passport", ph:"/ˈpɑːs.pɔːt/", zh:"护照", em:"🛂", ex:"Don't forget your passport.", exZh:"别忘了你的护照。" },
+      { en:"landmark", ph:"/ˈlænd.mɑːk/", zh:"地标", em:"🗼", ex:"The Eiffel Tower is a famous landmark.", exZh:"埃菲尔铁塔是著名的地标。" },
+      { en:"souvenir", ph:"/ˌsuː.vəˈnɪər/", zh:"纪念品", em:"🎁", ex:"I bought a souvenir for my mum.", exZh:"我给妈妈买了一个纪念品。" },
+      { en:"sightseeing", ph:"/ˈsaɪtˌsiː.ɪŋ/", zh:"观光", em:"👀", ex:"We went sightseeing in London.", exZh:"我们在伦敦观光。" },
+      { en:"backpack", ph:"/ˈbæk.pæk/", zh:"背包", em:"🎒", ex:"Pack your backpack for the trip.", exZh:"为旅行打包你的背包。" },
+      { en:"abroad", ph:"/əˈbrɔːd/", zh:"在国外", em:"🌏", ex:"Have you ever been abroad?", exZh:"你出过国吗？" },
+      { en:"customs", ph:"/ˈkʌs.təmz/", zh:"海关", em:"🛃", ex:"We went through customs.", exZh:"我们过了海关。" },
+      { en:"delay", ph:"/dɪˈleɪ/", zh:"延误", em:"⏰", ex:"The flight had a long delay.", exZh:"航班延误了很久。" }
+    ]
+  },
+  {
+    id: 6, name: "Health & wellbeing", emoji: "🧘",
+    color: "linear-gradient(135deg, #2DD4BF, #14B8A6)",
+    words: [
+      { en:"wellbeing", ph:"/ˌwelˈbiː.ɪŋ/", zh:"身心健康", em:"🧘", ex:"Exercise improves your wellbeing.", exZh:"运动改善你的身心健康。" },
+      { en:"nutrition", ph:"/njuːˈtrɪʃ.ən/", zh:"营养", em:"🥗", ex:"Good nutrition keeps you healthy.", exZh:"良好的营养保持你健康。" },
+      { en:"balanced diet", ph:"/ˌbæl.ənst ˈdaɪ.ət/", zh:"均衡饮食", em:"⚖️", ex:"A balanced diet is important.", exZh:"均衡饮食很重要。" },
+      { en:"calories", ph:"/ˈkæl.ər.iz/", zh:"卡路里", em:"🔥", ex:"This meal has too many calories.", exZh:"这顿饭卡路里太多了。" },
+      { en:"immune system", ph:"/ɪˈmjuːn ˌsɪs.təm/", zh:"免疫系统", em:"🛡️", ex:"Sleep strengthens your immune system.", exZh:"睡眠增强你的免疫系统。" },
+      { en:"anxiety", ph:"/æŋˈzaɪ.ə.ti/", zh:"焦虑", em:"😟", ex:"Breathing exercises reduce anxiety.", exZh:"呼吸练习减轻焦虑。" },
+      { en:"meditation", ph:"/ˌmed.ɪˈteɪ.ʃən/", zh:"冥想", em:"🧘‍♂️", ex:"Meditation helps you relax.", exZh:"冥想帮助你放松。" },
+      { en:"symptom", ph:"/ˈsɪmp.təm/", zh:"症状", em:"🤒", ex:"A headache is a common symptom.", exZh:"头痛是常见症状。" },
+      { en:"allergic", ph:"/əˈlɜː.dʒɪk/", zh:"过敏的", em:"🤧", ex:"She is allergic to nuts.", exZh:"她对坚果过敏。" },
+      { en:"prescription", ph:"/prɪˈskrɪp.ʃən/", zh:"处方", em:"📝", ex:"The doctor wrote a prescription.", exZh:"医生开了一张处方。" },
+      { en:"recovery", ph:"/rɪˈkʌv.ər.i/", zh:"恢复/康复", em:"💚", ex:"His recovery was quick.", exZh:"他恢复得很快。" },
+      { en:"physical", ph:"/ˈfɪz.ɪ.kəl/", zh:"身体的/体力的", em:"🏃", ex:"Physical activity is good for you.", exZh:"体育活动对你有好处。" },
+      { en:"mental health", ph:"/ˌmen.təl ˈhelθ/", zh:"心理健康", em:"🧠", ex:"Mental health is just as important.", exZh:"心理健康同样重要。" }
+    ]
+  },
+  {
+    id: 7, name: "Media & communication", emoji: "📡",
+    color: "linear-gradient(135deg, #F472B6, #EC4899)",
+    words: [
+      { en:"broadcast", ph:"/ˈbrɔːd.kɑːst/", zh:"广播/播送", em:"📡", ex:"The news is broadcast every evening.", exZh:"新闻每天晚上播出。" },
+      { en:"journalist", ph:"/ˈdʒɜː.nə.lɪst/", zh:"记者", em:"📰", ex:"The journalist interviewed the president.", exZh:"记者采访了总统。" },
+      { en:"headline", ph:"/ˈhed.laɪn/", zh:"头条新闻", em:"📰", ex:"The headline shocked everyone.", exZh:"头条新闻震惊了所有人。" },
+      { en:"social media", ph:"/ˌsəʊ.ʃəl ˈmiː.di.ə/", zh:"社交媒体", em:"📱", ex:"Social media connects people worldwide.", exZh:"社交媒体连接全世界的人。" },
+      { en:"podcast", ph:"/ˈpɒd.kɑːst/", zh:"播客", em:"🎙️", ex:"I listen to a science podcast.", exZh:"我听一个科学播客。" },
+      { en:"documentary", ph:"/ˌdɒk.jəˈmen.tər.i/", zh:"纪录片", em:"🎥", ex:"The documentary about oceans was great.", exZh:"关于海洋的纪录片很好看。" },
+      { en:"advertisement", ph:"/ədˈvɜː.tɪs.mənt/", zh:"广告", em:"📢", ex:"I saw an advertisement for the show.", exZh:"我看到了节目的广告。" },
+      { en:"influence", ph:"/ˈɪn.flu.əns/", zh:"影响/影响力", em:"🌊", ex:"The internet has a huge influence.", exZh:"互联网有巨大的影响力。" },
+      { en:"publish", ph:"/ˈpʌb.lɪʃ/", zh:"出版/发表", em:"📚", ex:"She published her first novel.", exZh:"她出版了第一部小说。" },
+      { en:"reliable", ph:"/rɪˈlaɪ.ə.bəl/", zh:"可靠的", em:"✅", ex:"Is this source reliable?", exZh:"这个来源可靠吗？" },
+      { en:"fake news", ph:"/ˌfeɪk ˈnjuːz/", zh:"假新闻", em:"🚫", ex:"Be careful of fake news online.", exZh:"小心网上的假新闻。" },
+      { en:"debate", ph:"/dɪˈbeɪt/", zh:"辩论/讨论", em:"🗣️", ex:"The students had a debate.", exZh:"学生们进行了一场辩论。" },
+      { en:"opinion", ph:"/əˈpɪn.jən/", zh:"意见/观点", em:"💭", ex:"Everyone has a different opinion.", exZh:"每个人都有不同的看法。" }
+    ]
+  },
+  {
+    id: 8, name: "Global issues", emoji: "🌐",
+    color: "linear-gradient(135deg, #FB923C, #EF4444)",
+    words: [
+      { en:"poverty", ph:"/ˈpɒv.ə.ti/", zh:"贫困", em:"😔", ex:"Many people live in poverty.", exZh:"许多人生活在贫困中。" },
+      { en:"equality", ph:"/ɪˈkwɒl.ə.ti/", zh:"平等", em:"⚖️", ex:"We should fight for equality.", exZh:"我们应该为平等而奋斗。" },
+      { en:"refugee", ph:"/ˌref.juˈdʒiː/", zh:"难民", em:"🏚️", ex:"Millions of refugees need help.", exZh:"数百万难民需要帮助。" },
+      { en:"volunteer", ph:"/ˌvɒl.ənˈtɪər/", zh:"志愿者", em:"🤝", ex:"I volunteer at a food bank.", exZh:"我在食物银行做志愿者。" },
+      { en:"charity", ph:"/ˈtʃær.ə.ti/", zh:"慈善机构", em:"💝", ex:"The charity helps children.", exZh:"这个慈善机构帮助孩子。" },
+      { en:"campaign", ph:"/kæmˈpeɪn/", zh:"运动/活动", em:"📣", ex:"They started a campaign for clean water.", exZh:"他们发起了一项净水运动。" },
+      { en:"climate change", ph:"/ˌklaɪ.mət ˈtʃeɪndʒ/", zh:"气候变化", em:"🌡️", ex:"Climate change affects everyone.", exZh:"气候变化影响每个人。" },
+      { en:"human rights", ph:"/ˌhjuː.mən ˈraɪts/", zh:"人权", em:"✊", ex:"Human rights must be protected.", exZh:"人权必须受到保护。" },
+      { en:"conflict", ph:"/ˈkɒn.flɪkt/", zh:"冲突", em:"⚡", ex:"We must resolve the conflict peacefully.", exZh:"我们必须和平解决冲突。" },
+      { en:"cooperation", ph:"/kəʊˌɒp.ərˈeɪ.ʃən/", zh:"合作", em:"🤝", ex:"International cooperation is needed.", exZh:"需要国际合作。" },
+      { en:"responsibility", ph:"/rɪˌspɒn.sɪˈbɪl.ə.ti/", zh:"责任", em:"📋", ex:"It's everyone's responsibility.", exZh:"这是每个人的责任。" },
+      { en:"awareness", ph:"/əˈweə.nəs/", zh:"意识/认识", em:"👁️", ex:"We need to raise awareness.", exZh:"我们需要提高意识。" },
+      { en:"donate", ph:"/dəʊˈneɪt/", zh:"捐赠", em:"🎗️", ex:"People donated money to the cause.", exZh:"人们为这项事业捐款。" }
+    ]
+  },
+  {
+    id: 9, name: "Future plans", emoji: "🚀",
+    color: "linear-gradient(135deg, #C084FC, #A78BFA)",
+    words: [
+      { en:"ambition", ph:"/æmˈbɪʃ.ən/", zh:"抱负/志向", em:"🌟", ex:"Her ambition is to become a doctor.", exZh:"她的抱负是成为一名医生。" },
+      { en:"career", ph:"/kəˈrɪər/", zh:"职业/事业", em:"💼", ex:"What career do you want?", exZh:"你想要什么职业？" },
+      { en:"goal", ph:"/ɡəʊl/", zh:"目标", em:"🎯", ex:"Set a goal and work towards it.", exZh:"设定目标并为之努力。" },
+      { en:"qualification", ph:"/ˌkwɒl.ɪ.fɪˈkeɪ.ʃən/", zh:"资格/学历", em:"📜", ex:"You need qualifications for the job.", exZh:"这份工作需要学历。" },
+      { en:"graduate", ph:"/ˈɡrædʒ.u.eɪt/", zh:"毕业", em:"🎓", ex:"She will graduate next year.", exZh:"她明年毕业。" },
+      { en:"scholarship", ph:"/ˈskɒl.ə.ʃɪp/", zh:"奖学金", em:"🏅", ex:"He won a scholarship.", exZh:"他获得了一份奖学金。" },
+      { en:"independence", ph:"/ˌɪn.dɪˈpen.dəns/", zh:"独立", em:"🗽", ex:"Young adults want independence.", exZh:"年轻人想要独立。" },
+      { en:"decision", ph:"/dɪˈsɪʒ.ən/", zh:"决定", em:"🤔", ex:"It was a difficult decision.", exZh:"这是一个艰难的决定。" },
+      { en:"predict", ph:"/prɪˈdɪkt/", zh:"预测", em:"🔮", ex:"It's hard to predict the future.", exZh:"很难预测未来。" },
+      { en:"possibility", ph:"/ˌpɒs.əˈbɪl.ə.ti/", zh:"可能性", em:"✨", ex:"There are many possibilities.", exZh:"有很多可能性。" },
+      { en:"volunteer", ph:"/ˌvɒl.ənˈtɪər/", zh:"志愿/做志愿者", em:"🤲", ex:"I plan to volunteer abroad.", exZh:"我计划去国外做志愿者。" },
+      { en:"entrepreneur", ph:"/ˌɒn.trə.prəˈnɜːr/", zh:"企业家", em:"🚀", ex:"She wants to be an entrepreneur.", exZh:"她想成为一名企业家。" },
+      { en:"skill", ph:"/skɪl/", zh:"技能", em:"🛠️", ex:"Learning new skills is important.", exZh:"学习新技能很重要。" },
+      { en:"invention", ph:"/ɪnˈven.ʃən/", zh:"发明", em:"💡", ex:"What invention would you create?", exZh:"你会创造什么发明？" }
+    ]
+  }
+];
+
+let currentUnit = 0, displayWords = [], autoplayTimer = null, autoplayIndex = 0;
+let cachedVoices = { en: null, zh: null };
+function loadVoices() { const voices = speechSynthesis.getVoices(); if (!voices.length) return; const enV = voices.filter(v => v.lang.startsWith('en')); cachedVoices.en = [enV.find(v => v.name === 'Samantha'), enV.find(v => v.name === 'Google UK English Female'), enV.find(v => v.localService), enV[0]].find(v => v) || null; const zhV = voices.filter(v => v.lang.startsWith('zh') || v.lang.startsWith('cmn')); cachedVoices.zh = [zhV.find(v => v.name === 'Ting-Ting'), zhV.find(v => v.localService), zhV[0]].find(v => v) || null; }
+speechSynthesis.onvoiceschanged = loadVoices; loadVoices();
+function speak(text, lang) { if (!window.speechSynthesis) return; speechSynthesis.cancel(); const isZh = lang === 'zh' || (!lang && /[\u4e00-\u9fff]/.test(text)); const u = new SpeechSynthesisUtterance(text); u.lang = isZh ? 'zh-CN' : 'en-US'; u.rate = isZh ? 0.9 : 0.75; const voice = isZh ? cachedVoices.zh : cachedVoices.en; if (voice) u.voice = voice; speechSynthesis.speak(u); }
+function buildNav() { const nav = document.getElementById('nav'); let html = `<button class="nav-btn active" style="background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:white" onclick="selectUnit(0)">🌈 全部 (${UNITS.reduce((s,u)=>s+u.words.length,0)}词)</button>`; UNITS.forEach(u => { html += `<button class="nav-btn" data-unit="${u.id}" onclick="selectUnit(${u.id})">${u.emoji} U${u.id} ${u.name}</button>`; }); nav.innerHTML = html; }
+function selectUnit(id) { currentUnit = id; stopAutoplay(); document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.style.background = 'white'; b.style.color = '#555'; }); if (id === 0) { const b = document.querySelector('.nav-btn'); b.classList.add('active'); b.style.background = 'linear-gradient(135deg,#7c3aed,#8b5cf6)'; b.style.color = 'white'; } else { const b = document.querySelector(`.nav-btn[data-unit="${id}"]`); const u = UNITS.find(u => u.id === id); b.classList.add('active'); b.style.background = u.color; b.style.color = 'white'; } renderCards(); updateInfo(); }
+function updateInfo() { const el = document.getElementById('unitInfo'); if (currentUnit === 0) el.textContent = `📚 全部 ${UNITS.reduce((s,u)=>s+u.words.length,0)} 个单词 · ${UNITS.length} 个单元`; else { const u = UNITS.find(u => u.id === currentUnit); el.textContent = `${u.emoji} Unit ${u.id}: ${u.name} · ${u.words.length} 个单词`; } }
+function getWords() { if (currentUnit === 0) return UNITS.flatMap(u => u.words.map(w => ({...w, unitColor: u.color}))); const u = UNITS.find(u => u.id === currentUnit); return u.words.map(w => ({...w, unitColor: u.color})); }
+function renderCards() { displayWords = getWords(); const grid = document.getElementById('cardGrid'); grid.innerHTML = displayWords.map((w, i) => `<div class="card-wrapper" onclick="flipCard(this)"><div class="card" data-index="${i}"><div class="card-face card-front"><span class="card-num">${i+1}</span><button class="speak-btn" onclick="event.stopPropagation();speak('${w.en.replace(/'/g,"\\'")}','en')">🔊</button><span class="card-emoji">${w.em}</span><span class="card-word">${w.en}</span><span class="card-phonetic">${w.ph}</span><span class="card-hint">👆 点击翻转</span></div><div class="card-face card-back"><button class="speak-btn" onclick="event.stopPropagation();speak('${w.zh.replace(/'/g,"\\'")}','zh')">🔊</button><span class="card-zh">${w.zh}</span><div class="card-example">📖 ${w.ex}</div><div class="card-example-zh">${w.exZh}</div></div></div></div>`).join(''); }
+function flipCard(wrapper) { wrapper.querySelector('.card').classList.toggle('flipped'); }
+function flipAll(show) { document.querySelectorAll('.card').forEach(c => { if (show) c.classList.add('flipped'); else c.classList.remove('flipped'); }); }
+function shuffleCards() { stopAutoplay(); displayWords.sort(() => Math.random() - 0.5); const grid = document.getElementById('cardGrid'); grid.innerHTML = displayWords.map((w, i) => `<div class="card-wrapper" onclick="flipCard(this)"><div class="card" data-index="${i}"><div class="card-face card-front"><span class="card-num">${i+1}</span><button class="speak-btn" onclick="event.stopPropagation();speak('${w.en.replace(/'/g,"\\'")}','en')">🔊</button><span class="card-emoji">${w.em}</span><span class="card-word">${w.en}</span><span class="card-phonetic">${w.ph}</span><span class="card-hint">👆 点击翻转</span></div><div class="card-face card-back"><button class="speak-btn" onclick="event.stopPropagation();speak('${w.zh.replace(/'/g,"\\'")}','zh')">🔊</button><span class="card-zh">${w.zh}</span><div class="card-example">📖 ${w.ex}</div><div class="card-example-zh">${w.exZh}</div></div></div></div>`).join(''); }
+function toggleAutoplay() { const btn = document.getElementById('autoplayBtn'); if (autoplayTimer) { stopAutoplay(); } else { flipAll(false); autoplayIndex = 0; btn.textContent = '⏹️ 停止播放'; btn.classList.add('playing'); playNext(); } }
+function stopAutoplay() { clearTimeout(autoplayTimer); autoplayTimer = null; autoplayIndex = 0; const btn = document.getElementById('autoplayBtn'); btn.textContent = '▶️ 连续播放'; btn.classList.remove('playing'); speechSynthesis.cancel(); }
+function playNext() { if (autoplayIndex >= displayWords.length) { stopAutoplay(); return; } const cards = document.querySelectorAll('.card'); const card = cards[autoplayIndex]; if (!card) { stopAutoplay(); return; } card.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => { card.classList.add('flipped'); const w = displayWords[autoplayIndex]; speak(w.en, 'en'); autoplayTimer = setTimeout(() => { speak(w.zh, 'zh'); autoplayTimer = setTimeout(() => { autoplayIndex++; playNext(); }, 2000); }, 2000); }, 500); }
+buildNav(); renderCards(); updateInfo();
+</script>
+</body>
+</html>

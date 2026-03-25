@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🎴 Power Up 1 翻牌游戏 - Coco English Park</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --pink: #FF6B9D; --purple: #C084FC; --blue: #60A5FA; --green: #34D399;
+  --yellow: #FBBF24; --orange: #FB923C; --red: #F87171; --teal: #2DD4BF;
+  --bg: #FFF0F5;
+}
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg); min-height: 100vh; overflow-x: hidden;
+}
+.header {
+  background: linear-gradient(135deg, #ec4899, #f472b6, #fb7185);
+  color: white; text-align: center; padding: 1.2rem 1rem;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.header h1 { font-size: 1.4rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+.header p { font-size: 0.8rem; opacity: 0.9; margin-top: 0.3rem; }
+.nav {
+  display: flex; gap: 0.5rem; padding: 0.8rem; overflow-x: auto;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  position: sticky; top: 68px; z-index: 99;
+  background: rgba(255,240,245,0.95); backdrop-filter: blur(10px);
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav-btn {
+  flex-shrink: 0; padding: 0.5rem 1rem; border-radius: 2rem; border: 2px solid transparent;
+  font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s;
+  white-space: nowrap; background: white; color: #555;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.nav-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+.nav-btn.active { color: white; border-color: transparent; transform: translateY(-2px); }
+.unit-info {
+  text-align: center; padding: 0.6rem; font-size: 0.85rem; color: #db2777; font-weight: 600;
+}
+.controls {
+  display: flex; gap: 0.5rem; justify-content: center; padding: 0.5rem 1rem; flex-wrap: wrap;
+}
+.ctrl-btn {
+  padding: 0.4rem 1rem; border-radius: 2rem; border: 2px solid var(--pink);
+  background: white; color: var(--pink); font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+}
+.ctrl-btn:hover { background: var(--pink); color: white; }
+.card-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 1rem; padding: 1rem; max-width: 1000px; margin: 0 auto;
+}
+.card-wrapper { perspective: 1000px; height: 220px; cursor: pointer; }
+.card {
+  width: 100%; height: 100%; position: relative;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+.card.flipped { transform: rotateY(180deg); }
+.card-face {
+  position: absolute; inset: 0; border-radius: 1.2rem;
+  backface-visibility: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 1rem 0.8rem;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  border: 3px solid rgba(255,255,255,0.8);
+  overflow: hidden;
+}
+.card-front { background: white; }
+.card-front .card-emoji { font-size: 2.5rem; margin-bottom: 0.4rem; }
+.card-front .card-word { font-size: 1.25rem; font-weight: 800; color: #1e293b; letter-spacing: 0.02em; }
+.card-front .card-phonetic { font-size: 0.78rem; color: #db2777; margin-top: 0.25rem; font-style: italic; }
+.card-front .card-hint { font-size: 0.6rem; color: #cbd5e1; margin-top: auto; padding-top: 0.3rem; }
+.card-back { transform: rotateY(180deg); background: linear-gradient(145deg, #fce7f3, #fbcfe8); }
+.card-back .card-zh { font-size: 1.2rem; font-weight: 800; color: #9d174d; margin-bottom: 0.6rem; }
+.card-back .card-example {
+  font-size: 0.75rem; color: #831843; text-align: center; line-height: 1.5;
+  background: rgba(255,255,255,0.5); border-radius: 0.8rem; padding: 0.5rem 0.6rem;
+}
+.card-back .card-example-zh { font-size: 0.7rem; color: #be185d; text-align: center; line-height: 1.4; margin-top: 0.3rem; }
+.speak-btn {
+  position: absolute; top: 0.5rem; right: 0.5rem;
+  width: 32px; height: 32px; border-radius: 50%; border: none;
+  background: rgba(219,39,119,0.12); font-size: 1rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; z-index: 5;
+}
+.speak-btn:hover { background: rgba(219,39,119,0.25); transform: scale(1.15); }
+.card-num { position: absolute; top: 0.4rem; left: 0.6rem; font-size: 0.6rem; color: #cbd5e1; font-weight: 700; }
+.autoplay-bar { text-align: center; padding: 1rem; max-width: 1000px; margin: 0 auto; }
+.autoplay-btn {
+  padding: 0.6rem 1.8rem; border-radius: 2rem; border: none;
+  background: linear-gradient(135deg, #ec4899, #f472b6);
+  color: white; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(236,72,153,0.3);
+}
+.autoplay-btn:hover { transform: scale(1.05); }
+.autoplay-btn.playing { background: linear-gradient(135deg, var(--red), var(--orange)); }
+.bg-deco { position: fixed; pointer-events: none; z-index: 0; opacity: 0.12; font-size: 3rem; }
+.bg-deco:nth-child(1) { top: 5%; left: 3%; animation: float 6s ease-in-out infinite; }
+.bg-deco:nth-child(2) { top: 15%; right: 5%; animation: float 8s ease-in-out infinite 1s; }
+.bg-deco:nth-child(3) { bottom: 10%; left: 8%; animation: float 7s ease-in-out infinite 2s; }
+.bg-deco:nth-child(4) { bottom: 20%; right: 3%; animation: float 5s ease-in-out infinite 0.5s; }
+@keyframes float { 0%,100%{ transform: translateY(0) rotate(0deg); } 50%{ transform: translateY(-20px) rotate(10deg); } }
+@media (max-width: 420px) {
+  .card-grid { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; padding: 0.8rem; }
+  .card-wrapper { height: 200px; }
+  .card-front .card-word { font-size: 1.1rem; }
+  .card-front .card-emoji { font-size: 2rem; }
+  .header h1 { font-size: 1.2rem; }
+}
+</style>
+</head>
+<body>
+<div class="bg-deco">🎴</div><div class="bg-deco">⭐</div><div class="bg-deco">🌈</div><div class="bg-deco">🦎</div>
+
+<div class="header">
+  <h1>🎴 Power Up 1 翻牌游戏</h1>
+  <p>Coco English Park · Cambridge Pre-A1→A1 · 点击卡片翻转</p>
+</div>
+
+<div class="nav" id="nav"></div>
+<div class="unit-info" id="unitInfo"></div>
+
+<div class="controls">
+  <button class="ctrl-btn" onclick="flipAll(true)">🔄 全部翻开</button>
+  <button class="ctrl-btn" onclick="flipAll(false)">🔙 全部盖回</button>
+  <button class="ctrl-btn" onclick="shuffleCards()">🎲 随机打乱</button>
+</div>
+
+<div class="card-grid" id="cardGrid"></div>
+
+<div class="autoplay-bar">
+  <button class="autoplay-btn" id="autoplayBtn" onclick="toggleAutoplay()">▶️ 连续播放</button>
+</div>
+
+<script>
+const UNITS = [
+  {
+    id: 1, name: "Hello!", emoji: "👋",
+    color: "linear-gradient(135deg, #FF6B9D, #FF8A65)",
+    words: [
+      { en:"hello", ph:"/həˈləʊ/", zh:"你好", em:"👋", ex:"Hello! How are you?", exZh:"你好！你好吗？" },
+      { en:"goodbye", ph:"/ɡʊdˈbaɪ/", zh:"再见", em:"👋", ex:"Goodbye! See you tomorrow.", exZh:"再见！明天见。" },
+      { en:"name", ph:"/neɪm/", zh:"名字", em:"📛", ex:"My name is Anna.", exZh:"我的名字叫安娜。" },
+      { en:"boy", ph:"/bɔɪ/", zh:"男孩", em:"👦", ex:"The boy is happy.", exZh:"那个男孩很高兴。" },
+      { en:"girl", ph:"/ɡɜːl/", zh:"女孩", em:"👧", ex:"The girl has a book.", exZh:"那个女孩有一本书。" },
+      { en:"friend", ph:"/frend/", zh:"朋友", em:"🤝", ex:"She is my friend.", exZh:"她是我的朋友。" },
+      { en:"please", ph:"/pliːz/", zh:"请", em:"🙏", ex:"Please sit down.", exZh:"请坐下。" },
+      { en:"thank you", ph:"/θæŋk juː/", zh:"谢谢", em:"💖", ex:"Thank you very much!", exZh:"非常感谢！" },
+      { en:"sorry", ph:"/ˈsɒr.i/", zh:"对不起", em:"😔", ex:"Sorry, I'm late.", exZh:"对不起，我迟到了。" },
+      { en:"yes", ph:"/jes/", zh:"是", em:"✅", ex:"Yes, I can!", exZh:"是的，我能！" },
+      { en:"no", ph:"/nəʊ/", zh:"不是", em:"❌", ex:"No, thank you.", exZh:"不，谢谢。" },
+      { en:"happy", ph:"/ˈhæp.i/", zh:"高兴的", em:"😊", ex:"I am very happy.", exZh:"我非常高兴。" }
+    ]
+  },
+  {
+    id: 2, name: "School", emoji: "🏫",
+    color: "linear-gradient(135deg, #60A5FA, #38BDF8)",
+    words: [
+      { en:"teacher", ph:"/ˈtiː.tʃər/", zh:"老师", em:"👩‍🏫", ex:"My teacher is kind.", exZh:"我的老师很和蔼。" },
+      { en:"book", ph:"/bʊk/", zh:"书", em:"📕", ex:"I read a book.", exZh:"我读一本书。" },
+      { en:"pen", ph:"/pen/", zh:"钢笔", em:"🖊️", ex:"I write with a pen.", exZh:"我用钢笔写字。" },
+      { en:"pencil", ph:"/ˈpen.səl/", zh:"铅笔", em:"✏️", ex:"I have a pencil.", exZh:"我有一支铅笔。" },
+      { en:"rubber", ph:"/ˈrʌb.ər/", zh:"橡皮", em:"🧹", ex:"Can I use your rubber?", exZh:"我能用你的橡皮吗？" },
+      { en:"ruler", ph:"/ˈruː.lər/", zh:"尺子", em:"📏", ex:"I draw with a ruler.", exZh:"我用尺子画线。" },
+      { en:"bag", ph:"/bæɡ/", zh:"书包", em:"🎒", ex:"My bag is blue.", exZh:"我的书包是蓝色的。" },
+      { en:"desk", ph:"/desk/", zh:"课桌", em:"🪑", ex:"Sit at your desk.", exZh:"坐在你的课桌旁。" },
+      { en:"chair", ph:"/tʃeər/", zh:"椅子", em:"💺", ex:"Sit on the chair.", exZh:"坐在椅子上。" },
+      { en:"classroom", ph:"/ˈklɑːs.ruːm/", zh:"教室", em:"🏫", ex:"This is my classroom.", exZh:"这是我的教室。" },
+      { en:"board", ph:"/bɔːd/", zh:"黑板", em:"📋", ex:"Look at the board.", exZh:"看黑板。" },
+      { en:"crayon", ph:"/ˈkreɪ.ɒn/", zh:"蜡笔", em:"🖍️", ex:"I like my red crayon.", exZh:"我喜欢我的红色蜡笔。" }
+    ]
+  },
+  {
+    id: 3, name: "My family", emoji: "👨‍👩‍👧‍👦",
+    color: "linear-gradient(135deg, #34D399, #6EE7B7)",
+    words: [
+      { en:"mum", ph:"/mʌm/", zh:"妈妈", em:"👩", ex:"My mum is a doctor.", exZh:"我妈妈是一名医生。" },
+      { en:"dad", ph:"/dæd/", zh:"爸爸", em:"👨", ex:"My dad is tall.", exZh:"我爸爸很高。" },
+      { en:"sister", ph:"/ˈsɪs.tər/", zh:"姐姐/妹妹", em:"👧", ex:"My sister is five.", exZh:"我妹妹五岁了。" },
+      { en:"brother", ph:"/ˈbrʌð.ər/", zh:"哥哥/弟弟", em:"👦", ex:"My brother is funny.", exZh:"我哥哥很有趣。" },
+      { en:"grandma", ph:"/ˈɡræn.mɑː/", zh:"奶奶/外婆", em:"👵", ex:"Grandma makes biscuits.", exZh:"奶奶做饼干。" },
+      { en:"grandpa", ph:"/ˈɡræn.pɑː/", zh:"爷爷/外公", em:"👴", ex:"Grandpa reads to me.", exZh:"爷爷给我读书。" },
+      { en:"baby", ph:"/ˈbeɪ.bi/", zh:"宝宝", em:"👶", ex:"The baby is sleeping.", exZh:"宝宝在睡觉。" },
+      { en:"old", ph:"/əʊld/", zh:"老的/年长的", em:"🧓", ex:"My grandpa is old.", exZh:"我的爷爷年纪大了。" },
+      { en:"young", ph:"/jʌŋ/", zh:"年轻的", em:"👶", ex:"My sister is young.", exZh:"我妹妹很小。" },
+      { en:"tall", ph:"/tɔːl/", zh:"高的", em:"📏", ex:"Dad is very tall.", exZh:"爸爸非常高。" },
+      { en:"short", ph:"/ʃɔːt/", zh:"矮的", em:"📐", ex:"I am short.", exZh:"我很矮。" },
+      { en:"love", ph:"/lʌv/", zh:"爱", em:"❤️", ex:"I love my family.", exZh:"我爱我的家人。" }
+    ]
+  },
+  {
+    id: 4, name: "Farm animals", emoji: "🐄",
+    color: "linear-gradient(135deg, #FBBF24, #F59E0B)",
+    words: [
+      { en:"cow", ph:"/kaʊ/", zh:"奶牛", em:"🐄", ex:"The cow gives milk.", exZh:"奶牛产牛奶。" },
+      { en:"sheep", ph:"/ʃiːp/", zh:"绵羊", em:"🐑", ex:"The sheep is white.", exZh:"绵羊是白色的。" },
+      { en:"horse", ph:"/hɔːs/", zh:"马", em:"🐴", ex:"I can ride a horse.", exZh:"我会骑马。" },
+      { en:"chicken", ph:"/ˈtʃɪk.ɪn/", zh:"鸡", em:"🐔", ex:"The chicken lays eggs.", exZh:"鸡下蛋。" },
+      { en:"duck", ph:"/dʌk/", zh:"鸭子", em:"🦆", ex:"The duck swims in the pond.", exZh:"鸭子在池塘里游泳。" },
+      { en:"pig", ph:"/pɪɡ/", zh:"猪", em:"🐷", ex:"The pig is pink.", exZh:"猪是粉色的。" },
+      { en:"goat", ph:"/ɡəʊt/", zh:"山羊", em:"🐐", ex:"The goat eats grass.", exZh:"山羊吃草。" },
+      { en:"donkey", ph:"/ˈdɒŋ.ki/", zh:"驴", em:"🫏", ex:"The donkey is strong.", exZh:"驴很强壮。" },
+      { en:"farm", ph:"/fɑːm/", zh:"农场", em:"🌾", ex:"We visit a farm.", exZh:"我们参观农场。" },
+      { en:"egg", ph:"/eɡ/", zh:"蛋", em:"🥚", ex:"I eat an egg.", exZh:"我吃一个蛋。" },
+      { en:"milk", ph:"/mɪlk/", zh:"牛奶", em:"🥛", ex:"I drink milk.", exZh:"我喝牛奶。" },
+      { en:"field", ph:"/fiːld/", zh:"田地", em:"🌿", ex:"Cows are in the field.", exZh:"奶牛在田地里。" }
+    ]
+  },
+  {
+    id: 5, name: "Food", emoji: "🍎",
+    color: "linear-gradient(135deg, #F87171, #FB923C)",
+    words: [
+      { en:"apple", ph:"/ˈæp.əl/", zh:"苹果", em:"🍎", ex:"I like apples.", exZh:"我喜欢苹果。" },
+      { en:"banana", ph:"/bəˈnɑː.nə/", zh:"香蕉", em:"🍌", ex:"The banana is yellow.", exZh:"香蕉是黄色的。" },
+      { en:"orange", ph:"/ˈɒr.ɪndʒ/", zh:"橙子", em:"🍊", ex:"I eat an orange.", exZh:"我吃一个橙子。" },
+      { en:"bread", ph:"/bred/", zh:"面包", em:"🍞", ex:"I have bread for breakfast.", exZh:"我早餐吃面包。" },
+      { en:"rice", ph:"/raɪs/", zh:"米饭", em:"🍚", ex:"I eat rice for lunch.", exZh:"我午餐吃米饭。" },
+      { en:"cake", ph:"/keɪk/", zh:"蛋糕", em:"🎂", ex:"The cake is delicious.", exZh:"蛋糕很好吃。" },
+      { en:"ice cream", ph:"/aɪs kriːm/", zh:"冰淇淋", em:"🍦", ex:"I love ice cream.", exZh:"我喜欢冰淇淋。" },
+      { en:"water", ph:"/ˈwɔː.tər/", zh:"水", em:"💧", ex:"I drink water.", exZh:"我喝水。" },
+      { en:"juice", ph:"/dʒuːs/", zh:"果汁", em:"🧃", ex:"I like orange juice.", exZh:"我喜欢橙汁。" },
+      { en:"pizza", ph:"/ˈpiːt.sə/", zh:"披萨", em:"🍕", ex:"We eat pizza.", exZh:"我们吃披萨。" },
+      { en:"sandwich", ph:"/ˈsæn.wɪtʃ/", zh:"三明治", em:"🥪", ex:"I have a sandwich.", exZh:"我有一个三明治。" },
+      { en:"biscuit", ph:"/ˈbɪs.kɪt/", zh:"饼干", em:"🍪", ex:"I like biscuits.", exZh:"我喜欢饼干。" }
+    ]
+  },
+  {
+    id: 6, name: "Transport", emoji: "🚗",
+    color: "linear-gradient(135deg, #818CF8, #6366F1)",
+    words: [
+      { en:"car", ph:"/kɑːr/", zh:"汽车", em:"🚗", ex:"We go by car.", exZh:"我们坐汽车去。" },
+      { en:"bus", ph:"/bʌs/", zh:"公交车", em:"🚌", ex:"I take the bus.", exZh:"我坐公交车。" },
+      { en:"train", ph:"/treɪn/", zh:"火车", em:"🚂", ex:"The train is fast.", exZh:"火车很快。" },
+      { en:"plane", ph:"/pleɪn/", zh:"飞机", em:"✈️", ex:"We fly by plane.", exZh:"我们坐飞机。" },
+      { en:"boat", ph:"/bəʊt/", zh:"船", em:"⛵", ex:"The boat is on the sea.", exZh:"船在海上。" },
+      { en:"bike", ph:"/baɪk/", zh:"自行车", em:"🚲", ex:"I ride my bike.", exZh:"我骑自行车。" },
+      { en:"helicopter", ph:"/ˈhel.ɪ.kɒp.tər/", zh:"直升机", em:"🚁", ex:"Look at the helicopter!", exZh:"看那架直升机！" },
+      { en:"lorry", ph:"/ˈlɒr.i/", zh:"卡车", em:"🚚", ex:"The lorry is big.", exZh:"卡车很大。" },
+      { en:"motorbike", ph:"/ˈməʊ.tə.baɪk/", zh:"摩托车", em:"🏍️", ex:"Dad has a motorbike.", exZh:"爸爸有一辆摩托车。" },
+      { en:"fast", ph:"/fɑːst/", zh:"快的", em:"⚡", ex:"The car is fast.", exZh:"汽车很快。" },
+      { en:"slow", ph:"/sləʊ/", zh:"慢的", em:"🐢", ex:"The boat is slow.", exZh:"船很慢。" },
+      { en:"drive", ph:"/draɪv/", zh:"驾驶", em:"🚗", ex:"Mum can drive.", exZh:"妈妈会开车。" }
+    ]
+  },
+  {
+    id: 7, name: "Sports & hobbies", emoji: "⚽",
+    color: "linear-gradient(135deg, #2DD4BF, #14B8A6)",
+    words: [
+      { en:"football", ph:"/ˈfʊt.bɔːl/", zh:"足球", em:"⚽", ex:"I play football.", exZh:"我踢足球。" },
+      { en:"swim", ph:"/swɪm/", zh:"游泳", em:"🏊", ex:"I can swim.", exZh:"我会游泳。" },
+      { en:"run", ph:"/rʌn/", zh:"跑步", em:"🏃", ex:"I run fast.", exZh:"我跑得快。" },
+      { en:"jump", ph:"/dʒʌmp/", zh:"跳", em:"🤸", ex:"I can jump high.", exZh:"我能跳得高。" },
+      { en:"dance", ph:"/dɑːns/", zh:"跳舞", em:"💃", ex:"I like to dance.", exZh:"我喜欢跳舞。" },
+      { en:"sing", ph:"/sɪŋ/", zh:"唱歌", em:"🎤", ex:"She can sing well.", exZh:"她唱歌唱得好。" },
+      { en:"draw", ph:"/drɔː/", zh:"画画", em:"🎨", ex:"I draw a house.", exZh:"我画一个房子。" },
+      { en:"read", ph:"/riːd/", zh:"阅读", em:"📖", ex:"I read a story.", exZh:"我读一个故事。" },
+      { en:"play", ph:"/pleɪ/", zh:"玩耍", em:"🎮", ex:"Let's play together!", exZh:"我们一起玩吧！" },
+      { en:"climb", ph:"/klaɪm/", zh:"攀爬", em:"🧗", ex:"I can climb a tree.", exZh:"我会爬树。" },
+      { en:"ride", ph:"/raɪd/", zh:"骑", em:"🚴", ex:"I ride a bike.", exZh:"我骑自行车。" },
+      { en:"fly", ph:"/flaɪ/", zh:"飞", em:"🪁", ex:"I fly a kite.", exZh:"我放风筝。" }
+    ]
+  },
+  {
+    id: 8, name: "My home", emoji: "🏠",
+    color: "linear-gradient(135deg, #C084FC, #A78BFA)",
+    words: [
+      { en:"bedroom", ph:"/ˈbed.ruːm/", zh:"卧室", em:"🛏️", ex:"This is my bedroom.", exZh:"这是我的卧室。" },
+      { en:"kitchen", ph:"/ˈkɪtʃ.ɪn/", zh:"厨房", em:"🍳", ex:"Mum is in the kitchen.", exZh:"妈妈在厨房里。" },
+      { en:"bathroom", ph:"/ˈbɑːθ.ruːm/", zh:"浴室", em:"🚿", ex:"I wash in the bathroom.", exZh:"我在浴室洗漱。" },
+      { en:"living room", ph:"/ˈlɪv.ɪŋ ruːm/", zh:"客厅", em:"🛋️", ex:"We watch TV in the living room.", exZh:"我们在客厅看电视。" },
+      { en:"garden", ph:"/ˈɡɑː.dən/", zh:"花园", em:"🌻", ex:"We play in the garden.", exZh:"我们在花园里玩。" },
+      { en:"door", ph:"/dɔːr/", zh:"门", em:"🚪", ex:"Open the door, please.", exZh:"请开门。" },
+      { en:"window", ph:"/ˈwɪn.dəʊ/", zh:"窗户", em:"🪟", ex:"Look out of the window.", exZh:"从窗户往外看。" },
+      { en:"bed", ph:"/bed/", zh:"床", em:"🛏️", ex:"I sleep in my bed.", exZh:"我在床上睡觉。" },
+      { en:"table", ph:"/ˈteɪ.bəl/", zh:"桌子", em:"🪑", ex:"The food is on the table.", exZh:"食物在桌子上。" },
+      { en:"sofa", ph:"/ˈsəʊ.fə/", zh:"沙发", em:"🛋️", ex:"I sit on the sofa.", exZh:"我坐在沙发上。" },
+      { en:"lamp", ph:"/læmp/", zh:"灯", em:"💡", ex:"Turn on the lamp.", exZh:"打开灯。" },
+      { en:"floor", ph:"/flɔːr/", zh:"地板", em:"🏠", ex:"Sit on the floor.", exZh:"坐在地板上。" }
+    ]
+  },
+  {
+    id: 9, name: "Colours & numbers", emoji: "🌈",
+    color: "linear-gradient(135deg, #FB923C, #FBBF24)",
+    words: [
+      { en:"red", ph:"/red/", zh:"红色", em:"🔴", ex:"The ball is red.", exZh:"球是红色的。" },
+      { en:"blue", ph:"/bluː/", zh:"蓝色", em:"🔵", ex:"The sky is blue.", exZh:"天空是蓝色的。" },
+      { en:"green", ph:"/ɡriːn/", zh:"绿色", em:"🟢", ex:"The grass is green.", exZh:"草是绿色的。" },
+      { en:"yellow", ph:"/ˈjel.əʊ/", zh:"黄色", em:"🟡", ex:"The sun is yellow.", exZh:"太阳是黄色的。" },
+      { en:"pink", ph:"/pɪŋk/", zh:"粉色", em:"💗", ex:"I like pink.", exZh:"我喜欢粉色。" },
+      { en:"purple", ph:"/ˈpɜː.pəl/", zh:"紫色", em:"🟣", ex:"Purple is my favourite.", exZh:"紫色是我最喜欢的。" },
+      { en:"white", ph:"/waɪt/", zh:"白色", em:"⚪", ex:"Snow is white.", exZh:"雪是白色的。" },
+      { en:"black", ph:"/blæk/", zh:"黑色", em:"⚫", ex:"My cat is black.", exZh:"我的猫是黑色的。" },
+      { en:"brown", ph:"/braʊn/", zh:"棕色", em:"🟤", ex:"The dog is brown.", exZh:"狗是棕色的。" },
+      { en:"one", ph:"/wʌn/", zh:"一", em:"1️⃣", ex:"I have one book.", exZh:"我有一本书。" },
+      { en:"two", ph:"/tuː/", zh:"二", em:"2️⃣", ex:"I have two hands.", exZh:"我有两只手。" },
+      { en:"ten", ph:"/ten/", zh:"十", em:"🔟", ex:"I count to ten.", exZh:"我数到十。" }
+    ]
+  }
+];
+
+let currentUnit = 0;
+let displayWords = [];
+let autoplayTimer = null;
+let autoplayIndex = 0;
+
+let cachedVoices = { en: null, zh: null };
+function loadVoices() {
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) return;
+  const enV = voices.filter(v => v.lang.startsWith('en'));
+  cachedVoices.en = [enV.find(v => v.name === 'Samantha'), enV.find(v => v.name === 'Google UK English Female'), enV.find(v => v.localService), enV[0]].find(v => v) || null;
+  const zhV = voices.filter(v => v.lang.startsWith('zh') || v.lang.startsWith('cmn'));
+  cachedVoices.zh = [zhV.find(v => v.name === 'Ting-Ting'), zhV.find(v => v.localService), zhV[0]].find(v => v) || null;
+}
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+function speak(text, lang) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const isZh = lang === 'zh' || (!lang && /[\u4e00-\u9fff]/.test(text));
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = isZh ? 'zh-CN' : 'en-US';
+  u.rate = isZh ? 0.9 : 0.75;
+  const voice = isZh ? cachedVoices.zh : cachedVoices.en;
+  if (voice) u.voice = voice;
+  speechSynthesis.speak(u);
+}
+
+function buildNav() {
+  const nav = document.getElementById('nav');
+  let html = `<button class="nav-btn active" style="background:linear-gradient(135deg,#ec4899,#f472b6);color:white" onclick="selectUnit(0)">🌈 全部 (${UNITS.reduce((s,u)=>s+u.words.length,0)}词)</button>`;
+  UNITS.forEach(u => { html += `<button class="nav-btn" data-unit="${u.id}" onclick="selectUnit(${u.id})">${u.emoji} U${u.id} ${u.name}</button>`; });
+  nav.innerHTML = html;
+}
+
+function selectUnit(id) {
+  currentUnit = id; stopAutoplay();
+  document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.style.background = 'white'; b.style.color = '#555'; });
+  if (id === 0) { const b = document.querySelector('.nav-btn'); b.classList.add('active'); b.style.background = 'linear-gradient(135deg,#ec4899,#f472b6)'; b.style.color = 'white'; }
+  else { const b = document.querySelector(`.nav-btn[data-unit="${id}"]`); const u = UNITS.find(u => u.id === id); b.classList.add('active'); b.style.background = u.color; b.style.color = 'white'; }
+  renderCards(); updateInfo();
+}
+
+function updateInfo() {
+  const el = document.getElementById('unitInfo');
+  if (currentUnit === 0) el.textContent = `📚 全部 ${UNITS.reduce((s,u)=>s+u.words.length,0)} 个单词 · ${UNITS.length} 个单元`;
+  else { const u = UNITS.find(u => u.id === currentUnit); el.textContent = `${u.emoji} Unit ${u.id}: ${u.name} · ${u.words.length} 个单词`; }
+}
+
+function getWords() {
+  if (currentUnit === 0) return UNITS.flatMap(u => u.words.map(w => ({...w, unitColor: u.color})));
+  const u = UNITS.find(u => u.id === currentUnit);
+  return u.words.map(w => ({...w, unitColor: u.color}));
+}
+
+function renderCards() {
+  displayWords = getWords();
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML = displayWords.map((w, i) => `
+    <div class="card-wrapper" onclick="flipCard(this)">
+      <div class="card" data-index="${i}">
+        <div class="card-face card-front">
+          <span class="card-num">${i+1}</span>
+          <button class="speak-btn" onclick="event.stopPropagation();speak('${w.en.replace(/'/g,"\\'")}','en')">🔊</button>
+          <span class="card-emoji">${w.em}</span>
+          <span class="card-word">${w.en}</span>
+          <span class="card-phonetic">${w.ph}</span>
+          <span class="card-hint">👆 点击翻转</span>
+        </div>
+        <div class="card-face card-back">
+          <button class="speak-btn" onclick="event.stopPropagation();speak('${w.zh.replace(/'/g,"\\'")}','zh')">🔊</button>
+          <span class="card-zh">${w.zh}</span>
+          <div class="card-example">📖 ${w.ex}</div>
+          <div class="card-example-zh">${w.exZh}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function flipCard(wrapper) { wrapper.querySelector('.card').classList.toggle('flipped'); }
+function flipAll(show) { document.querySelectorAll('.card').forEach(c => { if (show) c.classList.add('flipped'); else c.classList.remove('flipped'); }); }
+
+function shuffleCards() {
+  stopAutoplay(); displayWords.sort(() => Math.random() - 0.5);
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML = displayWords.map((w, i) => `
+    <div class="card-wrapper" onclick="flipCard(this)">
+      <div class="card" data-index="${i}">
+        <div class="card-face card-front">
+          <span class="card-num">${i+1}</span>
+          <button class="speak-btn" onclick="event.stopPropagation();speak('${w.en.replace(/'/g,"\\'")}','en')">🔊</button>
+          <span class="card-emoji">${w.em}</span>
+          <span class="card-word">${w.en}</span>
+          <span class="card-phonetic">${w.ph}</span>
+          <span class="card-hint">👆 点击翻转</span>
+        </div>
+        <div class="card-face card-back">
+          <button class="speak-btn" onclick="event.stopPropagation();speak('${w.zh.replace(/'/g,"\\'")}','zh')">🔊</button>
+          <span class="card-zh">${w.zh}</span>
+          <div class="card-example">📖 ${w.ex}</div>
+          <div class="card-example-zh">${w.exZh}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleAutoplay() {
+  const btn = document.getElementById('autoplayBtn');
+  if (autoplayTimer) { stopAutoplay(); }
+  else { flipAll(false); autoplayIndex = 0; btn.textContent = '⏹️ 停止播放'; btn.classList.add('playing'); playNext(); }
+}
+
+function stopAutoplay() {
+  clearTimeout(autoplayTimer); autoplayTimer = null; autoplayIndex = 0;
+  const btn = document.getElementById('autoplayBtn');
+  btn.textContent = '▶️ 连续播放'; btn.classList.remove('playing');
+  speechSynthesis.cancel();
+}
+
+function playNext() {
+  if (autoplayIndex >= displayWords.length) { stopAutoplay(); return; }
+  const cards = document.querySelectorAll('.card');
+  const card = cards[autoplayIndex];
+  if (!card) { stopAutoplay(); return; }
+  card.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => {
+    card.classList.add('flipped');
+    const w = displayWords[autoplayIndex];
+    speak(w.en, 'en');
+    autoplayTimer = setTimeout(() => {
+      speak(w.zh, 'zh');
+      autoplayTimer = setTimeout(() => { autoplayIndex++; playNext(); }, 2000);
+    }, 2000);
+  }, 500);
+}
+
+buildNav(); renderCards(); updateInfo();
+</script>
+</body>
+</html>

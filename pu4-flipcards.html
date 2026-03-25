@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🎴 Power Up 4 翻牌游戏 - Coco English Park</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --pink: #FF6B9D; --purple: #C084FC; --blue: #60A5FA; --green: #34D399; --yellow: #FBBF24; --orange: #FB923C; --red: #F87171; --teal: #2DD4BF; --bg: #ECFDF5; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); min-height: 100vh; overflow-x: hidden; }
+.header { background: linear-gradient(135deg, #059669, #10b981, #34d399); color: white; text-align: center; padding: 1.2rem 1rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+.header h1 { font-size: 1.4rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+.header p { font-size: 0.8rem; opacity: 0.9; margin-top: 0.3rem; }
+.nav { display: flex; gap: 0.5rem; padding: 0.8rem; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; position: sticky; top: 68px; z-index: 99; background: rgba(236,253,245,0.95); backdrop-filter: blur(10px); }
+.nav::-webkit-scrollbar { display: none; }
+.nav-btn { flex-shrink: 0; padding: 0.5rem 1rem; border-radius: 2rem; border: 2px solid transparent; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; white-space: nowrap; background: white; color: #555; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.nav-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+.nav-btn.active { color: white; border-color: transparent; transform: translateY(-2px); }
+.unit-info { text-align: center; padding: 0.6rem; font-size: 0.85rem; color: #059669; font-weight: 600; }
+.controls { display: flex; gap: 0.5rem; justify-content: center; padding: 0.5rem 1rem; flex-wrap: wrap; }
+.ctrl-btn { padding: 0.4rem 1rem; border-radius: 2rem; border: 2px solid var(--green); background: white; color: var(--green); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+.ctrl-btn:hover { background: var(--green); color: white; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 1rem; padding: 1rem; max-width: 1000px; margin: 0 auto; }
+.card-wrapper { perspective: 1000px; height: 220px; cursor: pointer; }
+.card { width: 100%; height: 100%; position: relative; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+.card.flipped { transform: rotateY(180deg); }
+.card-face { position: absolute; inset: 0; border-radius: 1.2rem; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem 0.8rem; box-shadow: 0 6px 20px rgba(0,0,0,0.1); border: 3px solid rgba(255,255,255,0.8); overflow: hidden; }
+.card-front { background: white; }
+.card-front .card-emoji { font-size: 2.5rem; margin-bottom: 0.4rem; }
+.card-front .card-word { font-size: 1.25rem; font-weight: 800; color: #1e293b; letter-spacing: 0.02em; }
+.card-front .card-phonetic { font-size: 0.78rem; color: #059669; margin-top: 0.25rem; font-style: italic; }
+.card-front .card-hint { font-size: 0.6rem; color: #cbd5e1; margin-top: auto; padding-top: 0.3rem; }
+.card-back { transform: rotateY(180deg); background: linear-gradient(145deg, #d1fae5, #a7f3d0); }
+.card-back .card-zh { font-size: 1.2rem; font-weight: 800; color: #064e3b; margin-bottom: 0.6rem; }
+.card-back .card-example { font-size: 0.75rem; color: #065f46; text-align: center; line-height: 1.5; background: rgba(255,255,255,0.5); border-radius: 0.8rem; padding: 0.5rem 0.6rem; }
+.card-back .card-example-zh { font-size: 0.7rem; color: #047857; text-align: center; line-height: 1.4; margin-top: 0.3rem; }
+.speak-btn { position: absolute; top: 0.5rem; right: 0.5rem; width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(5,150,105,0.12); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 5; }
+.speak-btn:hover { background: rgba(5,150,105,0.25); transform: scale(1.15); }
+.card-num { position: absolute; top: 0.4rem; left: 0.6rem; font-size: 0.6rem; color: #cbd5e1; font-weight: 700; }
+.autoplay-bar { text-align: center; padding: 1rem; max-width: 1000px; margin: 0 auto; }
+.autoplay-btn { padding: 0.6rem 1.8rem; border-radius: 2rem; border: none; background: linear-gradient(135deg, #059669, #10b981); color: white; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(5,150,105,0.3); }
+.autoplay-btn:hover { transform: scale(1.05); }
+.autoplay-btn.playing { background: linear-gradient(135deg, var(--red), var(--orange)); }
+.bg-deco { position: fixed; pointer-events: none; z-index: 0; opacity: 0.12; font-size: 3rem; }
+.bg-deco:nth-child(1) { top: 5%; left: 3%; animation: float 6s ease-in-out infinite; }
+.bg-deco:nth-child(2) { top: 15%; right: 5%; animation: float 8s ease-in-out infinite 1s; }
+.bg-deco:nth-child(3) { bottom: 10%; left: 8%; animation: float 7s ease-in-out infinite 2s; }
+.bg-deco:nth-child(4) { bottom: 20%; right: 3%; animation: float 5s ease-in-out infinite 0.5s; }
+@keyframes float { 0%,100%{ transform: translateY(0) rotate(0deg); } 50%{ transform: translateY(-20px) rotate(10deg); } }
+@media (max-width: 420px) { .card-grid { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; padding: 0.8rem; } .card-wrapper { height: 200px; } .card-front .card-word { font-size: 1.1rem; } .card-front .card-emoji { font-size: 2rem; } .header h1 { font-size: 1.2rem; } }
+</style>
+</head>
+<body>
+<div class="bg-deco">🎴</div><div class="bg-deco">🌿</div><div class="bg-deco">🌍</div><div class="bg-deco">🦎</div>
+<div class="header">
+  <h1>🎴 Power Up 4 翻牌游戏</h1>
+  <p>Coco English Park · Cambridge A1→A2 Movers · 点击卡片翻转</p>
+</div>
+<div class="nav" id="nav"></div>
+<div class="unit-info" id="unitInfo"></div>
+<div class="controls">
+  <button class="ctrl-btn" onclick="flipAll(true)">🔄 全部翻开</button>
+  <button class="ctrl-btn" onclick="flipAll(false)">🔙 全部盖回</button>
+  <button class="ctrl-btn" onclick="shuffleCards()">🎲 随机打乱</button>
+</div>
+<div class="card-grid" id="cardGrid"></div>
+<div class="autoplay-bar">
+  <button class="autoplay-btn" id="autoplayBtn" onclick="toggleAutoplay()">▶️ 连续播放</button>
+</div>
+
+<script>
+const UNITS = [
+  {
+    id: 1, name: "Experiences", emoji: "🌟",
+    color: "linear-gradient(135deg, #FF6B9D, #FF8A65)",
+    words: [
+      { en:"experience", ph:"/ɪkˈspɪə.ri.əns/", zh:"经历/体验", em:"🌟", ex:"It was an amazing experience.", exZh:"这是一次奇妙的经历。" },
+      { en:"amazing", ph:"/əˈmeɪ.zɪŋ/", zh:"令人惊叹的", em:"🤩", ex:"The show was amazing!", exZh:"演出太棒了！" },
+      { en:"terrible", ph:"/ˈter.ə.bəl/", zh:"糟糕的", em:"😱", ex:"The weather was terrible.", exZh:"天气太糟糕了。" },
+      { en:"wonderful", ph:"/ˈwʌn.də.fəl/", zh:"精彩的", em:"✨", ex:"What a wonderful day!", exZh:"多么美好的一天！" },
+      { en:"boring", ph:"/ˈbɔː.rɪŋ/", zh:"无聊的", em:"😴", ex:"The film was boring.", exZh:"那部电影很无聊。" },
+      { en:"frightening", ph:"/ˈfraɪ.tən.ɪŋ/", zh:"令人害怕的", em:"😨", ex:"The storm was frightening.", exZh:"暴风雨令人害怕。" },
+      { en:"brilliant", ph:"/ˈbrɪl.jənt/", zh:"极好的", em:"💎", ex:"That was a brilliant idea!", exZh:"那是个绝妙的主意！" },
+      { en:"nervous", ph:"/ˈnɜː.vəs/", zh:"紧张的", em:"😰", ex:"I feel nervous before tests.", exZh:"考试前我很紧张。" },
+      { en:"excited", ph:"/ɪkˈsaɪ.tɪd/", zh:"兴奋的", em:"🎉", ex:"I'm excited about the trip.", exZh:"我对这次旅行很兴奋。" },
+      { en:"disappointed", ph:"/ˌdɪs.əˈpɔɪn.tɪd/", zh:"失望的", em:"😞", ex:"I was disappointed.", exZh:"我很失望。" },
+      { en:"proud", ph:"/praʊd/", zh:"自豪的", em:"🏆", ex:"I'm proud of you!", exZh:"我为你骄傲！" },
+      { en:"surprised", ph:"/sərˈpraɪzd/", zh:"惊讶的", em:"😲", ex:"I was very surprised.", exZh:"我非常惊讶。" }
+    ]
+  },
+  {
+    id: 2, name: "The environment", emoji: "🌍",
+    color: "linear-gradient(135deg, #34D399, #6EE7B7)",
+    words: [
+      { en:"environment", ph:"/ɪnˈvaɪ.rən.mənt/", zh:"环境", em:"🌍", ex:"Protect the environment.", exZh:"保护环境。" },
+      { en:"pollution", ph:"/pəˈluː.ʃən/", zh:"污染", em:"🏭", ex:"Air pollution is bad.", exZh:"空气污染很严重。" },
+      { en:"recycle", ph:"/ˌriːˈsaɪ.kəl/", zh:"回收利用", em:"♻️", ex:"We recycle paper and plastic.", exZh:"我们回收纸和塑料。" },
+      { en:"waste", ph:"/weɪst/", zh:"浪费/废物", em:"🗑️", ex:"Don't waste water.", exZh:"不要浪费水。" },
+      { en:"energy", ph:"/ˈen.ə.dʒi/", zh:"能源", em:"⚡", ex:"We need to save energy.", exZh:"我们需要节约能源。" },
+      { en:"plastic", ph:"/ˈplæs.tɪk/", zh:"塑料", em:"🧴", ex:"Don't use too much plastic.", exZh:"不要用太多塑料。" },
+      { en:"protect", ph:"/prəˈtekt/", zh:"保护", em:"🛡️", ex:"We must protect animals.", exZh:"我们必须保护动物。" },
+      { en:"forest", ph:"/ˈfɒr.ɪst/", zh:"森林", em:"🌲", ex:"The forest is beautiful.", exZh:"森林很美。" },
+      { en:"ocean", ph:"/ˈəʊ.ʃən/", zh:"海洋", em:"🌊", ex:"The ocean is very deep.", exZh:"海洋非常深。" },
+      { en:"endangered", ph:"/ɪnˈdeɪn.dʒəd/", zh:"濒危的", em:"🐼", ex:"Pandas are endangered.", exZh:"大熊猫是濒危动物。" },
+      { en:"climate", ph:"/ˈklaɪ.mət/", zh:"气候", em:"🌡️", ex:"The climate is changing.", exZh:"气候在变化。" },
+      { en:"litter", ph:"/ˈlɪt.ər/", zh:"垃圾/乱扔", em:"🚯", ex:"Don't drop litter.", exZh:"不要乱扔垃圾。" }
+    ]
+  },
+  {
+    id: 3, name: "Technology", emoji: "💻",
+    color: "linear-gradient(135deg, #60A5FA, #38BDF8)",
+    words: [
+      { en:"technology", ph:"/tekˈnɒl.ə.dʒi/", zh:"科技", em:"💻", ex:"Technology helps us learn.", exZh:"科技帮助我们学习。" },
+      { en:"laptop", ph:"/ˈlæp.tɒp/", zh:"笔记本电脑", em:"💻", ex:"I do homework on my laptop.", exZh:"我用笔记本电脑做作业。" },
+      { en:"tablet", ph:"/ˈtæb.lət/", zh:"平板电脑", em:"📱", ex:"I read on my tablet.", exZh:"我在平板上阅读。" },
+      { en:"keyboard", ph:"/ˈkiː.bɔːd/", zh:"键盘", em:"⌨️", ex:"Type on the keyboard.", exZh:"在键盘上打字。" },
+      { en:"screen", ph:"/skriːn/", zh:"屏幕", em:"🖥️", ex:"Look at the screen.", exZh:"看屏幕。" },
+      { en:"printer", ph:"/ˈprɪn.tər/", zh:"打印机", em:"🖨️", ex:"Print the document.", exZh:"打印文件。" },
+      { en:"website", ph:"/ˈweb.saɪt/", zh:"网站", em:"🌐", ex:"Visit our website.", exZh:"访问我们的网站。" },
+      { en:"download", ph:"/ˌdaʊnˈləʊd/", zh:"下载", em:"⬇️", ex:"Download the app.", exZh:"下载这个应用。" },
+      { en:"password", ph:"/ˈpɑːs.wɜːd/", zh:"密码", em:"🔑", ex:"Don't share your password.", exZh:"不要分享你的密码。" },
+      { en:"robot", ph:"/ˈrəʊ.bɒt/", zh:"机器人", em:"🤖", ex:"The robot can dance.", exZh:"机器人会跳舞。" },
+      { en:"invention", ph:"/ɪnˈven.ʃən/", zh:"发明", em:"💡", ex:"The phone is a great invention.", exZh:"电话是一项伟大的发明。" },
+      { en:"program", ph:"/ˈprəʊ.ɡræm/", zh:"程序", em:"👨‍💻", ex:"I write a computer program.", exZh:"我写一个电脑程序。" }
+    ]
+  },
+  {
+    id: 4, name: "Materials & shapes", emoji: "🔷",
+    color: "linear-gradient(135deg, #FBBF24, #F59E0B)",
+    words: [
+      { en:"material", ph:"/məˈtɪə.ri.əl/", zh:"材料", em:"🧱", ex:"What material is it made of?", exZh:"它是什么材料做的？" },
+      { en:"wood", ph:"/wʊd/", zh:"木头", em:"🪵", ex:"The table is made of wood.", exZh:"桌子是木头做的。" },
+      { en:"metal", ph:"/ˈmet.əl/", zh:"金属", em:"⚙️", ex:"The key is made of metal.", exZh:"钥匙是金属做的。" },
+      { en:"glass", ph:"/ɡlɑːs/", zh:"玻璃", em:"🪟", ex:"Be careful with the glass.", exZh:"小心玻璃。" },
+      { en:"cotton", ph:"/ˈkɒt.ən/", zh:"棉花", em:"☁️", ex:"The T-shirt is cotton.", exZh:"T恤是棉的。" },
+      { en:"rubber", ph:"/ˈrʌb.ər/", zh:"橡胶", em:"🔴", ex:"Tyres are made of rubber.", exZh:"轮胎是橡胶做的。" },
+      { en:"leather", ph:"/ˈleð.ər/", zh:"皮革", em:"👜", ex:"The bag is leather.", exZh:"包是皮革的。" },
+      { en:"stone", ph:"/stəʊn/", zh:"石头", em:"🪨", ex:"The house is made of stone.", exZh:"房子是石头建的。" },
+      { en:"circle", ph:"/ˈsɜː.kəl/", zh:"圆形", em:"⭕", ex:"Draw a circle.", exZh:"画一个圆形。" },
+      { en:"triangle", ph:"/ˈtraɪ.æŋ.ɡəl/", zh:"三角形", em:"🔺", ex:"A triangle has three sides.", exZh:"三角形有三条边。" },
+      { en:"square", ph:"/skweər/", zh:"正方形", em:"🟧", ex:"The window is square.", exZh:"窗户是正方形的。" },
+      { en:"rectangle", ph:"/ˈrek.tæŋ.ɡəl/", zh:"长方形", em:"🟥", ex:"The door is a rectangle.", exZh:"门是长方形的。" }
+    ]
+  },
+  {
+    id: 5, name: "Space", emoji: "🚀",
+    color: "linear-gradient(135deg, #818CF8, #6366F1)",
+    words: [
+      { en:"planet", ph:"/ˈplæn.ɪt/", zh:"行星", em:"🪐", ex:"Earth is a planet.", exZh:"地球是一颗行星。" },
+      { en:"star", ph:"/stɑːr/", zh:"星星", em:"⭐", ex:"Stars shine at night.", exZh:"星星在夜晚闪烁。" },
+      { en:"moon", ph:"/muːn/", zh:"月亮", em:"🌙", ex:"The moon is bright.", exZh:"月亮很明亮。" },
+      { en:"sun", ph:"/sʌn/", zh:"太阳", em:"☀️", ex:"The sun gives us light.", exZh:"太阳给我们光明。" },
+      { en:"astronaut", ph:"/ˈæs.trə.nɔːt/", zh:"宇航员", em:"👨‍🚀", ex:"I want to be an astronaut.", exZh:"我想当宇航员。" },
+      { en:"rocket", ph:"/ˈrɒk.ɪt/", zh:"火箭", em:"🚀", ex:"The rocket goes to space.", exZh:"火箭飞往太空。" },
+      { en:"satellite", ph:"/ˈsæt.əl.aɪt/", zh:"卫星", em:"🛰️", ex:"Satellites orbit the Earth.", exZh:"卫星绕地球运行。" },
+      { en:"solar system", ph:"/ˈsəʊ.lər ˈsɪs.təm/", zh:"太阳系", em:"🌌", ex:"We live in the solar system.", exZh:"我们生活在太阳系。" },
+      { en:"telescope", ph:"/ˈtel.ɪ.skəʊp/", zh:"望远镜", em:"🔭", ex:"Look through the telescope.", exZh:"透过望远镜看。" },
+      { en:"gravity", ph:"/ˈɡræv.ə.ti/", zh:"重力", em:"🍎", ex:"Gravity keeps us on the ground.", exZh:"重力让我们留在地面。" },
+      { en:"orbit", ph:"/ˈɔː.bɪt/", zh:"轨道/绕行", em:"🔄", ex:"The Earth orbits the sun.", exZh:"地球绕太阳运行。" },
+      { en:"universe", ph:"/ˈjuː.nɪ.vɜːs/", zh:"宇宙", em:"🌌", ex:"The universe is very big.", exZh:"宇宙非常大。" }
+    ]
+  },
+  {
+    id: 6, name: "Music & arts", emoji: "🎵",
+    color: "linear-gradient(135deg, #F472B6, #EC4899)",
+    words: [
+      { en:"instrument", ph:"/ˈɪn.strə.mənt/", zh:"乐器", em:"🎸", ex:"I play an instrument.", exZh:"我演奏乐器。" },
+      { en:"guitar", ph:"/ɡɪˈtɑːr/", zh:"吉他", em:"🎸", ex:"He plays the guitar.", exZh:"他弹吉他。" },
+      { en:"piano", ph:"/piˈæn.əʊ/", zh:"钢琴", em:"🎹", ex:"She plays the piano.", exZh:"她弹钢琴。" },
+      { en:"drums", ph:"/drʌmz/", zh:"鼓", em:"🥁", ex:"I love playing drums.", exZh:"我喜欢打鼓。" },
+      { en:"violin", ph:"/ˌvaɪ.əˈlɪn/", zh:"小提琴", em:"🎻", ex:"The violin sounds beautiful.", exZh:"小提琴的声音很美。" },
+      { en:"concert", ph:"/ˈkɒn.sət/", zh:"音乐会", em:"🎶", ex:"We went to a concert.", exZh:"我们去了音乐会。" },
+      { en:"audience", ph:"/ˈɔː.di.əns/", zh:"观众", em:"👏", ex:"The audience clapped.", exZh:"观众鼓掌了。" },
+      { en:"perform", ph:"/pəˈfɔːm/", zh:"表演", em:"🎭", ex:"I perform in a play.", exZh:"我在话剧中表演。" },
+      { en:"rehearse", ph:"/rɪˈhɜːs/", zh:"排练", em:"🎬", ex:"We rehearse every week.", exZh:"我们每周排练。" },
+      { en:"rhythm", ph:"/ˈrɪð.əm/", zh:"节奏", em:"🎵", ex:"I like the rhythm.", exZh:"我喜欢这个节奏。" },
+      { en:"melody", ph:"/ˈmel.ə.di/", zh:"旋律", em:"🎼", ex:"It's a nice melody.", exZh:"这是一段好听的旋律。" },
+      { en:"stage", ph:"/steɪdʒ/", zh:"舞台", em:"🎭", ex:"The singer is on stage.", exZh:"歌手在舞台上。" }
+    ]
+  },
+  {
+    id: 7, name: "Communication", emoji: "💬",
+    color: "linear-gradient(135deg, #FB923C, #F59E0B)",
+    words: [
+      { en:"message", ph:"/ˈmes.ɪdʒ/", zh:"消息", em:"💬", ex:"I sent a message.", exZh:"我发了一条消息。" },
+      { en:"email", ph:"/ˈiː.meɪl/", zh:"电子邮件", em:"📧", ex:"Send me an email.", exZh:"给我发电子邮件。" },
+      { en:"phone call", ph:"/fəʊn kɔːl/", zh:"电话", em:"📞", ex:"I made a phone call.", exZh:"我打了一个电话。" },
+      { en:"letter", ph:"/ˈlet.ər/", zh:"信件", em:"✉️", ex:"I write a letter.", exZh:"我写一封信。" },
+      { en:"newspaper", ph:"/ˈnjuːz.peɪ.pər/", zh:"报纸", em:"📰", ex:"Dad reads the newspaper.", exZh:"爸爸读报纸。" },
+      { en:"article", ph:"/ˈɑː.tɪ.kəl/", zh:"文章", em:"📄", ex:"I read an article.", exZh:"我读了一篇文章。" },
+      { en:"interview", ph:"/ˈɪn.tə.vjuː/", zh:"采访/面试", em:"🎤", ex:"I saw an interview on TV.", exZh:"我在电视上看了一个采访。" },
+      { en:"report", ph:"/rɪˈpɔːt/", zh:"报告", em:"📋", ex:"Write a report about it.", exZh:"写一份关于它的报告。" },
+      { en:"explain", ph:"/ɪkˈspleɪn/", zh:"解释", em:"💡", ex:"Can you explain this?", exZh:"你能解释一下吗？" },
+      { en:"discuss", ph:"/dɪˈskʌs/", zh:"讨论", em:"🗣️", ex:"Let's discuss the plan.", exZh:"我们来讨论计划。" },
+      { en:"agree", ph:"/əˈɡriː/", zh:"同意", em:"✅", ex:"I agree with you.", exZh:"我同意你的看法。" },
+      { en:"disagree", ph:"/ˌdɪs.əˈɡriː/", zh:"不同意", em:"❌", ex:"I disagree with that.", exZh:"我不同意那个。" }
+    ]
+  },
+  {
+    id: 8, name: "The past", emoji: "🏰",
+    color: "linear-gradient(135deg, #C084FC, #A78BFA)",
+    words: [
+      { en:"century", ph:"/ˈsen.tʃər.i/", zh:"世纪", em:"📅", ex:"It was built in the 19th century.", exZh:"它建于19世纪。" },
+      { en:"ancient", ph:"/ˈeɪn.ʃənt/", zh:"古老的", em:"🏛️", ex:"The temple is ancient.", exZh:"这座神庙很古老。" },
+      { en:"modern", ph:"/ˈmɒd.ən/", zh:"现代的", em:"🏙️", ex:"This is a modern building.", exZh:"这是一座现代建筑。" },
+      { en:"discover", ph:"/dɪˈskʌv.ər/", zh:"发现", em:"🔍", ex:"They discovered a new island.", exZh:"他们发现了一个新岛屿。" },
+      { en:"explore", ph:"/ɪkˈsplɔːr/", zh:"探索", em:"🧭", ex:"Let's explore the cave.", exZh:"我们去探索洞穴吧。" },
+      { en:"king", ph:"/kɪŋ/", zh:"国王", em:"👑", ex:"The king lived in a castle.", exZh:"国王住在城堡里。" },
+      { en:"queen", ph:"/kwiːn/", zh:"女王", em:"👸", ex:"The queen was powerful.", exZh:"女王很有权力。" },
+      { en:"castle", ph:"/ˈkɑː.səl/", zh:"城堡", em:"🏰", ex:"We visited an old castle.", exZh:"我们参观了一座古堡。" },
+      { en:"battle", ph:"/ˈbæt.əl/", zh:"战斗", em:"⚔️", ex:"There was a big battle.", exZh:"有一场大战。" },
+      { en:"treasure", ph:"/ˈtreʒ.ər/", zh:"宝藏", em:"💰", ex:"Pirates looked for treasure.", exZh:"海盗寻找宝藏。" },
+      { en:"famous", ph:"/ˈfeɪ.məs/", zh:"著名的", em:"🌟", ex:"She is a famous scientist.", exZh:"她是一位著名的科学家。" },
+      { en:"history", ph:"/ˈhɪs.tər.i/", zh:"历史", em:"📖", ex:"I love learning about history.", exZh:"我喜欢学习历史。" }
+    ]
+  },
+  {
+    id: 9, name: "The future", emoji: "🔮",
+    color: "linear-gradient(135deg, #2DD4BF, #14B8A6)",
+    words: [
+      { en:"future", ph:"/ˈfjuː.tʃər/", zh:"未来", em:"🔮", ex:"What will the future be like?", exZh:"未来会是什么样？" },
+      { en:"predict", ph:"/prɪˈdɪkt/", zh:"预测", em:"🔮", ex:"Can you predict the weather?", exZh:"你能预测天气吗？" },
+      { en:"possible", ph:"/ˈpɒs.ə.bəl/", zh:"可能的", em:"💫", ex:"Anything is possible.", exZh:"一切皆有可能。" },
+      { en:"impossible", ph:"/ɪmˈpɒs.ə.bəl/", zh:"不可能的", em:"🚫", ex:"Nothing is impossible.", exZh:"没有什么是不可能的。" },
+      { en:"improve", ph:"/ɪmˈpruːv/", zh:"改进", em:"📈", ex:"I want to improve my English.", exZh:"我想提高我的英语。" },
+      { en:"develop", ph:"/dɪˈvel.əp/", zh:"发展", em:"🌱", ex:"The city is developing fast.", exZh:"这座城市发展很快。" },
+      { en:"design", ph:"/dɪˈzaɪn/", zh:"设计", em:"✏️", ex:"I design a new car.", exZh:"我设计一辆新车。" },
+      { en:"create", ph:"/kriˈeɪt/", zh:"创造", em:"🎨", ex:"Artists create beautiful things.", exZh:"艺术家创造美丽的东西。" },
+      { en:"solve", ph:"/sɒlv/", zh:"解决", em:"🧩", ex:"We must solve this problem.", exZh:"我们必须解决这个问题。" },
+      { en:"probably", ph:"/ˈprɒb.ə.bli/", zh:"可能", em:"🤔", ex:"It will probably rain.", exZh:"可能会下雨。" },
+      { en:"perhaps", ph:"/pəˈhæps/", zh:"也许", em:"💭", ex:"Perhaps we can go tomorrow.", exZh:"也许我们明天可以去。" },
+      { en:"imagine", ph:"/ɪˈmædʒ.ɪn/", zh:"想象", em:"💭", ex:"Imagine a world without cars.", exZh:"想象一个没有汽车的世界。" }
+    ]
+  }
+];
+
+let currentUnit = 0, displayWords = [], autoplayTimer = null, autoplayIndex = 0;
+let cachedVoices = { en: null, zh: null };
+function loadVoices() { const voices = speechSynthesis.getVoices(); if (!voices.length) return; const enV = voices.filter(v => v.lang.startsWith('en')); cachedVoices.en = [enV.find(v => v.name === 'Samantha'), enV.find(v => v.name === 'Google UK English Female'), enV.find(v => v.localService), enV[0]].find(v => v) || null; const zhV = voices.filter(v => v.lang.startsWith('zh') || v.lang.startsWith('cmn')); cachedVoices.zh = [zhV.find(v => v.name === 'Ting-Ting'), zhV.find(v => v.localService), zhV[0]].find(v => v) || null; }
+speechSynthesis.onvoiceschanged = loadVoices; loadVoices();
+function speak(text, lang) { if (!window.speechSynthesis) return; speechSynthesis.cancel(); const isZh = lang === 'zh' || (!lang && /[\u4e00-\u9fff]/.test(text)); const u = new SpeechSynthesisUtterance(text); u.lang = isZh ? 'zh-CN' : 'en-US'; u.rate = isZh ? 0.9 : 0.75; const voice = isZh ? cachedVoices.zh : cachedVoices.en; if (voice) u.voice = voice; speechSynthesis.speak(u); }
+function buildNav() { const nav = document.getElementById('nav'); let html = `<button class="nav-btn active" style="background:linear-gradient(135deg,#059669,#10b981);color:white" onclick="selectUnit(0)">🌈 全部 (${UNITS.reduce((s,u)=>s+u.words.length,0)}词)</button>`; UNITS.forEach(u => { html += `<button class="nav-btn" data-unit="${u.id}" onclick="selectUnit(${u.id})">${u.emoji} U${u.id} ${u.name}</button>`; }); nav.innerHTML = html; }
+function selectUnit(id) { currentUnit = id; stopAutoplay(); document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.style.background = 'white'; b.style.color = '#555'; }); if (id === 0) { const b = document.querySelector('.nav-btn'); b.classList.add('active'); b.style.background = 'linear-gradient(135deg,#059669,#10b981)'; b.style.color = 'white'; } else { const b = document.querySelector(`.nav-btn[data-unit="${id}"]`); const u = UNITS.find(u => u.id === id); b.classList.add('active'); b.style.background = u.color; b.style.color = 'white'; } renderCards(); updateInfo(); }
+function updateInfo() { const el = document.getElementById('unitInfo'); if (currentUnit === 0) el.textContent = `📚 全部 ${UNITS.reduce((s,u)=>s+u.words.length,0)} 个单词 · ${UNITS.length} 个单元`; else { const u = UNITS.find(u => u.id === currentUnit); el.textContent = `${u.emoji} Unit ${u.id}: ${u.name} · ${u.words.length} 个单词`; } }
+function getWords() { if (currentUnit === 0) return UNITS.flatMap(u => u.words.map(w => ({...w, unitColor: u.color}))); const u = UNITS.find(u => u.id === currentUnit); return u.words.map(w => ({...w, unitColor: u.color})); }
+function renderCards() { displayWords = getWords(); const grid = document.getElementById('cardGrid'); grid.innerHTML = displayWords.map((w, i) => `<div class="card-wrapper" onclick="flipCard(this)"><div class="card" data-index="${i}"><div class="card-face card-front"><span class="card-num">${i+1}</span><button class="speak-btn" onclick="event.stopPropagation();speak('${w.en.replace(/'/g,"\\'")}','en')">🔊</button><span class="card-emoji">${w.em}</span><span class="card-word">${w.en}</span><span class="card-phonetic">${w.ph}</span><span class="card-hint">👆 点击翻转</span></div><div class="card-face card-back"><button class="speak-btn" onclick="event.stopPropagation();speak('${w.zh.replace(/'/g,"\\'")}','zh')">🔊</button><span class="card-zh">${w.zh}</span><div class="card-example">📖 ${w.ex}</div><div class="card-example-zh">${w.exZh}</div></div></div></div>`).join(''); }
+function flipCard(wrapper) { wrapper.querySelector('.card').classList.toggle('flipped'); }
+function flipAll(show) { document.querySelectorAll('.card').forEach(c => { if (show) c.classList.add('flipped'); else c.classList.remove('flipped'); }); }
+function shuffleCards() { stopAutoplay(); displayWords.sort(() => Math.random() - 0.5); const grid = document.getElementById('cardGrid'); grid.innerHTML = displayWords.map((w, i) => `<div class="card-wrapper" onclick="flipCard(this)"><div class="card" data-index="${i}"><div class="card-face card-front"><span class="card-num">${i+1}</span><button class="speak-btn" onclick="event.stopPropagation();speak('${w.en.replace(/'/g,"\\'")}','en')">🔊</button><span class="card-emoji">${w.em}</span><span class="card-word">${w.en}</span><span class="card-phonetic">${w.ph}</span><span class="card-hint">👆 点击翻转</span></div><div class="card-face card-back"><button class="speak-btn" onclick="event.stopPropagation();speak('${w.zh.replace(/'/g,"\\'")}','zh')">🔊</button><span class="card-zh">${w.zh}</span><div class="card-example">📖 ${w.ex}</div><div class="card-example-zh">${w.exZh}</div></div></div></div>`).join(''); }
+function toggleAutoplay() { const btn = document.getElementById('autoplayBtn'); if (autoplayTimer) { stopAutoplay(); } else { flipAll(false); autoplayIndex = 0; btn.textContent = '⏹️ 停止播放'; btn.classList.add('playing'); playNext(); } }
+function stopAutoplay() { clearTimeout(autoplayTimer); autoplayTimer = null; autoplayIndex = 0; const btn = document.getElementById('autoplayBtn'); btn.textContent = '▶️ 连续播放'; btn.classList.remove('playing'); speechSynthesis.cancel(); }
+function playNext() { if (autoplayIndex >= displayWords.length) { stopAutoplay(); return; } const cards = document.querySelectorAll('.card'); const card = cards[autoplayIndex]; if (!card) { stopAutoplay(); return; } card.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => { card.classList.add('flipped'); const w = displayWords[autoplayIndex]; speak(w.en, 'en'); autoplayTimer = setTimeout(() => { speak(w.zh, 'zh'); autoplayTimer = setTimeout(() => { autoplayIndex++; playNext(); }, 2000); }, 2000); }, 500); }
+buildNav(); renderCards(); updateInfo();
+</script>
+</body>
+</html>

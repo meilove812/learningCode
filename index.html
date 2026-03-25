@@ -6,24 +6,29 @@
 <title>🦎 Coco Learning Park</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Segoe UI", system-ui, sans-serif; background: linear-gradient(135deg, #fce4ec, #e8f5e9, #e3f2fd, #fff9c4); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-h1 { font-size: 2.5em; margin-bottom: 10px; }
-.subtitle { color: #888; font-size: 1.1em; margin-bottom: 40px; }
-.cards { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; max-width: 800px; }
-.card { background: white; border-radius: 20px; padding: 30px; width: 220px; text-align: center; text-decoration: none; color: #333; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: all 0.3s; }
+body { font-family: "Segoe UI", system-ui, sans-serif; background: linear-gradient(135deg, #fce4ec, #e8f5e9, #e3f2fd, #fff9c4); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+h1 { font-size: 2.5em; margin-bottom: 10px; margin-top: 20px; }
+.subtitle { color: #888; font-size: 1.1em; margin-bottom: 30px; }
+.section-title { font-size: 1.3em; color: #555; margin: 20px 0 12px; font-weight: 700; }
+.cards { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; max-width: 900px; margin-bottom: 10px; }
+.card { background: white; border-radius: 20px; padding: 24px; width: 200px; text-align: center; text-decoration: none; color: #333; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: all 0.3s; }
 .card:hover { transform: translateY(-8px); box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
-.card .emoji { font-size: 3em; margin-bottom: 12px; }
-.card h2 { font-size: 1.2em; margin-bottom: 8px; }
-.card p { font-size: 0.85em; color: #888; line-height: 1.4; }
+.card .emoji { font-size: 2.8em; margin-bottom: 10px; }
+.card h2 { font-size: 1.1em; margin-bottom: 6px; }
+.card p { font-size: 0.8em; color: #888; line-height: 1.4; }
 .card.chinese { border-top: 4px solid #e91e63; }
 .card.english { border-top: 4px solid #2196f3; }
 .card.powerup { border-top: 4px solid #ff9800; }
+.card.flipcard { border-top: 4px solid #8b5cf6; }
 .footer { margin-top: 40px; color: #aaa; font-size: 0.8em; }
+@media (max-width: 480px) { .card { width: 160px; padding: 18px; } .card .emoji { font-size: 2.2em; } h1 { font-size: 1.8em; } }
 </style>
 </head>
 <body>
 <h1>🦎 Coco Learning Park</h1>
 <p class="subtitle">点击选择要学习的内容</p>
+
+<div class="section-title">📚 学习工具</div>
 <div class="cards">
   <a href="语文认字卡-speak.html" class="card chinese">
     <div class="emoji">📝</div>
@@ -51,6 +56,41 @@ h1 { font-size: 2.5em; margin-bottom: 10px; }
     <p>数学优化思维<br>动画演示<br>🎬 聪明 vs 笨办法</p>
   </a>
 </div>
-<p class="footer">Made with ❤️ by Coco 🦎 · 龙虾家出品</p>
+
+<div class="section-title">🎴 Power Up 翻牌游戏</div>
+<div class="cards">
+  <a href="pu1-flipcards.html" class="card flipcard">
+    <div class="emoji">🎴</div>
+    <h2>Power Up 1</h2>
+    <p>Cambridge Pre-A1<br>翻牌记单词<br>🔊 有声 · 🎲 打乱</p>
+  </a>
+  <a href="pu2-flipcards.html" class="card flipcard">
+    <div class="emoji">🎴</div>
+    <h2>Power Up 2</h2>
+    <p>Cambridge A1 Starters<br>翻牌记单词<br>🔊 有声 · 🎲 打乱</p>
+  </a>
+  <a href="pu3-flipcards.html" class="card flipcard">
+    <div class="emoji">🎴</div>
+    <h2>Power Up 3</h2>
+    <p>Cambridge A1 Movers<br>翻牌记单词<br>🔊 有声 · 🎲 打乱</p>
+  </a>
+  <a href="pu4-flipcards.html" class="card flipcard">
+    <div class="emoji">🎴</div>
+    <h2>Power Up 4</h2>
+    <p>Cambridge A1→A2<br>翻牌记单词<br>🔊 有声 · 🎲 打乱</p>
+  </a>
+  <a href="pu5-flipcards.html" class="card flipcard">
+    <div class="emoji">🎴</div>
+    <h2>Power Up 5</h2>
+    <p>Cambridge A2→B1 Flyers<br>翻牌记单词<br>🔊 有声 · 🎲 打乱</p>
+  </a>
+  <a href="pu6-flipcards.html" class="card flipcard">
+    <div class="emoji">🎴</div>
+    <h2>Power Up 6</h2>
+    <p>Cambridge A2→B1<br>翻牌记单词<br>🔊 有声 · 🎲 打乱</p>
+  </a>
+</div>
+
+<p class="footer">Made with ❤️ by Coco 🦎</p>
 </body>
 </html>
