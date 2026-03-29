@@ -378,6 +378,9 @@ function loadVoices() {
 }
 synth.onvoiceschanged = loadVoices;
 loadVoices();
+// Retry voice loading (some devices need delay)
+setTimeout(loadVoices, 500);
+setTimeout(loadVoices, 2000);
 
 document.getElementById('voiceSel').onchange = function() {
   const v = voices.find(x => x.name === this.value);
@@ -387,28 +390,46 @@ document.getElementById('voiceSel').onchange = function() {
 
 function getRate() { return parseFloat(document.getElementById('rateSlider').value); }
 
+// iOS/Safari workaround: first interaction unlocks audio
+let audioUnlocked = false;
+function unlockAudio() {
+  if (audioUnlocked) return;
+  const u = new SpeechSynthesisUtterance('');
+  u.volume = 0;
+  synth.speak(u);
+  audioUnlocked = true;
+}
+document.addEventListener('click', unlockAudio, { once: true });
+document.addEventListener('touchstart', unlockAudio, { once: true });
+
 function speak(en, cn, el) {
   if (muted) return;
+  // Fix: cancel then small delay to avoid Safari silent bug
   synth.cancel();
   document.querySelectorAll('.playing').forEach(e => e.classList.remove('playing'));
   if (el) el.classList.add('playing');
 
-  const u1 = new SpeechSynthesisUtterance(en);
-  u1.voice = enVoice; u1.rate = getRate(); u1.lang = 'en-US';
+  setTimeout(() => {
+    // Reload voices if needed (some devices lazy-load)
+    if (!enVoice) { loadVoices(); }
 
-  if (cn && cnVoice) {
-    u1.onend = () => {
-      setTimeout(() => {
-        const u2 = new SpeechSynthesisUtterance(cn);
-        u2.voice = cnVoice; u2.rate = getRate(); u2.lang = 'zh-CN';
-        u2.onend = () => { if (el) el.classList.remove('playing'); processQueue(); };
-        synth.speak(u2);
-      }, 300);
-    };
-  } else {
-    u1.onend = () => { if (el) el.classList.remove('playing'); processQueue(); };
-  }
-  synth.speak(u1);
+    const u1 = new SpeechSynthesisUtterance(en);
+    u1.voice = enVoice; u1.rate = getRate(); u1.lang = 'en-US';
+
+    if (cn && cnVoice) {
+      u1.onend = () => {
+        setTimeout(() => {
+          const u2 = new SpeechSynthesisUtterance(cn);
+          u2.voice = cnVoice; u2.rate = getRate(); u2.lang = 'zh-CN';
+          u2.onend = () => { if (el) el.classList.remove('playing'); processQueue(); };
+          synth.speak(u2);
+        }, 400);
+      };
+    } else {
+      u1.onend = () => { if (el) el.classList.remove('playing'); processQueue(); };
+    }
+    synth.speak(u1);
+  }, 100);
 }
 
 function preview() { speak('This is the best review lesson!', '这是最棒的复习课！', null); }
