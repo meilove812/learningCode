@@ -256,27 +256,27 @@
     <h2>📖 Julia and Paul's Busy Day</h2>
     <p style="font-size:13px;color:#888;margin-bottom:10px;">正确顺序：d → c → b → a → e → f · 点击听故事 👇</p>
     <div class="story-timeline">
-      <div class="story-item" data-order="1" onclick="speak('At eight o&#39;clock, Julia and Paul woke up.','八点钟，Julia和Paul醒了。',this)">
+      <div class="story-item" data-order="1" data-en="At eight oclock, Julia and Paul woke up." data-cn="八点钟，Julia和Paul醒了。">
         <span class="time">8:00</span> At eight o'clock, Julia and Paul <b>woke up</b>.
         <span class="cn">八点，Julia和Paul起床了。</span>
       </div>
-      <div class="story-item" data-order="2" onclick="speak('At half past eight, they had cereal and pancakes for breakfast.','八点半，他们吃了麦片和煎饼当早餐。',this)">
+      <div class="story-item" data-order="2" data-en="At half past eight, they had cereal and pancakes for breakfast." data-cn="八点半，他们吃了麦片和煎饼当早餐。">
         <span class="time">8:30</span> They had <b>cereal and pancakes</b> for breakfast.
         <span class="cn">八点半吃早餐：麦片和煎饼。</span>
       </div>
-      <div class="story-item" data-order="3" onclick="speak('At half past nine, Dad said Come on! Let&#39;s go!','九点半，爸爸说：快走！我们出发！',this)">
+      <div class="story-item" data-order="3" data-en="At half past nine, Dad said Come on! Lets go!" data-cn="九点半，爸爸说：快走！我们出发！">
         <span class="time">9:30</span> Dad said <b>"Come on! Let's go!"</b>
         <span class="cn">九点半，爸爸说"快走！出发！"</span>
       </div>
-      <div class="story-item" data-order="4" onclick="speak('At ten o&#39;clock, Mum drove them to the countryside. They saw the hospital where Mum works.','十点，妈妈开车带他们去乡下。他们看到了妈妈工作的医院。',this)">
+      <div class="story-item" data-order="4" data-en="At ten oclock, Mum drove them to the countryside. They saw the hospital where Mum works." data-cn="十点，妈妈开车带他们去乡下。他们看到了妈妈工作的医院。">
         <span class="time">10:00</span> Mum <b>drove</b> them to the countryside. They saw the hospital where Mum works.
         <span class="cn">十点，妈妈开车去乡下，路过妈妈的医院。</span>
       </div>
-      <div class="story-item" data-order="5" onclick="speak('At eleven o&#39;clock, they climbed trees, took photos, and made a mountain of leaves.','十一点，他们爬树、拍照、用树叶堆了一座小山。',this)">
+      <div class="story-item" data-order="5" data-en="At eleven oclock, they climbed trees, took photos, and made a mountain of leaves." data-cn="十一点，他们爬树、拍照、用树叶堆了一座小山。">
         <span class="time">11:00</span> They <b>climbed trees</b>, took photos, and made a mountain of leaves.
         <span class="cn">十一点，爬树、拍照、堆树叶山。</span>
       </div>
-      <div class="story-item" data-order="6" onclick="speak('At twelve o&#39;clock, Dad made noodles and sauce for lunch.','十二点，爸爸做了面条和酱当午餐。',this)">
+      <div class="story-item" data-order="6" data-en="At twelve oclock, Dad made noodles and sauce for lunch." data-cn="十二点，爸爸做了面条和酱当午餐。">
         <span class="time">12:00</span> Dad made <b>noodles and sauce</b> for lunch.
         <span class="cn">十二点，爸爸做了面条当午饭。</span>
       </div>
@@ -473,6 +473,7 @@ const sentenceData = [
   { word: 'my friend', sentence: 'I am as clever as my friend.', cn: '我和朋友一样聪明。' },
   { word: 'elephant', sentence: 'An elephant is the biggest animal.', cn: '大象是最大的动物。' },
 ];
+// Sentence Game + Story click binding
 const grid = document.getElementById('sentenceGrid');
 sentenceData.forEach((d, i) => {
   const card = document.createElement('div');
@@ -489,6 +490,15 @@ sentenceData.forEach((d, i) => {
     }
   };
   grid.appendChild(card);
+});
+
+// Bind story items via JS (avoids HTML quote escaping issues)
+document.querySelectorAll('.story-item').forEach(el => {
+  el.addEventListener('click', function() {
+    const en = this.getAttribute('data-en');
+    const cn = this.getAttribute('data-cn');
+    speak(en, cn, this);
+  });
 });
 </script>
 </body>
