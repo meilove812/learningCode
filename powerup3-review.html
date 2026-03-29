@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📚 Power Up 3 · Units 1-3 Review · 有声讲解</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'PingFang SC', 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh; padding: 16px;
+    color: #333;
+  }
+  .container { max-width: 720px; margin: 0 auto; }
+
+  h1 { text-align: center; color: #fff; font-size: 24px; margin: 10px 0 6px; }
+  .subtitle { text-align: center; color: rgba(255,255,255,0.8); font-size: 13px; margin-bottom: 16px; }
+
+  /* Voice controls */
+  .voice-bar {
+    background: rgba(255,255,255,0.95); border-radius: 14px; padding: 10px 14px;
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .voice-bar select { flex: 1; min-width: 120px; padding: 6px; border-radius: 8px; border: 1px solid #ddd; font-size: 13px; }
+  .voice-bar input[type=range] { width: 80px; }
+  .voice-bar label { font-size: 12px; color: #666; }
+  .voice-bar button { padding: 6px 12px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; }
+  .btn-preview { background: #e3f2fd; color: #1565c0; }
+  .btn-mute { background: #fce4ec; color: #c62828; }
+  .btn-play-all { background: #667eea; color: #fff; font-weight: 600; padding: 8px 16px; }
+  .btn-stop { background: #ef5350; color: #fff; }
+
+  /* Section cards */
+  .section {
+    background: #fff; border-radius: 16px; padding: 20px;
+    margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  }
+  .section h2 { font-size: 18px; color: #667eea; margin-bottom: 12px; border-left: 4px solid #667eea; padding-left: 10px; }
+  .section h3 { font-size: 15px; color: #764ba2; margin: 14px 0 8px; }
+
+  /* Clickable paragraphs */
+  .para {
+    padding: 10px 12px; margin: 6px 0; border-radius: 10px;
+    cursor: pointer; transition: all 0.3s; line-height: 1.8; font-size: 15px;
+    border-left: 3px solid transparent;
+  }
+  .para:hover { background: #f5f0ff; }
+  .para.playing { background: #ede7f6; border-left: 4px solid #764ba2; }
+  .para .cn { color: #888; font-size: 13px; display: block; margin-top: 2px; }
+
+  /* Grammar cards */
+  .grammar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+  .grammar-card {
+    background: linear-gradient(135deg, #f5f7ff, #ede7f6); border-radius: 12px;
+    padding: 14px; cursor: pointer; transition: transform 0.2s;
+  }
+  .grammar-card:hover { transform: scale(1.02); }
+  .grammar-card .rule { font-weight: 600; color: #667eea; margin-bottom: 6px; font-size: 14px; }
+  .grammar-card .example { font-size: 13px; color: #555; line-height: 1.6; }
+  .grammar-card .example b { color: #d32f2f; }
+
+  /* Vocab cards */
+  .vocab-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .vocab-card {
+    background: #e8f5e9; border-radius: 10px; padding: 8px 14px;
+    cursor: pointer; font-weight: 600; font-size: 14px; color: #2e7d32;
+    transition: all 0.2s;
+  }
+  .vocab-card:hover { background: #c8e6c9; transform: scale(1.05); }
+
+  /* Story ordering */
+  .story-timeline { position: relative; padding-left: 30px; }
+  .story-item {
+    position: relative; margin: 10px 0; padding: 10px 14px;
+    background: #fff8e1; border-radius: 10px; cursor: pointer;
+    transition: all 0.2s; font-size: 14px; line-height: 1.7;
+  }
+  .story-item:hover { background: #fff3e0; }
+  .story-item.playing { background: #ffecb3; border-left: 4px solid #f57f17; }
+  .story-item .time { font-weight: 700; color: #e65100; }
+  .story-item .cn { color: #888; font-size: 12px; }
+  .story-item::before {
+    content: attr(data-order); position: absolute; left: -30px; top: 10px;
+    background: #667eea; color: #fff; width: 22px; height: 22px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+  }
+
+  /* Health advice poster */
+  .health-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+  .health-card {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 12px;
+    padding: 14px; text-align: center; cursor: pointer; transition: transform 0.2s;
+  }
+  .health-card:hover { transform: scale(1.05); }
+  .health-card .emoji { font-size: 32px; margin-bottom: 6px; }
+  .health-card .en { font-weight: 600; font-size: 14px; color: #2e7d32; }
+  .health-card .cn { font-size: 12px; color: #666; margin-top: 4px; }
+
+  /* Could/couldn't survey */
+  .survey-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; }
+  .survey-table th { background: #667eea; color: #fff; padding: 8px; border-radius: 8px; font-size: 13px; }
+  .survey-table td { background: #f8f9ff; padding: 8px; text-align: center; border-radius: 8px; font-size: 13px; }
+
+  /* Sentence game */
+  .sentence-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; }
+  .sentence-card {
+    background: #fff3e0; border-radius: 10px; padding: 10px; text-align: center;
+    cursor: pointer; font-size: 13px; font-weight: 600; color: #e65100;
+    transition: all 0.2s; min-height: 50px; display: flex; align-items: center; justify-content: center;
+  }
+  .sentence-card:hover { background: #ffe0b2; transform: scale(1.05); }
+  .sentence-card.flipped { background: #e8f5e9; color: #2e7d32; font-size: 11px; font-weight: 400; }
+
+  .footer { text-align: center; color: rgba(255,255,255,0.6); font-size: 11px; margin-top: 10px; padding: 10px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📚 Power Up 3 · Units 1-3 Review</h1>
+  <div class="subtitle">Unit 3 Consolidation + Review · 有声讲解 · 点击任意内容朗读</div>
+
+  <!-- Voice Controls -->
+  <div class="voice-bar">
+    <label>🔊</label>
+    <select id="voiceSel"></select>
+    <label>语速</label>
+    <input type="range" id="rateSlider" min="0.5" max="1.5" step="0.1" value="0.8">
+    <button class="btn-preview" onclick="preview()">试听</button>
+    <button class="btn-mute" id="muteBtn" onclick="toggleMute()">🔊</button>
+    <button class="btn-play-all" onclick="playAll()">▶ 连续播放</button>
+    <button class="btn-stop" onclick="stopAll()">⏹ 停止</button>
+  </div>
+
+  <!-- Section 1: Health Advice Poster -->
+  <div class="section">
+    <h2>🏥 Health Advice 健康建议海报</h2>
+    <p style="font-size:13px;color:#888;margin-bottom:10px;">Mission in Action: 制作一张健康建议海报！点击卡片听朗读 👇</p>
+    <div class="health-grid">
+      <div class="health-card" onclick="speak('Drink water every day','每天多喝水',this)">
+        <div class="emoji">💧</div>
+        <div class="en">Drink water</div>
+        <div class="cn">多喝水</div>
+      </div>
+      <div class="health-card" onclick="speak('Eat fruit and vegetables','多吃水果和蔬菜',this)">
+        <div class="emoji">🥦🍎</div>
+        <div class="en">Eat fruit and vegetables</div>
+        <div class="cn">多吃水果和蔬菜</div>
+      </div>
+      <div class="health-card" onclick="speak('Eat healthy food','吃健康的食物',this)">
+        <div class="emoji">🥗</div>
+        <div class="en">Eat healthy food</div>
+        <div class="cn">吃健康食物</div>
+      </div>
+      <div class="health-card" onclick="speak('Exercise for at least one hour a day','每天至少运动一小时',this)">
+        <div class="emoji">🏃‍♂️</div>
+        <div class="en">Exercise for at least 1 hour a day</div>
+        <div class="cn">每天至少运动1小时</div>
+      </div>
+      <div class="health-card" onclick="speak('Get enough sleep every night','每晚保证充足睡眠',this)">
+        <div class="emoji">😴</div>
+        <div class="en">Get enough sleep</div>
+        <div class="cn">保证充足睡眠</div>
+      </div>
+      <div class="health-card" onclick="speak('Have fun playing with your friends','和朋友一起开心玩耍',this)">
+        <div class="emoji">👫</div>
+        <div class="en">Have fun with friends</div>
+        <div class="cn">和朋友开心玩耍</div>
+      </div>
+      <div class="health-card" onclick="speak('Wash your hands before eating','饭前洗手',this)">
+        <div class="emoji">🧼</div>
+        <div class="en">Wash your hands</div>
+        <div class="cn">饭前洗手</div>
+      </div>
+      <div class="health-card" onclick="speak('Go to bed early and wake up early','早睡早起身体好',this)">
+        <div class="emoji">🌙</div>
+        <div class="en">Go to bed early</div>
+        <div class="cn">早睡早起</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Grammar Review -->
+  <div class="section">
+    <h2>📝 Grammar Review 语法复习</h2>
+
+    <h3>1️⃣ 最高级 Superlatives（the + ...est / the most ...）</h3>
+    <div class="grammar-grid">
+      <div class="grammar-card" onclick="speak('Mount Teide is the highest mountain in Spain.','泰德峰是西班牙最高的山。',this)">
+        <div class="rule">the highest 最高的</div>
+        <div class="example">Mount Teide is <b>the highest</b> mountain in Spain.</div>
+      </div>
+      <div class="grammar-card" onclick="speak('This is the biggest shop in town.','这是镇上最大的商店。',this)">
+        <div class="rule">the biggest 最大的</div>
+        <div class="example">This is <b>the biggest</b> shop in town.</div>
+      </div>
+      <div class="grammar-card" onclick="speak('The Nile is the longest river in the world.','尼罗河是世界上最长的河。',this)">
+        <div class="rule">the longest 最长的</div>
+        <div class="example">The Nile is <b>the longest</b> river in the world.</div>
+      </div>
+      <div class="grammar-card" onclick="speak('An elephant is the strongest animal on land.','大象是陆地上最强壮的动物。',this)">
+        <div class="rule">the strongest 最强壮的</div>
+        <div class="example">An elephant is <b>the strongest</b> animal on land.</div>
+      </div>
+      <div class="grammar-card" onclick="speak('She is the best dancer in school.','她是学校里最棒的舞者。',this)">
+        <div class="rule">the best 最好的 ⚠️不规则</div>
+        <div class="example">She is <b>the best</b> dancer in school.</div>
+      </div>
+    </div>
+
+    <h3>2️⃣ 比较级 Comparatives（more + ...）</h3>
+    <div class="grammar-grid">
+      <div class="grammar-card" onclick="speak('English books are more exciting than maths books.','英语书比数学书更有趣。',this)">
+        <div class="rule">more exciting 更令人兴奋的</div>
+        <div class="example">English books are <b>more exciting</b> than maths books.</div>
+      </div>
+    </div>
+
+    <h3>3️⃣ 同级比较 as...as（和...一样）</h3>
+    <div class="grammar-grid">
+      <div class="grammar-card" onclick="speak('I am as clever as my friend Javier.','我和我的朋友哈维尔一样聪明。',this)">
+        <div class="rule">as clever as 和...一样聪明</div>
+        <div class="example">I am <b>as clever as</b> my friend Javier.</div>
+      </div>
+      <div class="grammar-card" onclick="speak('I can jump as high as my friend.','我可以跳得和我朋友一样高。',this)">
+        <div class="rule">as high as 和...一样高</div>
+        <div class="example">I can jump <b>as high as</b> my friend.</div>
+      </div>
+    </div>
+
+    <h3>4️⃣ could / couldn't（过去的能力）</h3>
+    <div class="grammar-grid">
+      <div class="grammar-card" onclick="speak('I could swim when I was three.','我三岁时会游泳。',this)">
+        <div class="rule">could ✅ 过去能做</div>
+        <div class="example">I <b>could</b> swim when I was three.</div>
+      </div>
+      <div class="grammar-card" onclick="speak('I couldn\\'t ride a bike when I was three.','我三岁时不会骑自行车。',this)">
+        <div class="rule">couldn't ❌ 过去不能做</div>
+        <div class="example">I <b>couldn't</b> ride a bike when I was three.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Sentence Game -->
+  <div class="section">
+    <h2>🎮 Sentence Game 造句游戏</h2>
+    <p style="font-size:13px;color:#888;margin-bottom:10px;">点击卡片看例句并朗读！用方框里的词造句 👇</p>
+    <div class="sentence-grid" id="sentenceGrid">
+    </div>
+  </div>
+
+  <!-- Section 4: Story - Julia and Paul's Busy Day -->
+  <div class="section">
+    <h2>📖 Julia and Paul's Busy Day</h2>
+    <p style="font-size:13px;color:#888;margin-bottom:10px;">正确顺序：d → c → b → a → e → f · 点击听故事 👇</p>
+    <div class="story-timeline">
+      <div class="story-item" data-order="1" onclick="speak('At eight o\\'clock, Julia and Paul woke up.','八点钟，Julia和Paul醒了。',this)">
+        <span class="time">8:00</span> At eight o'clock, Julia and Paul <b>woke up</b>.
+        <span class="cn">八点，Julia和Paul起床了。</span>
+      </div>
+      <div class="story-item" data-order="2" onclick="speak('At half past eight, they had cereal and pancakes for breakfast.','八点半，他们吃了麦片和煎饼当早餐。',this)">
+        <span class="time">8:30</span> They had <b>cereal and pancakes</b> for breakfast.
+        <span class="cn">八点半吃早餐：麦片和煎饼。</span>
+      </div>
+      <div class="story-item" data-order="3" onclick="speak('At half past nine, Dad said Come on! Let\\'s go!','九点半，爸爸说：快走！我们出发！',this)">
+        <span class="time">9:30</span> Dad said <b>"Come on! Let's go!"</b>
+        <span class="cn">九点半，爸爸说"快走！出发！"</span>
+      </div>
+      <div class="story-item" data-order="4" onclick="speak('At ten o\\'clock, Mum drove them to the countryside. They saw the hospital where Mum works.','十点，妈妈开车带他们去乡下。他们看到了妈妈工作的医院。',this)">
+        <span class="time">10:00</span> Mum <b>drove</b> them to the countryside. They saw the hospital where Mum works.
+        <span class="cn">十点，妈妈开车去乡下，路过妈妈的医院。</span>
+      </div>
+      <div class="story-item" data-order="5" onclick="speak('At eleven o\\'clock, they climbed trees, took photos, and made a mountain of leaves.','十一点，他们爬树、拍照、用树叶堆了一座小山。',this)">
+        <span class="time">11:00</span> They <b>climbed trees</b>, took photos, and made a mountain of leaves.
+        <span class="cn">十一点，爬树、拍照、堆树叶山。</span>
+      </div>
+      <div class="story-item" data-order="6" onclick="speak('At twelve o\\'clock, Dad made noodles and sauce for lunch.','十二点，爸爸做了面条和酱当午餐。',this)">
+        <span class="time">12:00</span> Dad made <b>noodles and sauce</b> for lunch.
+        <span class="cn">十二点，爸爸做了面条当午饭。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: Could/Couldn't Survey -->
+  <div class="section">
+    <h2>🗣️ Could you...when you were 3? 调查游戏</h2>
+    <p style="font-size:13px;color:#888;margin-bottom:10px;">问问爸爸妈妈：你三岁的时候会这些吗？</p>
+    <table class="survey-table">
+      <tr>
+        <th></th>
+        <th onclick="speak('hop','单脚跳')">🦘 Hop<br><span style="font-weight:normal;font-size:11px">单脚跳</span></th>
+        <th onclick="speak('climb trees','爬树')">🌳 Climb trees<br><span style="font-weight:normal;font-size:11px">爬树</span></th>
+        <th onclick="speak('swim','游泳')">🏊 Swim<br><span style="font-weight:normal;font-size:11px">游泳</span></th>
+        <th onclick="speak('ride a bike','骑车')">🚲 Ride a bike<br><span style="font-weight:normal;font-size:11px">骑自行车</span></th>
+      </tr>
+      <tr>
+        <td><b>👧 Me</b></td>
+        <td onclick="this.textContent=this.textContent==='?'?'✅':'❌';speak(this.textContent==='✅'?'I could hop when I was three.':'I couldn\\'t hop when I was three.','')">?</td>
+        <td onclick="this.textContent=this.textContent==='?'?'✅':'❌';speak(this.textContent==='✅'?'I could climb trees when I was three.':'I couldn\\'t climb trees when I was three.','')">?</td>
+        <td onclick="this.textContent=this.textContent==='?'?'✅':'❌';speak(this.textContent==='✅'?'I could swim when I was three.':'I couldn\\'t swim when I was three.','')">?</td>
+        <td onclick="this.textContent=this.textContent==='?'?'✅':'❌';speak(this.textContent==='✅'?'I could ride a bike when I was three.':'I couldn\\'t ride a bike when I was three.','')">?</td>
+      </tr>
+      <tr>
+        <td><b>👩 Mum</b></td>
+        <td onclick="this.textContent=this.textContent==='?'?'✅':'❌'">?</td>
+        <td onclick="this.textContent=this.textContent==='?'?'✅':'❌'">?</td>
+        <td onclick="this.textContent=this.textContent==='?'?'✅':'❌'">?</td>
+        <td onclick="this.textContent=this.textContent==='?'?'✅':'❌'">?</td>
+      </tr>
+      <tr>
+        <td><b>👨 Dad</b></td>
+        <td onclick="this.textContent=this.textContent==='?'?'✅':'❌'">?</td>
+        <td onclick="this.textContent=this.textContent==='?'?'✅':'❌'">?</td>
+        <td onclick="this.textContent=this.textContent==='?'?'✅':'❌'">?</td>
+        <td onclick="this.textContent=this.textContent==='?'?'✅':'❌'">?</td>
+      </tr>
+    </table>
+    <p style="font-size:12px;color:#888;margin-top:8px;">点击 ? 切换 ✅/❌ · 造句：I could/couldn't ___ when I was three.</p>
+  </div>
+
+  <!-- Section 6: Key Vocabulary -->
+  <div class="section">
+    <h2>🔤 Key Vocabulary 重点词汇</h2>
+    <div class="vocab-grid">
+      <div class="vocab-card" onclick="speak('highest, the highest mountain','最高的',this)">highest 最高的</div>
+      <div class="vocab-card" onclick="speak('biggest, the biggest lake','最大的',this)">biggest 最大的</div>
+      <div class="vocab-card" onclick="speak('longest, the longest river','最长的',this)">longest 最长的</div>
+      <div class="vocab-card" onclick="speak('strongest, the strongest animal','最强壮的',this)">strongest 最强壮的</div>
+      <div class="vocab-card" onclick="speak('best, the best dancer','最好的',this)">best 最好的</div>
+      <div class="vocab-card" onclick="speak('clever, as clever as','聪明的',this)">clever 聪明的</div>
+      <div class="vocab-card" onclick="speak('more exciting, more exciting than','更令人兴奋的',this)">more exciting 更兴奋的</div>
+      <div class="vocab-card" onclick="speak('could, I could swim','能（过去）',this)">could 能（过去）</div>
+      <div class="vocab-card" onclick="speak('couldn\\'t, I couldn\\'t ride a bike','不能（过去）',this)">couldn't 不能（过去）</div>
+      <div class="vocab-card" onclick="speak('cereal','麦片',this)">cereal 麦片</div>
+      <div class="vocab-card" onclick="speak('pancakes','煎饼',this)">pancakes 煎饼</div>
+      <div class="vocab-card" onclick="speak('noodles','面条',this)">noodles 面条</div>
+      <div class="vocab-card" onclick="speak('countryside','乡下',this)">countryside 乡下</div>
+      <div class="vocab-card" onclick="speak('exercise','运动',this)">exercise 运动</div>
+      <div class="vocab-card" onclick="speak('healthy','健康的',this)">healthy 健康的</div>
+      <div class="vocab-card" onclick="speak('helmet','头盔',this)">helmet 头盔</div>
+    </div>
+  </div>
+
+  <div class="footer">Made with 💜 by Coco 🦎 · Power Up 3 Units 1-3 Review</div>
+</div>
+
+<script>
+// === Voice Setup ===
+const synth = window.speechSynthesis;
+let voices = [], enVoice = null, cnVoice = null, muted = false, playQueue = [], playing = false;
+
+const enPref = ['Samantha','Daniel','Karen','Google US','Google UK','Microsoft','Enhanced','Premium','Natural'];
+const cnPref = ['Tingting','Sinji','Meijia','Google 普通话','Microsoft Xiaoxiao','Enhanced','Premium','Natural'];
+
+function scoreV(v, prefs) {
+  for (let i = 0; i < prefs.length; i++)
+    if (v.name.includes(prefs[i])) return prefs.length - i + 100;
+  let s = 0;
+  if (/enhanced|premium|natural/i.test(v.name)) s += 50;
+  if (/compact/i.test(v.name)) s -= 20;
+  return s;
+}
+
+function loadVoices() {
+  voices = synth.getVoices();
+  const sel = document.getElementById('voiceSel');
+  if (!voices.length) return;
+  const enVoices = voices.filter(v => /en/i.test(v.lang)).sort((a,b) => scoreV(b,enPref) - scoreV(a,enPref));
+  const cnVoices = voices.filter(v => /zh|cmn/i.test(v.lang)).sort((a,b) => scoreV(b,cnPref) - scoreV(a,cnPref));
+  enVoice = enVoices[0] || voices[0];
+  cnVoice = cnVoices[0] || null;
+  sel.innerHTML = '';
+  enVoices.slice(0,5).forEach(v => { const o = document.createElement('option'); o.value = v.name; o.textContent = '🇬🇧 '+v.name; sel.appendChild(o); });
+  cnVoices.slice(0,5).forEach(v => { const o = document.createElement('option'); o.value = v.name; o.textContent = '🇨🇳 '+v.name; sel.appendChild(o); });
+  sel.value = enVoice.name;
+}
+synth.onvoiceschanged = loadVoices;
+loadVoices();
+
+document.getElementById('voiceSel').onchange = function() {
+  const v = voices.find(x => x.name === this.value);
+  if (v && /en/i.test(v.lang)) enVoice = v;
+  if (v && /zh|cmn/i.test(v.lang)) cnVoice = v;
+};
+
+function getRate() { return parseFloat(document.getElementById('rateSlider').value); }
+
+function speak(en, cn, el) {
+  if (muted) return;
+  synth.cancel();
+  document.querySelectorAll('.playing').forEach(e => e.classList.remove('playing'));
+  if (el) el.classList.add('playing');
+
+  const u1 = new SpeechSynthesisUtterance(en);
+  u1.voice = enVoice; u1.rate = getRate(); u1.lang = 'en-US';
+
+  if (cn && cnVoice) {
+    u1.onend = () => {
+      setTimeout(() => {
+        const u2 = new SpeechSynthesisUtterance(cn);
+        u2.voice = cnVoice; u2.rate = getRate(); u2.lang = 'zh-CN';
+        u2.onend = () => { if (el) el.classList.remove('playing'); processQueue(); };
+        synth.speak(u2);
+      }, 300);
+    };
+  } else {
+    u1.onend = () => { if (el) el.classList.remove('playing'); processQueue(); };
+  }
+  synth.speak(u1);
+}
+
+function preview() { speak('This is the best review lesson!', '这是最棒的复习课！', null); }
+function toggleMute() {
+  muted = !muted;
+  document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊';
+  if (muted) synth.cancel();
+}
+
+// Play all
+function playAll() {
+  synth.cancel(); playing = true; playQueue = [];
+  document.querySelectorAll('.health-card, .grammar-card, .story-item, .vocab-card').forEach(el => {
+    playQueue.push(el);
+  });
+  processQueue();
+}
+function processQueue() {
+  if (!playing || !playQueue.length) { playing = false; return; }
+  const el = playQueue.shift();
+  el.click();
+}
+function stopAll() { playing = false; playQueue = []; synth.cancel(); document.querySelectorAll('.playing').forEach(e => e.classList.remove('playing')); }
+
+// Sentence Game data
+const sentenceData = [
+  { word: 'me', sentence: 'I am the strongest in my class.', cn: '我是班里最强壮的。' },
+  { word: 'a shop', sentence: 'This is the biggest shop in town.', cn: '这是镇上最大的商店。' },
+  { word: 'jump', sentence: 'I can jump as high as my friend.', cn: '我跳得和朋友一样高。' },
+  { word: 'pop star', sentence: 'She is the best pop star.', cn: '她是最棒的歌星。' },
+  { word: 'mountain', sentence: 'Mount Teide is the highest mountain.', cn: '泰德峰是最高的山。' },
+  { word: 'milkshake', sentence: 'This is the best milkshake!', cn: '这是最好喝的奶昔！' },
+  { word: 'river', sentence: 'The Nile is the longest river.', cn: '尼罗河是最长的河。' },
+  { word: 'restaurant', sentence: 'This restaurant is more exciting.', cn: '这家餐厅更有趣。' },
+  { word: 'kangaroo', sentence: 'A kangaroo is the strongest jumper.', cn: '袋鼠是最强的跳跃者。' },
+  { word: 'dancer', sentence: 'She is the best dancer in school.', cn: '她是学校最棒的舞者。' },
+  { word: 'lake', sentence: 'This is the biggest lake in China.', cn: '这是中国最大的湖。' },
+  { word: 'books', sentence: 'English books are more exciting.', cn: '英语书更有趣。' },
+  { word: 'cinema', sentence: 'This is the biggest cinema.', cn: '这是最大的电影院。' },
+  { word: 'English', sentence: 'I am as clever as my English teacher.', cn: '我和英语老师一样聪明。' },
+  { word: 'my friend', sentence: 'I am as clever as my friend.', cn: '我和朋友一样聪明。' },
+  { word: 'elephant', sentence: 'An elephant is the biggest animal.', cn: '大象是最大的动物。' },
+];
+const grid = document.getElementById('sentenceGrid');
+sentenceData.forEach((d, i) => {
+  const card = document.createElement('div');
+  card.className = 'sentence-card';
+  card.textContent = (i+1) + '. ' + d.word;
+  card.onclick = function() {
+    if (this.classList.contains('flipped')) {
+      this.classList.remove('flipped');
+      this.textContent = (i+1) + '. ' + d.word;
+    } else {
+      this.classList.add('flipped');
+      this.textContent = d.sentence;
+      speak(d.sentence, d.cn, this);
+    }
+  };
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>
