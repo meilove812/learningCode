@@ -2,209 +2,256 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>第一单元 · 识字 - Coco Learning Park</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>一年级上册·识字卡 | Coco Learning Park</title>
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#fef9f0;color:#333;padding-bottom:80px}
-.header{text-align:center;padding:20px 10px 10px;background:linear-gradient(135deg,#ff9a9e,#fad0c4);color:#fff;text-shadow:1px 1px 2px rgba(0,0,0,.2)}
-.header h1{font-size:1.6em;margin-bottom:4px}
-.header p{font-size:.85em;opacity:.9}
-.filters{display:flex;flex-wrap:wrap;gap:8px;padding:12px;justify-content:center;background:#fff;border-bottom:1px solid #eee;position:sticky;top:0;z-index:10}
-.filters button{border:2px solid #ddd;background:#fff;border-radius:20px;padding:6px 14px;font-size:.85em;cursor:pointer;transition:.2s}
-.filters button.active{color:#fff;border-color:transparent}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:12px}
-.card{background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);border-top:4px solid #ccc;transition:transform .15s}
-.card:active{transform:scale(.97)}
-.pinyin{font-size:1.1em;color:#e74c3c;margin-bottom:4px;font-family:serif}
-.tian-svg{display:block;margin:0 auto;width:100px;height:100px}
-.hanzi-in-grid{font-family:'KaiTi','STKaiti','楷体',serif;font-size:64px;fill:#333}
-.ciyu{font-size:.85em;color:#888;margin:6px 0}
-.btn-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
-.btn-row button{border:none;background:#f0f0f0;border-radius:8px;padding:5px 10px;font-size:.78em;cursor:pointer;transition:.2s}
-.btn-row button:hover{background:#e0e0e0}
-.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:8px 12px;display:flex;align-items:center;gap:10px;z-index:20;flex-wrap:wrap;justify-content:center}
-.bottom-bar button{background:#ff6b6b;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:.85em;cursor:pointer;white-space:nowrap}
-.bottom-bar label{font-size:.8em;color:#666}
-.bottom-bar input[type=range]{width:100px}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;justify-content:center;align-items:center}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#fdf2f8,#ede9fe,#e0f2fe,#ecfdf5);min-height:100vh;padding:12px}
+h1{text-align:center;font-size:1.4em;margin:8px 0;color:#6b21a8}
+.filters{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:10px 0}
+.filters button{border:none;border-radius:20px;padding:6px 14px;font-size:.85em;cursor:pointer;background:#e2e8f0;color:#475569;transition:.2s}
+.filters button.active{color:#fff;transform:scale(1.05)}
+.controls{display:flex;justify-content:center;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+.controls button{border:none;border-radius:20px;padding:6px 14px;font-size:.85em;cursor:pointer;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff}
+.controls label{font-size:.8em;color:#64748b}
+.controls input[type=range]{width:80px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;max-width:720px;margin:10px auto;padding:0 4px}
+/* Card flip */
+.card-container{width:140px;height:200px;perspective:800px;justify-self:center}
+.card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s ease;cursor:pointer;border-radius:14px}
+.card.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;align-items:center}
+.card-front{background:#fff;justify-content:center}
+.card-back{background:#fff;transform:rotateY(180deg);justify-content:flex-start;padding:14px 8px 8px}
+.card-front .lesson-tag{position:absolute;top:6px;left:6px;font-size:.55em;padding:2px 7px;border-radius:10px;color:#fff;font-weight:600}
+.card-front .tian-wrap{position:relative;width:90px;height:90px;margin-top:8px}
+.card-front .tian-wrap svg{position:absolute;top:0;left:0}
+.card-front .tian-char{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:3.5em;font-family:'KaiTi','STKaiti','楷体',serif;line-height:1;z-index:1}
+.card-front .speak-btn{position:absolute;bottom:28px;right:8px;width:28px;height:28px;border-radius:50%;border:none;font-size:1em;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.06)}
+.card-front .flip-hint{position:absolute;bottom:6px;font-size:.6em;color:#bbb}
+/* Back */
+.card-back .pinyin{font-size:1.4em;font-weight:700;margin-bottom:4px}
+.card-back .ciyu{font-size:1.1em;color:#666;margin-bottom:8px}
+.card-back .btns{display:flex;gap:6px;margin-top:auto}
+.card-back .btns button{border:none;border-radius:12px;padding:5px 10px;font-size:.8em;cursor:pointer;color:#fff}
+.card-back .watermark{position:absolute;bottom:4px;right:8px;font-size:3em;opacity:.06;font-family:'KaiTi','STKaiti','楷体',serif}
+/* Highlight */
+.card-container.highlight .card{box-shadow:0 0 16px 4px rgba(139,92,246,.5);transform:scale(1.08)}
+.card-container.highlight .card.flipped{transform:rotateY(180deg) scale(1.08)}
+/* Modal */
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);z-index:100;justify-content:center;align-items:center}
 .modal-overlay.show{display:flex}
-.modal{background:#fff;border-radius:16px;padding:20px;width:340px;max-width:95vw;text-align:center;position:relative}
-.modal h3{margin-bottom:6px;font-size:1.2em}
-.modal .pinyin-modal{color:#e74c3c;font-size:1.1em;font-family:serif}
-.modal .close-btn{position:absolute;top:10px;right:14px;font-size:1.4em;cursor:pointer;color:#999}
-.modal .writer-wrap{margin:12px auto;position:relative;width:280px;height:280px;border:3px solid #e74c3c;background:#fff}
-.modal .writer-wrap svg.grid-bg{position:absolute;inset:0;z-index:0}
-.modal .writer-target{position:relative;z-index:1}
+.modal{background:#fff;border-radius:18px;padding:20px;max-width:340px;width:90%;text-align:center;position:relative}
+.modal h3{margin-bottom:10px;font-size:1.2em}
+.modal .close-btn{position:absolute;top:8px;right:12px;font-size:1.4em;cursor:pointer;border:none;background:none;color:#999}
+.modal .tian-big{position:relative;width:280px;height:280px;margin:0 auto;border:3px solid #e53935}
+.modal .tian-big svg{position:absolute;top:0;left:0;width:100%;height:100%}
+.modal .tian-big #hw-target{position:absolute;top:0;left:0;width:100%;height:100%}
 .modal .modal-btns{margin-top:12px;display:flex;gap:8px;justify-content:center}
-.modal .modal-btns button{border:none;border-radius:8px;padding:8px 18px;font-size:.9em;cursor:pointer;color:#fff}
-.footer{text-align:center;padding:20px 10px 90px;color:#aaa;font-size:.8em}
-/* lesson colors */
-.lesson-1{border-top-color:#ff7eb3}.lesson-2{border-top-color:#a855f7}.lesson-3{border-top-color:#3b82f6}.lesson-4{border-top-color:#22c55e}.lesson-5{border-top-color:#f59e0b}
-.f1.active{background:#ff7eb3;color:#fff}.f2.active{background:#a855f7;color:#fff}.f3.active{background:#3b82f6;color:#fff}.f4.active{background:#22c55e;color:#fff}.f5.active{background:#f59e0b;color:#fff}.fall.active{background:#555;color:#fff}
+.modal .modal-btns button{border:none;border-radius:14px;padding:7px 16px;font-size:.9em;cursor:pointer;color:#fff;background:#8b5cf6}
+/* Reward */
+.reward{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:4em;z-index:200;pointer-events:none;animation:rewardPop .8s ease forwards}
+@keyframes rewardPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}60%{transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1) translateY(-40px)}}
+footer{text-align:center;font-size:.75em;color:#94a3b8;margin:16px 0 8px}
 </style>
 </head>
 <body>
-<div class="header">
-<h1>📖 第一单元 · 识字 ✍️</h1>
-<p>一年级下册写字表 · 田字格 · 笔顺动画 · 描红练习</p>
-</div>
-<div class="filters">
-<button class="fall active" onclick="filterLesson('all')">全部</button>
-<button class="f1" onclick="filterLesson(1)">春夏秋冬</button>
-<button class="f2" onclick="filterLesson(2)">姓氏歌</button>
-<button class="f3" onclick="filterLesson(3)">小青蛙</button>
-<button class="f4" onclick="filterLesson(4)">猜字谜</button>
-<button class="f5" onclick="filterLesson(5)">语文园地一</button>
+<h1>📝 一年级上册 · 识字卡</h1>
+<div class="filters" id="filters"></div>
+<div class="controls">
+  <button onclick="playAll()">▶️ 连续播放笔顺</button>
+  <label>语速 <input type="range" id="rate" min="0.3" max="1.5" step="0.1" value="0.8"></label>
+  <span id="rateVal" style="font-size:.75em;color:#888">0.8</span>
 </div>
 <div class="grid" id="grid"></div>
-<div class="bottom-bar">
-<button onclick="playAll()">▶️ 连续播放笔顺</button>
-<label>语速</label>
-<input type="range" id="rate" min="0.3" max="2" step="0.1" value="0.8">
-<span id="rateVal">0.8</span>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <h3 id="modalTitle"></h3>
+    <div class="tian-big">
+      <svg viewBox="0 0 100 100" width="100%" height="100%">
+        <rect x="1" y="1" width="98" height="98" fill="none" stroke="#e53935" stroke-width="1.5"/>
+        <line x1="50" y1="1" x2="50" y2="99" stroke="#ccc" stroke-width=".6" stroke-dasharray="4,3"/>
+        <line x1="1" y1="50" x2="99" y2="50" stroke="#ccc" stroke-width=".6" stroke-dasharray="4,3"/>
+      </svg>
+      <div id="hw-target"></div>
+    </div>
+    <div class="modal-btns">
+      <button onclick="doAnimate()">✏️ 笔顺</button>
+      <button onclick="doQuiz()">🖊 描红</button>
+      <button onclick="doAnimate()">🔄 重播</button>
+    </div>
+  </div>
 </div>
-<div class="modal-overlay" id="modal">
-<div class="modal">
-<span class="close-btn" onclick="closeModal()">✕</span>
-<div class="pinyin-modal" id="modalPinyin"></div>
-<h3 id="modalTitle"></h3>
-<div class="writer-wrap">
-<svg class="grid-bg" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
-<rect x="1" y="1" width="278" height="278" fill="none" stroke="#e74c3c" stroke-width="2"/>
-<line x1="140" y1="0" x2="140" y2="280" stroke="#ccc" stroke-width="1" stroke-dasharray="6,4"/>
-<line x1="0" y1="140" x2="280" y2="140" stroke="#ccc" stroke-width="1" stroke-dasharray="6,4"/>
-<line x1="0" y1="0" x2="280" y2="280" stroke="#eee" stroke-width="1" stroke-dasharray="4,6"/>
-<line x1="280" y1="0" x2="0" y2="280" stroke="#eee" stroke-width="1" stroke-dasharray="4,6"/>
-</svg>
-<div id="writerTarget" class="writer-target"></div>
-</div>
-<div class="modal-btns">
-<button id="btnAnimate" style="background:#3b82f6" onclick="animateStroke()">✏️ 播放笔顺</button>
-<button id="btnQuiz" style="background:#22c55e" onclick="startQuiz()">🖊 描红练习</button>
-<button id="btnReplay" style="background:#f59e0b;display:none" onclick="animateStroke()">🔄 重播</button>
-</div>
-</div>
-</div>
-<div class="footer">🦎 Coco Learning Park · 人教版2024新课标</div>
+<footer>🦎 Coco Learning Park · 人教版2024新课标</footer>
 
 <script>
-const DATA=[
-{char:'春',py:'chūn',ci:'春天',lesson:1},{char:'冬',py:'dōng',ci:'冬天',lesson:1},{char:'花',py:'huā',ci:'花朵',lesson:1},{char:'吹',py:'chuī',ci:'吹风',lesson:1},{char:'飞',py:'fēi',ci:'飞鸟',lesson:1},{char:'入',py:'rù',ci:'进入',lesson:1},
-{char:'什',py:'shén',ci:'什么',lesson:2},{char:'么',py:'me',ci:'什么',lesson:2},{char:'古',py:'gǔ',ci:'古代',lesson:2},{char:'胡',py:'hú',ci:'胡说',lesson:2},{char:'双',py:'shuāng',ci:'双手',lesson:2},{char:'言',py:'yán',ci:'语言',lesson:2},
-{char:'青',py:'qīng',ci:'青草',lesson:3},{char:'清',py:'qīng',ci:'清水',lesson:3},{char:'苗',py:'miáo',ci:'禾苗',lesson:3},{char:'晴',py:'qíng',ci:'晴天',lesson:3},{char:'请',py:'qǐng',ci:'请问',lesson:3},{char:'生',py:'shēng',ci:'学生',lesson:3},
-{char:'字',py:'zì',ci:'写字',lesson:4},{char:'红',py:'hóng',ci:'红色',lesson:4},{char:'动',py:'dòng',ci:'运动',lesson:4},{char:'万',py:'wàn',ci:'万岁',lesson:4},{char:'无',py:'wú',ci:'无人',lesson:4},{char:'明',py:'míng',ci:'明天',lesson:4},
-{char:'文',py:'wén',ci:'语文',lesson:5},{char:'卡',py:'kǎ',ci:'卡片',lesson:5},{char:'片',py:'piàn',ci:'卡片',lesson:5},{char:'合',py:'hé',ci:'合唱',lesson:5}
+var lessons=[
+  {name:'1.春夏秋冬',color:['#FF6B9D','#FF8BA7'],chars:[['春','chūn','春天'],['冬','dōng','冬天'],['花','huā','花朵'],['吹','chuī','吹风'],['飞','fēi','飞鸟'],['入','rù','进入']]},
+  {name:'2.姓氏歌',color:['#A855F7','#C084FC'],chars:[['什','shén','什么'],['么','me','什么'],['古','gǔ','古代'],['胡','hú','胡说'],['双','shuāng','双手'],['言','yán','语言']]},
+  {name:'3.小青蛙',color:['#3B82F6','#60A5FA'],chars:[['青','qīng','青草'],['清','qīng','清水'],['苗','miáo','禾苗'],['晴','qíng','晴天'],['请','qǐng','请问'],['生','shēng','学生']]},
+  {name:'4.猜字谜',color:['#22C55E','#4ADE80'],chars:[['字','zì','写字'],['红','hóng','红色'],['动','dòng','运动'],['万','wàn','万岁'],['无','wú','无人'],['明','míng','明天']]},
+  {name:'语文园地一',color:['#F97316','#FB923C'],chars:[['文','wén','语文'],['卡','kǎ','卡片'],['片','piàn','卡片'],['合','hé','合唱']]}
 ];
-const COLORS={1:'#ff7eb3',2:'#a855f7',3:'#3b82f6',4:'#22c55e',5:'#f59e0b'};
-let currentFilter='all', writer=null, currentChar='';
+var currentFilter='全部',hw=null,currentChar='';
+var rateInput=document.getElementById('rate'),rateVal=document.getElementById('rateVal');
+rateInput.oninput=function(){rateVal.textContent=this.value};
 
-function gridSVG(ch){
-return `<svg class="tian-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-<rect x="1" y="1" width="98" height="98" fill="#fff" stroke="#e74c3c" stroke-width="2" rx="2"/>
-<line x1="50" y1="1" x2="50" y2="99" stroke="#ccc" stroke-width=".8" stroke-dasharray="4,3"/>
-<line x1="1" y1="50" x2="99" y2="50" stroke="#ccc" stroke-width=".8" stroke-dasharray="4,3"/>
-<text x="50" y="54" text-anchor="middle" dominant-baseline="middle" class="hanzi-in-grid">${ch}</text>
-</svg>`;
+function buildFilters(){
+  var f=document.getElementById('filters');
+  var names=['全部'].concat(lessons.map(function(l){return l.name}));
+  names.forEach(function(n){
+    var b=document.createElement('button');
+    b.textContent=n;
+    if(n==='全部')b.classList.add('active');
+    b.onclick=function(){
+      currentFilter=n;
+      f.querySelectorAll('button').forEach(function(x){x.classList.remove('active');x.style.background='#e2e8f0';x.style.color='#475569'});
+      b.classList.add('active');
+      var lesson=lessons.find(function(l){return l.name===n});
+      if(lesson){b.style.background='linear-gradient(135deg,'+lesson.color[0]+','+lesson.color[1]+')';b.style.color='#fff'}
+      else{b.style.background='linear-gradient(135deg,#8b5cf6,#6366f1)';b.style.color='#fff'}
+      buildGrid();
+    };
+    f.appendChild(b);
+  });
 }
-
-function renderGrid(){
-const g=document.getElementById('grid');
-g.innerHTML='';
-DATA.forEach((d,i)=>{
-if(currentFilter!=='all'&&d.lesson!==currentFilter)return;
-const c=document.createElement('div');
-c.className=`card lesson-${d.lesson}`;
-c.innerHTML=`<div class="pinyin">${d.py}</div>${gridSVG(d.char)}<div class="ciyu">${d.ci}</div>
-<div class="btn-row"><button onclick="speak(${i})">🔊</button><button onclick="openModal(${i},'animate')">✏️笔顺</button><button onclick="openModal(${i},'quiz')">🖊描红</button></div>`;
-g.appendChild(c);
-});
+function buildGrid(){
+  var g=document.getElementById('grid');
+  g.innerHTML='';
+  lessons.forEach(function(lesson){
+    if(currentFilter!=='全部'&&currentFilter!==lesson.name)return;
+    lesson.chars.forEach(function(c){
+      var container=document.createElement('div');
+      container.className='card-container';
+      container.dataset.char=c[0];
+      container.dataset.lesson=lesson.name;
+      var card=document.createElement('div');
+      card.className='card';
+      card.style.border='3px solid '+lesson.color[0];
+      card.style.borderRadius='14px';
+      // Front
+      var front=document.createElement('div');
+      front.className='card-face card-front';
+      front.style.background='linear-gradient(135deg,'+lesson.color[0]+'12,'+lesson.color[1]+'08)';
+      front.innerHTML='<span class="lesson-tag" style="background:linear-gradient(135deg,'+lesson.color[0]+','+lesson.color[1]+')">'+lesson.name.replace(/^\d\./,'')+'</span>'
+        +'<div class="tian-wrap"><svg viewBox="0 0 100 100" width="90" height="90"><rect x="1" y="1" width="98" height="98" fill="none" stroke="#e53935" stroke-width="2"/><line x1="50" y1="1" x2="50" y2="99" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/><line x1="1" y1="50" x2="99" y2="50" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/></svg><span class="tian-char" style="color:'+lesson.color[0]+'">'+c[0]+'</span></div>'
+        +'<button class="speak-btn" data-char="'+c[0]+'" data-ciyu="'+c[2]+'">🔊</button>'
+        +'<span class="flip-hint">👆 点我翻转</span>';
+      // Back
+      var back=document.createElement('div');
+      back.className='card-face card-back';
+      back.style.background='linear-gradient(135deg,'+lesson.color[0]+'15,'+lesson.color[1]+'10)';
+      back.innerHTML='<div class="pinyin" style="color:'+lesson.color[0]+'">'+c[1]+'</div>'
+        +'<div class="ciyu">'+c[2]+'</div>'
+        +'<div class="btns">'
+        +'<button style="background:linear-gradient(135deg,'+lesson.color[0]+','+lesson.color[1]+')" data-action="speak" data-char="'+c[0]+'" data-ciyu="'+c[2]+'">🔊</button>'
+        +'<button style="background:linear-gradient(135deg,'+lesson.color[0]+','+lesson.color[1]+')" data-action="stroke" data-char="'+c[0]+'">✏️</button>'
+        +'<button style="background:linear-gradient(135deg,'+lesson.color[0]+','+lesson.color[1]+')" data-action="quiz" data-char="'+c[0]+'">🖊</button>'
+        +'</div>'
+        +'<span class="watermark">'+c[0]+'</span>';
+      card.appendChild(front);
+      card.appendChild(back);
+      container.appendChild(card);
+      // Events
+      card.onclick=function(e){
+        if(e.target.closest('button'))return;
+        card.classList.toggle('flipped');
+      };
+      container.querySelectorAll('button').forEach(function(btn){
+        btn.onclick=function(e){
+          e.stopPropagation();
+          var a=btn.dataset.action;
+          if(!a){speakChar(btn.dataset.char,btn.dataset.ciyu);return}
+          if(a==='speak')speakChar(btn.dataset.char,btn.dataset.ciyu);
+          else if(a==='stroke')openModal(btn.dataset.char,'stroke');
+          else if(a==='quiz')openModal(btn.dataset.char,'quiz');
+        };
+      });
+      g.appendChild(container);
+    });
+  });
 }
-
-function filterLesson(l){
-currentFilter=l;
-document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('active'));
-event.target.classList.add('active');
-renderGrid();
+function speakChar(ch,ciyu){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  var r=parseFloat(rateInput.value);
+  var u1=new SpeechSynthesisUtterance(ch);
+  u1.lang='zh-CN';u1.rate=r;
+  var u2=new SpeechSynthesisUtterance(ciyu);
+  u2.lang='zh-CN';u2.rate=r;
+  u1.onend=function(){window.speechSynthesis.speak(u2)};
+  window.speechSynthesis.speak(u1);
 }
-
-function getRate(){return parseFloat(document.getElementById('rate').value)}
-document.getElementById('rate').oninput=function(){document.getElementById('rateVal').textContent=this.value};
-
-function speak(i){
-const d=DATA[i];
-const u=new SpeechSynthesisUtterance(d.char);
-u.lang='zh-CN';u.rate=getRate();
-const u2=new SpeechSynthesisUtterance(d.ci);
-u2.lang='zh-CN';u2.rate=getRate();
-u.onend=()=>speechSynthesis.speak(u2);
-speechSynthesis.cancel();
-speechSynthesis.speak(u);
+function openModal(ch,mode){
+  currentChar=ch;
+  document.getElementById('modalTitle').textContent=ch;
+  document.getElementById('modalOverlay').classList.add('show');
+  var target=document.getElementById('hw-target');
+  target.innerHTML='';
+  hw=HanziWriter.create(target,ch,{width:280,height:280,padding:10,showOutline:true,strokeAnimationSpeed:1,delayBetweenStrokes:300,
+    charDataLoader:function(c,onLoad){fetch('https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/'+c+'.json').then(function(r){return r.json()}).then(onLoad)}
+  });
+  if(mode==='stroke')setTimeout(function(){hw.animateCharacter()},400);
+  else if(mode==='quiz')setTimeout(function(){startQuiz()},400);
 }
-
-function openModal(i,mode){
-const d=DATA[i];
-currentChar=d.char;
-document.getElementById('modalPinyin').textContent=d.py;
-document.getElementById('modalTitle').textContent=d.char+' — '+d.ci;
-document.getElementById('modal').classList.add('show');
-document.getElementById('btnReplay').style.display='none';
-const target=document.getElementById('writerTarget');
-target.innerHTML='';
-if(writer){try{writer=null}catch(e){}}
-writer=HanziWriter.create(target,d.char,{
-width:280,height:280,padding:10,
-showOutline:true,showCharacter:mode==='animate',
-strokeColor:'#333',outlineColor:'#ddd',
-drawingColor:'#22c55e',
-strokeAnimationSpeed:1,delayBetweenStrokes:300,
-charDataLoader:function(c,onLoad){
-fetch('https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/'+c+'.json')
-.then(r=>r.json()).then(onLoad);
-}
-});
-if(mode==='animate')setTimeout(()=>animateStroke(),300);
-else setTimeout(()=>startQuiz(),300);
-}
-
-function animateStroke(){
-if(!writer)return;
-document.getElementById('btnReplay').style.display='inline-block';
-writer.hideCharacter();
-writer.animateCharacter({onComplete:()=>{document.getElementById('btnReplay').style.display='inline-block'}});
-}
-
+function doAnimate(){if(hw){hw.hideCharacter();hw.animateCharacter()}}
+function doQuiz(){if(hw)startQuiz()}
 function startQuiz(){
-if(!writer)return;
-document.getElementById('btnReplay').style.display='none';
-writer.quiz({strokeHighlightSpeed:2});
+  hw.quiz({onComplete:function(){showReward()}});
 }
-
+function showReward(){
+  var d=document.createElement('div');
+  d.className='reward';
+  d.textContent=['⭐🎉','🌟✨','🎊👏','💪🌈'][Math.floor(Math.random()*4)];
+  document.body.appendChild(d);
+  setTimeout(function(){d.remove()},1500);
+}
 function closeModal(){
-document.getElementById('modal').classList.remove('show');
-if(writer){try{writer=null}catch(e){}}
+  document.getElementById('modalOverlay').classList.remove('show');
+  if(hw){hw=null}
+  document.getElementById('hw-target').innerHTML='';
 }
-
-let playIdx=0,playing=false;
 function playAll(){
-const visible=DATA.filter(d=>currentFilter==='all'||d.lesson===currentFilter);
-if(playing){playing=false;return}
-playing=true;playIdx=0;
-function next(){
-if(!playing||playIdx>=visible.length){playing=false;return}
-const d=visible[playIdx];
-openModal(DATA.indexOf(d),'animate');
-const u=new SpeechSynthesisUtterance(d.char);
-u.lang='zh-CN';u.rate=getRate();
-speechSynthesis.cancel();speechSynthesis.speak(u);
-playIdx++;
-setTimeout(()=>{closeModal();setTimeout(next,300)},2500);
+  var cards=document.querySelectorAll('.card-container');
+  var visible=[];
+  cards.forEach(function(c){if(c.offsetParent!==null)visible.push(c)});
+  if(!visible.length)return;
+  var i=0;
+  function next(){
+    if(i>=visible.length)return;
+    visible.forEach(function(c){c.classList.remove('highlight')});
+    var c=visible[i];
+    c.classList.add('highlight');
+    c.scrollIntoView({behavior:'smooth',block:'center'});
+    var ch=c.dataset.char;
+    var lesson=lessons.find(function(l){return l.name===c.dataset.lesson});
+    var charData=lesson?lesson.chars.find(function(x){return x[0]===ch}):null;
+    speakChar(ch,charData?charData[2]:ch);
+    // animate in a temp container
+    var tempDiv=document.createElement('div');
+    tempDiv.style.cssText='position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;overflow:hidden';
+    document.body.appendChild(tempDiv);
+    try{
+      var w=HanziWriter.create(tempDiv,ch,{width:100,height:100,strokeAnimationSpeed:2,delayBetweenStrokes:200,
+        charDataLoader:function(c2,onLoad){fetch('https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/'+c2+'.json').then(function(r){return r.json()}).then(onLoad)}
+      });
+      setTimeout(function(){
+        w.animateCharacter({onComplete:function(){
+          tempDiv.remove();
+          c.classList.remove('highlight');
+          i++;
+          setTimeout(next,300);
+        }});
+      },300);
+    }catch(e){tempDiv.remove();c.classList.remove('highlight');i++;setTimeout(next,300)}
+  }
+  next();
 }
-next();
-}
-
-renderGrid();
+document.getElementById('modalOverlay').onclick=function(e){if(e.target===this)closeModal()};
+buildFilters();
+buildGrid();
 </script>
 </body>
 </html>
