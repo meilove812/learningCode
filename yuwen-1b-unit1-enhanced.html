@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>第一单元 · 识字 - Coco Learning Park</title>
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#fef9f0;color:#333;padding-bottom:80px}
+.header{text-align:center;padding:20px 10px 10px;background:linear-gradient(135deg,#ff9a9e,#fad0c4);color:#fff;text-shadow:1px 1px 2px rgba(0,0,0,.2)}
+.header h1{font-size:1.6em;margin-bottom:4px}
+.header p{font-size:.85em;opacity:.9}
+.filters{display:flex;flex-wrap:wrap;gap:8px;padding:12px;justify-content:center;background:#fff;border-bottom:1px solid #eee;position:sticky;top:0;z-index:10}
+.filters button{border:2px solid #ddd;background:#fff;border-radius:20px;padding:6px 14px;font-size:.85em;cursor:pointer;transition:.2s}
+.filters button.active{color:#fff;border-color:transparent}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:12px}
+.card{background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);border-top:4px solid #ccc;transition:transform .15s}
+.card:active{transform:scale(.97)}
+.pinyin{font-size:1.1em;color:#e74c3c;margin-bottom:4px;font-family:serif}
+.tian-svg{display:block;margin:0 auto;width:100px;height:100px}
+.hanzi-in-grid{font-family:'KaiTi','STKaiti','楷体',serif;font-size:64px;fill:#333}
+.ciyu{font-size:.85em;color:#888;margin:6px 0}
+.btn-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.btn-row button{border:none;background:#f0f0f0;border-radius:8px;padding:5px 10px;font-size:.78em;cursor:pointer;transition:.2s}
+.btn-row button:hover{background:#e0e0e0}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:8px 12px;display:flex;align-items:center;gap:10px;z-index:20;flex-wrap:wrap;justify-content:center}
+.bottom-bar button{background:#ff6b6b;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:.85em;cursor:pointer;white-space:nowrap}
+.bottom-bar label{font-size:.8em;color:#666}
+.bottom-bar input[type=range]{width:100px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;justify-content:center;align-items:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:16px;padding:20px;width:340px;max-width:95vw;text-align:center;position:relative}
+.modal h3{margin-bottom:6px;font-size:1.2em}
+.modal .pinyin-modal{color:#e74c3c;font-size:1.1em;font-family:serif}
+.modal .close-btn{position:absolute;top:10px;right:14px;font-size:1.4em;cursor:pointer;color:#999}
+.modal .writer-wrap{margin:12px auto;position:relative;width:280px;height:280px;border:3px solid #e74c3c;background:#fff}
+.modal .writer-wrap svg.grid-bg{position:absolute;inset:0;z-index:0}
+.modal .writer-target{position:relative;z-index:1}
+.modal .modal-btns{margin-top:12px;display:flex;gap:8px;justify-content:center}
+.modal .modal-btns button{border:none;border-radius:8px;padding:8px 18px;font-size:.9em;cursor:pointer;color:#fff}
+.footer{text-align:center;padding:20px 10px 90px;color:#aaa;font-size:.8em}
+/* lesson colors */
+.lesson-1{border-top-color:#ff7eb3}.lesson-2{border-top-color:#a855f7}.lesson-3{border-top-color:#3b82f6}.lesson-4{border-top-color:#22c55e}.lesson-5{border-top-color:#f59e0b}
+.f1.active{background:#ff7eb3;color:#fff}.f2.active{background:#a855f7;color:#fff}.f3.active{background:#3b82f6;color:#fff}.f4.active{background:#22c55e;color:#fff}.f5.active{background:#f59e0b;color:#fff}.fall.active{background:#555;color:#fff}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>📖 第一单元 · 识字 ✍️</h1>
+<p>一年级下册写字表 · 田字格 · 笔顺动画 · 描红练习</p>
+</div>
+<div class="filters">
+<button class="fall active" onclick="filterLesson('all')">全部</button>
+<button class="f1" onclick="filterLesson(1)">春夏秋冬</button>
+<button class="f2" onclick="filterLesson(2)">姓氏歌</button>
+<button class="f3" onclick="filterLesson(3)">小青蛙</button>
+<button class="f4" onclick="filterLesson(4)">猜字谜</button>
+<button class="f5" onclick="filterLesson(5)">语文园地一</button>
+</div>
+<div class="grid" id="grid"></div>
+<div class="bottom-bar">
+<button onclick="playAll()">▶️ 连续播放笔顺</button>
+<label>语速</label>
+<input type="range" id="rate" min="0.3" max="2" step="0.1" value="0.8">
+<span id="rateVal">0.8</span>
+</div>
+<div class="modal-overlay" id="modal">
+<div class="modal">
+<span class="close-btn" onclick="closeModal()">✕</span>
+<div class="pinyin-modal" id="modalPinyin"></div>
+<h3 id="modalTitle"></h3>
+<div class="writer-wrap">
+<svg class="grid-bg" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+<rect x="1" y="1" width="278" height="278" fill="none" stroke="#e74c3c" stroke-width="2"/>
+<line x1="140" y1="0" x2="140" y2="280" stroke="#ccc" stroke-width="1" stroke-dasharray="6,4"/>
+<line x1="0" y1="140" x2="280" y2="140" stroke="#ccc" stroke-width="1" stroke-dasharray="6,4"/>
+<line x1="0" y1="0" x2="280" y2="280" stroke="#eee" stroke-width="1" stroke-dasharray="4,6"/>
+<line x1="280" y1="0" x2="0" y2="280" stroke="#eee" stroke-width="1" stroke-dasharray="4,6"/>
+</svg>
+<div id="writerTarget" class="writer-target"></div>
+</div>
+<div class="modal-btns">
+<button id="btnAnimate" style="background:#3b82f6" onclick="animateStroke()">✏️ 播放笔顺</button>
+<button id="btnQuiz" style="background:#22c55e" onclick="startQuiz()">🖊 描红练习</button>
+<button id="btnReplay" style="background:#f59e0b;display:none" onclick="animateStroke()">🔄 重播</button>
+</div>
+</div>
+</div>
+<div class="footer">🦎 Coco Learning Park · 人教版2024新课标</div>
+
+<script>
+const DATA=[
+{char:'春',py:'chūn',ci:'春天',lesson:1},{char:'冬',py:'dōng',ci:'冬天',lesson:1},{char:'花',py:'huā',ci:'花朵',lesson:1},{char:'吹',py:'chuī',ci:'吹风',lesson:1},{char:'飞',py:'fēi',ci:'飞鸟',lesson:1},{char:'入',py:'rù',ci:'进入',lesson:1},
+{char:'什',py:'shén',ci:'什么',lesson:2},{char:'么',py:'me',ci:'什么',lesson:2},{char:'古',py:'gǔ',ci:'古代',lesson:2},{char:'胡',py:'hú',ci:'胡说',lesson:2},{char:'双',py:'shuāng',ci:'双手',lesson:2},{char:'言',py:'yán',ci:'语言',lesson:2},
+{char:'青',py:'qīng',ci:'青草',lesson:3},{char:'清',py:'qīng',ci:'清水',lesson:3},{char:'苗',py:'miáo',ci:'禾苗',lesson:3},{char:'晴',py:'qíng',ci:'晴天',lesson:3},{char:'请',py:'qǐng',ci:'请问',lesson:3},{char:'生',py:'shēng',ci:'学生',lesson:3},
+{char:'字',py:'zì',ci:'写字',lesson:4},{char:'红',py:'hóng',ci:'红色',lesson:4},{char:'动',py:'dòng',ci:'运动',lesson:4},{char:'万',py:'wàn',ci:'万岁',lesson:4},{char:'无',py:'wú',ci:'无人',lesson:4},{char:'明',py:'míng',ci:'明天',lesson:4},
+{char:'文',py:'wén',ci:'语文',lesson:5},{char:'卡',py:'kǎ',ci:'卡片',lesson:5},{char:'片',py:'piàn',ci:'卡片',lesson:5},{char:'合',py:'hé',ci:'合唱',lesson:5}
+];
+const COLORS={1:'#ff7eb3',2:'#a855f7',3:'#3b82f6',4:'#22c55e',5:'#f59e0b'};
+let currentFilter='all', writer=null, currentChar='';
+
+function gridSVG(ch){
+return `<svg class="tian-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<rect x="1" y="1" width="98" height="98" fill="#fff" stroke="#e74c3c" stroke-width="2" rx="2"/>
+<line x1="50" y1="1" x2="50" y2="99" stroke="#ccc" stroke-width=".8" stroke-dasharray="4,3"/>
+<line x1="1" y1="50" x2="99" y2="50" stroke="#ccc" stroke-width=".8" stroke-dasharray="4,3"/>
+<text x="50" y="54" text-anchor="middle" dominant-baseline="middle" class="hanzi-in-grid">${ch}</text>
+</svg>`;
+}
+
+function renderGrid(){
+const g=document.getElementById('grid');
+g.innerHTML='';
+DATA.forEach((d,i)=>{
+if(currentFilter!=='all'&&d.lesson!==currentFilter)return;
+const c=document.createElement('div');
+c.className=`card lesson-${d.lesson}`;
+c.innerHTML=`<div class="pinyin">${d.py}</div>${gridSVG(d.char)}<div class="ciyu">${d.ci}</div>
+<div class="btn-row"><button onclick="speak(${i})">🔊</button><button onclick="openModal(${i},'animate')">✏️笔顺</button><button onclick="openModal(${i},'quiz')">🖊描红</button></div>`;
+g.appendChild(c);
+});
+}
+
+function filterLesson(l){
+currentFilter=l;
+document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('active'));
+event.target.classList.add('active');
+renderGrid();
+}
+
+function getRate(){return parseFloat(document.getElementById('rate').value)}
+document.getElementById('rate').oninput=function(){document.getElementById('rateVal').textContent=this.value};
+
+function speak(i){
+const d=DATA[i];
+const u=new SpeechSynthesisUtterance(d.char);
+u.lang='zh-CN';u.rate=getRate();
+const u2=new SpeechSynthesisUtterance(d.ci);
+u2.lang='zh-CN';u2.rate=getRate();
+u.onend=()=>speechSynthesis.speak(u2);
+speechSynthesis.cancel();
+speechSynthesis.speak(u);
+}
+
+function openModal(i,mode){
+const d=DATA[i];
+currentChar=d.char;
+document.getElementById('modalPinyin').textContent=d.py;
+document.getElementById('modalTitle').textContent=d.char+' — '+d.ci;
+document.getElementById('modal').classList.add('show');
+document.getElementById('btnReplay').style.display='none';
+const target=document.getElementById('writerTarget');
+target.innerHTML='';
+if(writer){try{writer=null}catch(e){}}
+writer=HanziWriter.create(target,d.char,{
+width:280,height:280,padding:10,
+showOutline:true,showCharacter:mode==='animate',
+strokeColor:'#333',outlineColor:'#ddd',
+drawingColor:'#22c55e',
+strokeAnimationSpeed:1,delayBetweenStrokes:300,
+charDataLoader:function(c,onLoad){
+fetch('https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/'+c+'.json')
+.then(r=>r.json()).then(onLoad);
+}
+});
+if(mode==='animate')setTimeout(()=>animateStroke(),300);
+else setTimeout(()=>startQuiz(),300);
+}
+
+function animateStroke(){
+if(!writer)return;
+document.getElementById('btnReplay').style.display='inline-block';
+writer.hideCharacter();
+writer.animateCharacter({onComplete:()=>{document.getElementById('btnReplay').style.display='inline-block'}});
+}
+
+function startQuiz(){
+if(!writer)return;
+document.getElementById('btnReplay').style.display='none';
+writer.quiz({strokeHighlightSpeed:2});
+}
+
+function closeModal(){
+document.getElementById('modal').classList.remove('show');
+if(writer){try{writer=null}catch(e){}}
+}
+
+let playIdx=0,playing=false;
+function playAll(){
+const visible=DATA.filter(d=>currentFilter==='all'||d.lesson===currentFilter);
+if(playing){playing=false;return}
+playing=true;playIdx=0;
+function next(){
+if(!playing||playIdx>=visible.length){playing=false;return}
+const d=visible[playIdx];
+openModal(DATA.indexOf(d),'animate');
+const u=new SpeechSynthesisUtterance(d.char);
+u.lang='zh-CN';u.rate=getRate();
+speechSynthesis.cancel();speechSynthesis.speak(u);
+playIdx++;
+setTimeout(()=>{closeModal();setTimeout(next,300)},2500);
+}
+next();
+}
+
+renderGrid();
+</script>
+</body>
+</html>
