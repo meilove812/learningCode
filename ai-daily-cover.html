@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI日报封面</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{display:flex;justify-content:center;align-items:center;min-height:100vh;background:#111;font-family:'PingFang SC','Microsoft YaHei',sans-serif}
+.cover{width:1080px;height:608px;background:linear-gradient(135deg,#0f172a 0%,#1e293b 40%,#0f172a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.cover::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background-image:radial-gradient(circle,rgba(59,130,246,.08) 1px,transparent 1px);background-size:40px 40px}
+.cover::after{content:'';position:absolute;top:-50%;right:-30%;width:600px;height:600px;background:radial-gradient(circle,rgba(59,130,246,.15),transparent 70%);border-radius:50%}
+.brand{font-size:28px;color:rgba(255,255,255,.5);letter-spacing:8px;margin-bottom:24px;z-index:1}
+.icon{font-size:72px;margin-bottom:20px;z-index:1}
+.title{font-size:52px;font-weight:800;color:#fff;z-index:1;letter-spacing:2px}
+.date{font-size:36px;color:rgba(255,255,255,.7);margin-top:20px;z-index:1;font-weight:300}
+.footer{position:absolute;bottom:28px;font-size:18px;color:rgba(255,255,255,.3);z-index:1;letter-spacing:4px}
+.accent{position:absolute;bottom:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,#3b82f6,#8b5cf6,#ec4899)}
+</style>
+</head>
+<body>
+<div class="cover">
+  <!-- ✏️ 修改日期 -->
+  <div class="brand">AI DAILY</div>
+  <div class="icon">🌐</div>
+  <div class="title">全球AI日报</div>
+  <div class="date">2026年4月14日（周二）</div>
+  <div class="footer">🦎 AI宝爸实验室</div>
+  <div class="accent"></div>
+</div>
+</body>
+</html>
