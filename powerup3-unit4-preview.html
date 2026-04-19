@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Up 3 Unit 4 预习 | Coco Learning Park</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,#e0f7fa,#f3e5f5);min-height:100vh;padding-bottom:80px}
+.header{background:linear-gradient(135deg,#7c4dff,#448aff);color:#fff;text-align:center;padding:18px 12px 14px;border-radius:0 0 24px 24px;box-shadow:0 4px 20px rgba(124,77,255,.3)}
+.header h1{font-size:1.3em;margin-bottom:4px}
+.header p{font-size:.85em;opacity:.9}
+.tabs{display:flex;gap:6px;padding:12px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs button{flex-shrink:0;border:none;border-radius:20px;padding:10px 16px;font-size:.9em;font-weight:600;cursor:pointer;transition:all .2s;background:#fff;color:#555;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.tabs button.active{color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.tabs button:nth-child(1).active{background:linear-gradient(135deg,#ff6b6b,#ee5a24)}
+.tabs button:nth-child(2).active{background:linear-gradient(135deg,#f9ca24,#f0932b)}
+.tabs button:nth-child(3).active{background:linear-gradient(135deg,#6ab04c,#38ada9)}
+.tabs button:nth-child(4).active{background:linear-gradient(135deg,#9b59b6,#8e44ad)}
+.panel{display:none;padding:12px 10px;animation:fadeIn .3s}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card{background:#fff;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.card h3{font-size:1.05em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.line-item{padding:10px 12px;border-radius:12px;margin-bottom:8px;cursor:pointer;transition:background .2s;border-left:4px solid #7c4dff}
+.line-item:hover{background:#f5f0ff}
+.line-item:active{background:#ede7f6}
+.line-en{font-size:1.15em;font-weight:600;color:#333;margin-bottom:3px}
+.line-cn{font-size:.9em;color:#888;margin-bottom:4px}
+.line-key{display:inline-block;background:#fff9c4;border-radius:8px;padding:2px 8px;font-size:.82em;color:#f57f17;font-weight:600;margin-top:2px}
+.vocab-grid{display:flex;flex-wrap:wrap;gap:8px}
+.vocab-chip{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:12px;padding:8px 14px;cursor:pointer;transition:transform .15s,box-shadow .15s;text-align:center;min-width:90px}
+.vocab-chip:active{transform:scale(.95)}
+.vocab-chip .emoji{font-size:1.5em;display:block;margin-bottom:2px}
+.vocab-chip .en{font-weight:700;font-size:.95em;color:#2e7d32}
+.vocab-chip .cn{font-size:.78em;color:#666}
+.callout{background:linear-gradient(135deg,#fff3e0,#ffe0b2);border-radius:14px;padding:14px 16px;margin-bottom:14px;border-left:4px solid #ff9800}
+.callout h4{color:#e65100;margin-bottom:8px}
+.callout ul{padding-left:18px;font-size:.9em;color:#555;line-height:1.7}
+.quiz-q{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.quiz-q p{font-weight:700;margin-bottom:10px;font-size:1em}
+.quiz-opts{display:flex;flex-direction:column;gap:6px}
+.quiz-opt{border:2px solid #e0e0e0;border-radius:10px;padding:10px 14px;cursor:pointer;font-size:.95em;transition:all .2s;background:#fafafa}
+.quiz-opt:active{transform:scale(.98)}
+.quiz-opt.correct{border-color:#4caf50;background:#e8f5e9;color:#2e7d32;font-weight:700}
+.quiz-opt.wrong{border-color:#ef5350;background:#ffebee;color:#c62828}
+.quiz-opt.disabled{pointer-events:none;opacity:.7}
+.quiz-fb{margin-top:8px;font-weight:700;font-size:.95em;min-height:1.4em}
+.plant-diagram{display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px;font-size:1.1em}
+.plant-diagram .part{cursor:pointer;padding:6px 14px;border-radius:10px;transition:background .2s}
+.plant-diagram .part:active{background:#e8f5e9}
+.plant-diagram .part .emoji{font-size:1.4em;margin-right:6px}
+.section-title{font-size:1.1em;font-weight:700;margin:16px 0 10px;padding-left:4px;display:flex;align-items:center;gap:6px}
+.play-all-btn{display:block;width:100%;border:none;border-radius:14px;padding:14px;font-size:1em;font-weight:700;color:#fff;cursor:pointer;margin-top:12px;transition:transform .15s}
+.play-all-btn:active{transform:scale(.97)}
+.footer{text-align:center;padding:20px;font-size:.82em;color:#999;margin-top:20px}
+.speaker-icon{display:inline-block;width:20px;height:20px;margin-right:4px;vertical-align:middle;opacity:.5}
+.sentence-block{margin-bottom:14px}
+.sentence-block .verse-label{font-size:.8em;color:#b388ff;font-weight:700;margin-bottom:6px;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📖 Power Up 3 · Unit 4 预习</h1>
+  <p>Hey Coco! 课前预习，上课更自信 💪</p>
+</div>
+
+<div class="tabs" id="tabs">
+  <button class="active" onclick="switchTab(0)">🎵 歌曲</button>
+  <button onclick="switchTab(1)">🐾 动物</button>
+  <button onclick="switchTab(2)">🌱 植物</button>
+  <button onclick="switchTab(3)">🪴 食虫植物</button>
+</div>
+
+<!-- ========== TAB 0: Song ========== -->
+<div class="panel active" id="panel0">
+  <div class="section-title">🎵 歌曲：Carefully, Slowly, Quickly</div>
+
+  <div class="card">
+    <div class="sentence-block"><div class="verse-label">🎶 第一段 — Carefully 小心地</div></div>
+    <div class="line-item" onclick="speakEn(this,'Carefully, carefully, carefully, carefully')">
+      <div class="line-en">🔊 Carefully, carefully, carefully, carefully</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'小心地，小心地')">小心地，小心地</div>
+      <span class="line-key">🔑 carefully = 小心地</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'We flew to the jungle.')">
+      <div class="line-en">🔊 We flew to the jungle.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们飞到了丛林。')">我们飞到了丛林。</div>
+      <span class="line-key">🔑 flew (fly的过去式) = 飞 · jungle = 丛林</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'We drove to the beach')">
+      <div class="line-en">🔊 We drove to the beach</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们开车到了海滩。')">我们开车到了海滩。</div>
+      <span class="line-key">🔑 drove (drive的过去式) = 开车 · beach = 海滩</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'And we sailed on the sea.')">
+      <div class="line-en">🔊 And we sailed on the sea.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们在海上航行。')">我们在海上航行。</div>
+      <span class="line-key">🔑 sailed = 航行 · sea = 大海</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'Yes, we did')">
+      <div class="line-en">🔊 Yes, we did ...</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'是的，我们做到了')">是的，我们做到了...</div>
+      <span class="line-key">🔑 did = do的过去式</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sentence-block"><div class="verse-label">🎶 第二段 — Slowly 慢慢地</div></div>
+    <div class="line-item" onclick="speakEn(this,'Slowly, slowly, slowly, slowly')">
+      <div class="line-en">🔊 Slowly, slowly, slowly, slowly</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'慢慢地，慢慢地')">慢慢地，慢慢地</div>
+      <span class="line-key">🔑 slowly = 慢慢地</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'We fished in a river.')">
+      <div class="line-en">🔊 We fished in a river.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们在河里钓鱼。')">我们在河里钓鱼。</div>
+      <span class="line-key">🔑 fished = 钓鱼 · river = 河</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'We threw our nets')">
+      <div class="line-en">🔊 We threw our nets</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们撒了网。')">我们撒了网。</div>
+      <span class="line-key">🔑 threw (throw的过去式) = 扔/撒 · nets = 渔网</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'And we caught some fish.')">
+      <div class="line-en">🔊 And we caught some fish.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们抓到了一些鱼。')">我们抓到了一些鱼。</div>
+      <span class="line-key">🔑 caught (catch的过去式) = 抓到</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'Yes, we did')">
+      <div class="line-en">🔊 Yes, we did ...</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'是的，我们做到了')">是的，我们做到了...</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sentence-block"><div class="verse-label">🎶 第三段 — Quickly 快快地</div></div>
+    <div class="line-item" onclick="speakEn(this,'Quickly, quickly, quickly, quickly')">
+      <div class="line-en">🔊 Quickly, quickly, quickly, quickly</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'快快地，快快地')">快快地，快快地</div>
+      <span class="line-key">🔑 quickly = 快速地</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'We learnt to dance.')">
+      <div class="line-en">🔊 We learnt to dance.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们学会了跳舞。')">我们学会了跳舞。</div>
+      <span class="line-key">🔑 learnt (learn的过去式) = 学会</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'We bounced and hopped.')">
+      <div class="line-en">🔊 We bounced and hopped.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们蹦蹦跳跳。')">我们蹦蹦跳跳。</div>
+      <span class="line-key">🔑 bounced = 弹跳 · hopped = 单脚跳</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'And we skipped and kicked.')">
+      <div class="line-en">🔊 And we skipped and kicked.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们跳绳又踢腿。')">我们跳绳又踢腿。</div>
+      <span class="line-key">🔑 skipped = 蹦跳 · kicked = 踢</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'Yes, we did')">
+      <div class="line-en">🔊 Yes, we did ...</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'是的，我们做到了')">是的，我们做到了...</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <h4>📝 语法要点：Past Simple 过去式</h4>
+    <ul>
+      <li><strong>规则变化</strong>（加-ed）：fish → fish<strong>ed</strong>, learn → learn<strong>t</strong>, skip → skip<strong>ped</strong>, kick → kick<strong>ed</strong></li>
+      <li><strong>不规则变化</strong>（要背！）：fly → <strong>flew</strong>, drive → <strong>drove</strong>, throw → <strong>threw</strong>, catch → <strong>caught</strong></li>
+    </ul>
+  </div>
+
+  <div class="section-title">✏️ 小测验</div>
+  <div class="quiz-q" id="sq1">
+    <p>1. flew 是哪个词的过去式？</p>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="checkQuiz('sq1',this,false)">A. flow</div>
+      <div class="quiz-opt" onclick="checkQuiz('sq1',this,true)">B. fly ✈️</div>
+      <div class="quiz-opt" onclick="checkQuiz('sq1',this,false)">C. flat</div>
+    </div>
+    <div class="quiz-fb"></div>
+  </div>
+  <div class="quiz-q" id="sq2">
+    <p>2. caught 是什么意思？</p>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="checkQuiz('sq2',this,false)">A. 买到</div>
+      <div class="quiz-opt" onclick="checkQuiz('sq2',this,true)">B. 抓到 🎣</div>
+      <div class="quiz-opt" onclick="checkQuiz('sq2',this,false)">C. 看到</div>
+    </div>
+    <div class="quiz-fb"></div>
+  </div>
+  <div class="quiz-q" id="sq3">
+    <p>3. slowly 是什么意思？</p>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="checkQuiz('sq3',this,false)">A. 快快地</div>
+      <div class="quiz-opt" onclick="checkQuiz('sq3',this,false)">B. 小心地</div>
+      <div class="quiz-opt" onclick="checkQuiz('sq3',this,true)">C. 慢慢地 🐢</div>
+    </div>
+    <div class="quiz-fb"></div>
+  </div>
+
+  <button class="play-all-btn" style="background:linear-gradient(135deg,#ff6b6b,#ee5a24)" onclick="playAllLines(0)">🔊 连续播放全部歌词</button>
+</div>
+
+<!-- ========== TAB 1: Animals ========== -->
+<div class="panel" id="panel1">
+  <div class="section-title">🐾 动物比较 — Comparative Adverbs</div>
+
+  <div class="card">
+    <h3>📖 例句讲解</h3>
+    <div class="line-item" onclick="speakEn(this,'Elephants can move faster than snakes.')">
+      <div class="line-en">🔊 Elephants can move faster than snakes.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'大象比蛇移动得更快。')">大象比蛇移动得更快。</div>
+      <span class="line-key">🔑 faster = 更快 (fast的比较级)</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'Monkeys can climb better than tigers.')">
+      <div class="line-en">🔊 Monkeys can climb better than tigers.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'猴子比老虎爬得更好。')">猴子比老虎爬得更好。</div>
+      <span class="line-key">🔑 better = 更好 (well的比较级)</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'Bears can run more quickly than monkeys.')">
+      <div class="line-en">🔊 Bears can run more quickly than monkeys.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'熊比猴子跑得更快。')">熊比猴子跑得更快。</div>
+      <span class="line-key">🔑 more quickly = 更快地 (长副词用more)</span>
+    </div>
+  </div>
+
+  <div class="callout">
+    <h4>📝 规则总结：副词比较级</h4>
+    <ul>
+      <li><strong>短副词</strong>（1个词）→ 加-er：fast → fast<strong>er</strong>, hard → hard<strong>er</strong></li>
+      <li><strong>长副词</strong>（2个词以上）→ 前面加more：quickly → <strong>more</strong> quickly, carefully → <strong>more</strong> carefully</li>
+      <li><strong>特殊的</strong>：well → <strong>better</strong>, badly → <strong>worse</strong></li>
+    </ul>
+  </div>
+
+  <div class="section-title">🦁 动物词汇</div>
+  <div class="card">
+    <div class="vocab-grid">
+      <div class="vocab-chip" onclick="speakEn(this,'elephant')"><span class="emoji">🐘</span><span class="en">elephant</span><span class="cn">大象</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'bat')"><span class="emoji">🦇</span><span class="en">bat</span><span class="cn">蝙蝠</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'tiger')"><span class="emoji">🐅</span><span class="en">tiger</span><span class="cn">老虎</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'snake')"><span class="emoji">🐍</span><span class="en">snake</span><span class="cn">蛇</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'monkey')"><span class="emoji">🐒</span><span class="en">monkey</span><span class="cn">猴子</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'bear')"><span class="emoji">🐻</span><span class="en">bear</span><span class="cn">熊</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">🏃 动作词汇</div>
+  <div class="card">
+    <div class="vocab-grid">
+      <div class="vocab-chip" onclick="speakEn(this,'move')"><span class="emoji">👟</span><span class="en">move</span><span class="cn">移动</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'run')"><span class="emoji">🏃</span><span class="en">run</span><span class="cn">跑</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'jump')"><span class="emoji">🦘</span><span class="en">jump</span><span class="cn">跳</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'fly')"><span class="emoji">🕊️</span><span class="en">fly</span><span class="cn">飞</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'swim')"><span class="emoji">🏊</span><span class="en">swim</span><span class="cn">游泳</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'climb')"><span class="emoji">🧗</span><span class="en">climb</span><span class="cn">爬</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">💨 副词词汇</div>
+  <div class="card">
+    <div class="vocab-grid">
+      <div class="vocab-chip" onclick="speakEn(this,'well')"><span class="emoji">👍</span><span class="en">well</span><span class="cn">好地</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'loudly')"><span class="emoji">📢</span><span class="en">loudly</span><span class="cn">大声地</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'quietly')"><span class="emoji">🤫</span><span class="en">quietly</span><span class="cn">安静地</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'quickly')"><span class="emoji">⚡</span><span class="en">quickly</span><span class="cn">快速地</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'slowly')"><span class="emoji">🐢</span><span class="en">slowly</span><span class="cn">慢慢地</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'carefully')"><span class="emoji">🔍</span><span class="en">carefully</span><span class="cn">小心地</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'hard')"><span class="emoji">💪</span><span class="en">hard</span><span class="cn">努力地</span></div>
+      <div class="vocab-chip" onclick="speakEn(this,'fast')"><span class="emoji">🚀</span><span class="en">fast</span><span class="cn">快地</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">✏️ 小测验 — 选出正确的比较句</div>
+  <div class="quiz-q" id="aq1">
+    <p>🐅 Tigers / 🐘 Elephants / run</p>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="checkQuiz('aq1',this,true)">A. Tigers can run faster than elephants. ✅</div>
+      <div class="quiz-opt" onclick="checkQuiz('aq1',this,false)">B. Tigers can run more fast than elephants.</div>
+      <div class="quiz-opt" onclick="checkQuiz('aq1',this,false)">C. Tigers can run better than elephants.</div>
+    </div>
+    <div class="quiz-fb"></div>
+  </div>
+  <div class="quiz-q" id="aq2">
+    <p>🐒 Monkeys / 🐻 Bears / climb</p>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="checkQuiz('aq2',this,false)">A. Monkeys can climb more well than bears.</div>
+      <div class="quiz-opt" onclick="checkQuiz('aq2',this,true)">B. Monkeys can climb better than bears. ✅</div>
+      <div class="quiz-opt" onclick="checkQuiz('aq2',this,false)">C. Monkeys can climb gooder than bears.</div>
+    </div>
+    <div class="quiz-fb"></div>
+  </div>
+  <div class="quiz-q" id="aq3">
+    <p>哪个是 "more carefully" 的意思？</p>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="checkQuiz('aq3',this,false)">A. 更快地</div>
+      <div class="quiz-opt" onclick="checkQuiz('aq3',this,true)">B. 更小心地 🔍</div>
+      <div class="quiz-opt" onclick="checkQuiz('aq3',this,false)">C. 更大声地</div>
+    </div>
+    <div class="quiz-fb"></div>
+  </div>
+</div>
+
+<!-- ========== TAB 2: Plants ========== -->
+<div class="panel" id="panel2">
+  <div class="section-title">🌱 课文：From the Roots to the Flower</div>
+
+  <div class="card">
+    <div class="line-item" onclick="speakEn(this,'Plants are living things and grow almost everywhere')">
+      <div class="line-en">🔊 Plants are living things and grow almost everywhere</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'植物是有生命的东西，几乎到处都能生长')">植物是有生命的东西，几乎到处都能生长</div>
+      <span class="line-key">🔑 living things = 有生命的东西 · everywhere = 到处</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'from the bottom of the sea to the highest mountain.')">
+      <div class="line-en">🔊 – from the bottom of the sea to the highest mountain.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'从海底到最高的山顶。')">——从海底到最高的山顶。</div>
+      <span class="line-key">🔑 bottom = 底部 · highest = 最高的</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'What plants grow near you?')">
+      <div class="line-en">🔊 What plants grow near you?</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'你家附近长什么植物？')">你家附近长什么植物？</div>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'Most plants make food using sunlight.')">
+      <div class="line-en">🔊 Most plants make food using sunlight.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'大多数植物用阳光制造食物。')">大多数植物用阳光制造食物。</div>
+      <span class="line-key">🔑 sunlight = 阳光</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'They also need water to survive, just like us!')">
+      <div class="line-en">🔊 They also need water to survive, just like us!</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'它们也需要水才能活下来，就像我们一样！')">它们也需要水才能活下来，就像我们一样！</div>
+      <span class="line-key">🔑 survive = 存活</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'Plants usually have three parts to them: roots, a stem and leaves.')">
+      <div class="line-en">🔊 Plants usually have three parts to them: roots, a stem and leaves.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'植物通常有三个部分：根、茎和叶子。')">植物通常有三个部分：根、茎和叶子。</div>
+      <span class="line-key">🔑 roots = 根 · stem = 茎 · leaves = 叶子</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'The roots take up water from the ground')">
+      <div class="line-en">🔊 The roots take up water from the ground</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'根从地里吸收水分')">根从地里吸收水分</div>
+      <span class="line-key">🔑 take up = 吸收 · ground = 地面</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'and the leaves take in sunlight and air around them for food.')">
+      <div class="line-en">🔊 and the leaves take in sunlight and air around them for food.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'叶子吸收周围的阳光和空气来制造食物。')">叶子吸收周围的阳光和空气来制造食物。</div>
+      <span class="line-key">🔑 take in = 吸收</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'Some plants also have flowers or fruit.')">
+      <div class="line-en">🔊 Some plants also have flowers or fruit.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'有些植物还有花或果实。')">有些植物还有花或果实。</div>
+      <span class="line-key">🔑 flowers = 花 · fruit = 果实</span>
+    </div>
+  </div>
+
+  <div class="section-title">🌿 植物结构图</div>
+  <div class="card">
+    <div class="plant-diagram">
+      <div class="part" onclick="speakEn(this,'flower')" style="color:#e91e63"><span class="emoji">🌸</span> <strong>flower</strong> 花</div>
+      <div class="part" onclick="speakEn(this,'fruit')" style="color:#f44336"><span class="emoji">🍅</span> <strong>fruit</strong> 果实</div>
+      <div class="part" onclick="speakEn(this,'leaves')" style="color:#4caf50"><span class="emoji">🍃</span> <strong>leaves</strong> 叶子</div>
+      <div style="width:6px;height:40px;background:linear-gradient(#8bc34a,#795548);border-radius:3px;margin:4px auto"></div>
+      <div class="part" onclick="speakEn(this,'stem')" style="color:#795548"><span class="emoji">🟫</span> <strong>stem</strong> 茎</div>
+      <div style="width:80px;height:3px;background:#795548;margin:2px auto"></div>
+      <div class="part" onclick="speakEn(this,'roots')" style="color:#5d4037"><span class="emoji">🟤</span> <strong>roots</strong> 根</div>
+    </div>
+  </div>
+
+  <div class="section-title">✏️ 小测验</div>
+  <div class="quiz-q" id="pq1">
+    <p>植物的三个基本部分是什么？</p>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="checkQuiz('pq1',this,false)">A. flowers, fruit, leaves</div>
+      <div class="quiz-opt" onclick="checkQuiz('pq1',this,true)">B. roots, stem, leaves 🌱</div>
+      <div class="quiz-opt" onclick="checkQuiz('pq1',this,false)">C. sunlight, water, air</div>
+    </div>
+    <div class="quiz-fb"></div>
+  </div>
+  <div class="quiz-q" id="pq2">
+    <p>根 (roots) 的作用是什么？</p>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="checkQuiz('pq2',this,true)">A. 从地里吸收水分 💧</div>
+      <div class="quiz-opt" onclick="checkQuiz('pq2',this,false)">B. 吸收阳光</div>
+      <div class="quiz-opt" onclick="checkQuiz('pq2',this,false)">C. 开花结果</div>
+    </div>
+    <div class="quiz-fb"></div>
+  </div>
+  <div class="quiz-q" id="pq3">
+    <p>叶子 (leaves) 吸收什么来制造食物？</p>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="checkQuiz('pq3',this,false)">A. 水和土壤</div>
+      <div class="quiz-opt" onclick="checkQuiz('pq3',this,true)">B. 阳光和空气 ☀️</div>
+      <div class="quiz-opt" onclick="checkQuiz('pq3',this,false)">C. 花和果实</div>
+    </div>
+    <div class="quiz-fb"></div>
+  </div>
+
+  <button class="play-all-btn" style="background:linear-gradient(135deg,#6ab04c,#38ada9)" onclick="playAllLines(2)">🔊 连续播放全部课文</button>
+</div>
+
+<!-- ========== TAB 3: Carnivorous Plants ========== -->
+<div class="panel" id="panel3">
+  <div class="section-title">🪴 Culture: Carnivorous Plants 食虫植物</div>
+
+  <div class="card">
+    <h3>🌍 什么是食虫植物？</h3>
+    <div class="line-item" onclick="speakEn(this,'Like most other plants, carnivorous plants need sun, air and water to make their own food.')">
+      <div class="line-en">🔊 Like most other plants, carnivorous plants need sun, air and water to make their own food.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'和大多数植物一样，食虫植物需要阳光、空气和水来制造食物。')">和大多数植物一样，食虫植物需要阳光、空气和水来制造食物。</div>
+      <span class="line-key">🔑 carnivorous = 食肉的/食虫的</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'But they also get extra nutrients by eating small animals!')">
+      <div class="line-en">🔊 But they also get extra nutrients by eating small animals!</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'但它们还通过吃小动物来获取额外的营养！')">但它们还通过吃小动物来获取额外的营养！</div>
+      <span class="line-key">🔑 nutrients = 营养 · extra = 额外的</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🪤 Venus Flytrap 捕蝇草</h3>
+    <div class="line-item" onclick="speakEn(this,'Venus flytraps grow naturally in the USA but are used as house plants all over the world.')">
+      <div class="line-en">🔊 Venus flytraps grow naturally in the USA but are used as house plants all over the world.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'捕蝇草自然生长在美国，但世界各地都有人当盆栽养。')">捕蝇草自然生长在美国，但世界各地都有人当盆栽养。</div>
+      <span class="line-key">🔑 naturally = 自然地 · house plants = 盆栽</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'They use their leaves to catch insects, like flies.')">
+      <div class="line-en">🔊 They use their leaves to catch insects, like flies.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'它们用叶子抓虫子，比如苍蝇。')">它们用叶子抓虫子，比如苍蝇。</div>
+      <span class="line-key">🔑 insects = 昆虫 · flies = 苍蝇</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'The leaves close when an insect touches the tiny hairs that grow on them.')">
+      <div class="line-en">🔊 The leaves close when an insect touches the tiny hairs that grow on them.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'当虫子碰到叶子上的小毛毛时，叶子就会合上。')">当虫子碰到叶子上的小毛毛时，叶子就会合上。</div>
+      <span class="line-key">🔑 tiny hairs = 小毛毛 · close = 合上</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'The plant can then slowly eat the insect.')">
+      <div class="line-en">🔊 The plant can then slowly eat the insect.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'然后植物就会慢慢把虫子吃掉。')">然后植物就会慢慢把虫子吃掉。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🌿 Sundew Plant 茅膏菜</h3>
+    <div class="line-item" onclick="speakEn(this,'Sundew plants are found in the Indian rainforests.')">
+      <div class="line-en">🔊 Sundew plants are found in the Indian rainforests.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'茅膏菜生长在印度的热带雨林里。')">茅膏菜生长在印度的热带雨林里。</div>
+      <span class="line-key">🔑 rainforests = 热带雨林</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'Their leaves have sticky hairs')">
+      <div class="line-en">🔊 Their leaves have sticky hairs</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'它们的叶子上有粘粘的毛')">它们的叶子上有粘粘的毛</div>
+      <span class="line-key">🔑 sticky = 粘粘的</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'and when an insect lands on the leaves, the sticky hairs trap them.')">
+      <div class="line-en">🔊 and when an insect lands on the leaves, the sticky hairs trap them.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'当虫子落在叶子上，粘毛就把它们困住了。')">当虫子落在叶子上，粘毛就把它们困住了。</div>
+      <span class="line-key">🔑 trap = 困住/陷阱</span>
+    </div>
+    <div class="line-item" onclick="speakEn(this,'Large sundew plants can trap and eat spiders.')">
+      <div class="line-en">🔊 Large sundew plants can trap and eat spiders.</div>
+      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'大的茅膏菜甚至能困住蜘蛛吃掉！')">大的茅膏菜甚至能困住蜘蛛吃掉！</div>
+      <span class="line-key">🔑 spiders = 蜘蛛</span>
+    </div>
+  </div>
+
+  <div class="section-title">✏️ 小测验</div>
+  <div class="quiz-q" id="cq1">
+    <p>捕蝇草 (Venus flytrap) 来自哪个国家？</p>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="checkQuiz('cq1',this,false)">A. India 印度</div>
+      <div class="quiz-opt" onclick="checkQuiz('cq1',this,true)">B. USA 美国 🇺🇸</div>
+      <div class="quiz-opt" onclick="checkQuiz('cq1',this,false)">C. China 中国</div>
+    </div>
+    <div class="quiz-fb"></div>
+  </div>
+  <div class="quiz-q" id="cq2">
+    <p>茅膏菜 (Sundew) 来自哪里？</p>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="checkQuiz('cq2',this,true)">A. Indian rainforests 印度雨林 🌴</div>
+      <div class="quiz-opt" onclick="checkQuiz('cq2',this,false)">B. USA 美国</div>
+      <div class="quiz-opt" onclick="checkQuiz('cq2',this,false)">C. Africa 非洲</div>
+    </div>
+    <div class="quiz-fb"></div>
+  </div>
+  <div class="quiz-q" id="cq3">
+    <p>哪种植物有粘粘的毛 (sticky hairs)？</p>
+    <div class="quiz-opts">
+      <div class="quiz-opt" onclick="checkQuiz('cq3',this,false)">A. Venus flytrap 捕蝇草</div>
+      <div class="quiz-opt" onclick="checkQuiz('cq3',this,true)">B. Sundew 茅膏菜 🌿</div>
+      <div class="quiz-opt" onclick="checkQuiz('cq3',this,false)">C. Sunflower 向日葵</div>
+    </div>
+    <div class="quiz-fb"></div>
+  </div>
+
+  <button class="play-all-btn" style="background:linear-gradient(135deg,#9b59b6,#8e44ad)" onclick="playAllLines(3)">🔊 连续播放全部课文</button>
+</div>
+
+<div class="footer">🦎 Coco Learning Park · Power Up 3 Unit 4</div>
+
+<script>
+// Tab switching
+function switchTab(i){
+  speechSynthesis.cancel();
+  document.querySelectorAll('.tabs button').forEach((b,j)=>b.classList.toggle('active',j===i));
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+}
+
+// TTS
+function speakEn(el,text){
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US';u.rate=0.85;
+  speechSynthesis.speak(u);
+  flash(el);
+}
+function speakCn(el,text){
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='zh-CN';u.rate=0.9;
+  speechSynthesis.speak(u);
+  flash(el);
+}
+function flash(el){
+  el.style.background='#ede7f6';
+  setTimeout(()=>el.style.background='',600);
+}
+
+// Quiz
+function checkQuiz(qid,el,correct){
+  const q=document.getElementById(qid);
+  const opts=q.querySelectorAll('.quiz-opt');
+  const fb=q.querySelector('.quiz-fb');
+  opts.forEach(o=>o.classList.add('disabled'));
+  if(correct){
+    el.classList.add('correct');
+    fb.textContent='⭐ 太棒了！答对啦！🎉';
+    fb.style.color='#4caf50';
+  }else{
+    el.classList.add('wrong');
+    fb.textContent='❌ 再想想哦～';
+    fb.style.color='#ef5350';
+    // Show correct
+    setTimeout(()=>{
+      opts.forEach(o=>{o.classList.remove('disabled')});
+      el.classList.remove('wrong');
+      fb.textContent='💡 点击正确答案试试！';
+      fb.style.color='#ff9800';
+    },1500);
+  }
+}
+
+// Play all lines in a panel
+function playAllLines(panelIdx){
+  speechSynthesis.cancel();
+  const panel=document.getElementById('panel'+panelIdx);
+  const items=panel.querySelectorAll('.line-en');
+  let i=0;
+  function next(){
+    if(i>=items.length)return;
+    const text=items[i].textContent.replace('🔊 ','').replace('🔊','').trim();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='en-US';u.rate=0.85;
+    u.onend=()=>{i++;setTimeout(next,400)};
+    items[i].closest('.line-item').style.background='#ede7f6';
+    setTimeout(()=>{if(items[i-1])items[i-1].closest('.line-item').style.background=''},2000);
+    speechSynthesis.speak(u);
+    i===0||flash(items[i].closest('.line-item'));
+  }
+  next();
+}
+</script>
+</body>
+</html>
