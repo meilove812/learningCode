@@ -3,335 +3,663 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🧠 数学思维训练 - Coco Learning Park</title>
+<title>🧠 数学思维训练</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, 'PingFang SC', sans-serif; background: #FFF8F0; min-height: 100vh; padding-bottom: 60px; }
-
-.header { text-align: center; padding: 20px 16px 10px; background: linear-gradient(135deg, #FF9A9E, #FECFEF, #A8EDEA); }
-.header h1 { font-size: 24px; color: #5B2C6F; text-shadow: 1px 1px 0 #fff; }
-.header .sub { font-size: 14px; color: #7D3C98; margin-top: 4px; }
-
-.tabs { display: flex; gap: 8px; padding: 12px 16px; justify-content: center; flex-wrap: wrap; }
-.tab { padding: 10px 16px; border-radius: 20px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: all .2s; }
-.tab[data-q="0"] { background: #D6EAF8; color: #2471A3; }
-.tab[data-q="1"] { background: #D5F5E3; color: #1E8449; }
-.tab[data-q="2"] { background: #FDEBD0; color: #CA6F1E; }
-.tab.active[data-q="0"] { background: #2E86C1; color: #fff; box-shadow: 0 3px 10px #2E86C188; }
-.tab.active[data-q="1"] { background: #27AE60; color: #fff; box-shadow: 0 3px 10px #27AE6088; }
-.tab.active[data-q="2"] { background: #E67E22; color: #fff; box-shadow: 0 3px 10px #E67E2288; }
-
-.question { display: none; padding: 0 16px; max-width: 500px; margin: 0 auto; }
-.question.active { display: block; }
-
-.card { border-radius: 20px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,.08); }
-.q0 .card { background: #EBF5FB; border: 2px solid #AED6F1; }
-.q1 .card { background: #EAFAF1; border: 2px solid #ABEBC6; }
-.q2 .card { background: #FEF5E7; border: 2px solid #F9CB9C; }
-
-.stars { font-size: 20px; margin-bottom: 8px; }
-.q-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-.q-text { font-size: 16px; line-height: 1.8; color: #333; }
-.q-text .blank { display: inline-block; width: 50px; border-bottom: 2px solid #E74C3C; text-align: center; color: #E74C3C; font-weight: 700; }
-
-.speak-btn { background: none; border: none; font-size: 22px; cursor: pointer; vertical-align: middle; }
-
-/* Animation area */
-.anim-area { position: relative; height: 200px; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
-.q0 .anim-area { background: linear-gradient(to bottom, #85C1E9 60%, #7DCEA0 60%); }
-.q1 .anim-area { background: linear-gradient(to bottom, #A3E4D7 30%, #D5F5E3 30%); }
-.q2 .anim-area { background: linear-gradient(to bottom, #ABEBC6 50%, #82E0AA 50%); }
-
-/* Bus scene */
-.bus { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 60px; transition: all .5s; }
-.person { position: absolute; font-size: 24px; transition: all 1s ease-in-out; opacity: 1; }
-.person.gone { opacity: 0; transform: translateY(-40px); }
-.person.arrive { opacity: 1; }
-.bus-counter { position: absolute; top: 8px; right: 12px; background: #fff; border-radius: 12px; padding: 4px 12px; font-size: 14px; font-weight: 700; color: #2C3E50; }
-
-/* Bucket scene */
-.bucket-wrap { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 100px; height: 140px; }
-.bucket-body { width: 100px; height: 120px; background: #AAB7B8; border-radius: 0 0 15px 15px; position: relative; overflow: hidden; border: 3px solid #7F8C8D; }
-.water { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to bottom, #5DADE2, #2E86C1); transition: height 1s ease-in-out; }
-.bucket-label { text-align: center; font-size: 14px; font-weight: 700; color: #1A5276; margin-top: 4px; }
-.pour-anim { position: absolute; font-size: 28px; opacity: 0; transition: all .8s; }
-
-/* Bird scene */
-.tree-row { display: flex; justify-content: space-around; position: absolute; bottom: 0; left: 0; right: 0; height: 100%; align-items: flex-end; padding: 0 10px; }
-.tree-col { text-align: center; width: 22%; position: relative; }
-.tree-emoji { font-size: 50px; }
-.tree-label { font-size: 12px; font-weight: 700; color: #1E8449; background: #ffffffcc; border-radius: 8px; padding: 1px 6px; }
-.bird { position: absolute; font-size: 18px; transition: all 1.2s ease-in-out; }
-
-/* Steps */
-.steps-area { min-height: 40px; }
-.step { display: none; padding: 12px; border-radius: 12px; margin-bottom: 8px; font-size: 15px; line-height: 1.7; animation: fadeIn .4s; }
-.step.visible { display: block; }
-.q0 .step { background: #D4E6F1; }
-.q1 .step { background: #D0ECE7; }
-.q2 .step { background: #FAE5CD; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-
-.next-btn { display: inline-block; padding: 10px 24px; border-radius: 25px; border: none; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer; margin-top: 8px; transition: transform .15s; }
-.next-btn:active { transform: scale(.95); }
-.q0 .next-btn { background: linear-gradient(135deg, #3498DB, #2E86C1); }
-.q1 .next-btn { background: linear-gradient(135deg, #2ECC71, #27AE60); }
-.q2 .next-btn { background: linear-gradient(135deg, #F39C12, #E67E22); }
-.next-btn:disabled { opacity: .4; cursor: default; }
-
-.reset-btn { background: none; border: 1px dashed #aaa; color: #888; padding: 6px 16px; border-radius: 15px; font-size: 13px; cursor: pointer; margin-left: 8px; }
-
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#FFF8F0;min-height:100vh;padding:12px;padding-bottom:80px}
+.tabs{display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:10px 18px;border-radius:20px;border:none;font-size:16px;font-weight:bold;cursor:pointer;transition:all .3s;opacity:.6}
+.tab.active{opacity:1;transform:scale(1.05);color:#fff}
+.tab[data-t="0"]{background:#4A90D9;color:#fff}
+.tab[data-t="1"]{background:#7ED321;color:#fff}
+.tab[data-t="2"]{background:#F5A623;color:#fff}
+.problem{display:none}
+.problem.active{display:block}
+.card{background:#fff;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 4px 15px rgba(0,0,0,.08)}
+.card h2{font-size:20px;margin-bottom:12px}
+.stars{color:#FFD700;font-size:18px}
+.typewriter-box{font-size:18px;line-height:1.8;min-height:60px;padding:12px;background:#F9F9F9;border-radius:12px;margin:12px 0}
+.typewriter-cursor{display:inline-block;width:2px;height:1.1em;background:#333;animation:blink .8s infinite;vertical-align:text-bottom}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.btn{padding:10px 24px;border-radius:16px;border:none;font-size:16px;font-weight:bold;color:#fff;cursor:pointer;transition:all .2s;margin:6px 4px}
+.btn:active{transform:scale(.95)}
+.btn-blue{background:#4A90D9}
+.btn-green{background:#7ED321}
+.btn-orange{background:#F5A623}
+.btn-sm{padding:6px 12px;font-size:13px;border-radius:10px}
+.speak-btn{background:none;border:none;font-size:22px;cursor:pointer;vertical-align:middle;padding:2px 6px}
+.step-box{padding:14px;margin:8px 0;border-radius:14px;background:#F0F8FF;display:none;font-size:16px;line-height:1.7}
+.step-box.show{display:block;animation:fadeIn .4s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+/* Bus */
+.bus-scene{position:relative;width:100%;height:260px;overflow:hidden;background:#E8F4FD;border-radius:16px;margin:12px 0}
+.bus{position:absolute;left:50%;transform:translateX(-50%);bottom:40px;width:180px;height:90px;background:#4A90D9;border-radius:12px 12px 4px 4px;border:3px solid #3A7BC8}
+.bus::after{content:'🚌';position:absolute;top:-30px;left:50%;transform:translateX(-50%);font-size:28px}
+.bus .window{position:absolute;top:12px;width:28px;height:22px;background:#B8D9F2;border-radius:4px;border:2px solid #3A7BC8}
+.bus .wheel{position:absolute;bottom:-14px;width:24px;height:24px;background:#333;border-radius:50%;border:3px solid #666}
+.bus-people{position:absolute;left:50%;transform:translateX(-50%);bottom:50px;width:160px;display:flex;flex-wrap:wrap;justify-content:center;gap:3px;padding:8px;z-index:2}
+.person{width:14px;height:14px;background:#FF6B6B;border-radius:50%;transition:all .6s ease;opacity:1}
+.person.out{transform:translateY(80px) translateX(var(--ox,0px));opacity:0}
+.person.in{animation:slideIn .5s ease}
+@keyframes slideIn{from{transform:translateY(-60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.bus-label{position:absolute;top:10px;right:10px;font-size:15px;font-weight:bold;color:#4A90D9;background:#fff;padding:4px 10px;border-radius:10px}
+.bus-count{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:14px;font-weight:bold;color:#333;background:rgba(255,255,255,.9);padding:3px 10px;border-radius:8px}
+/* Bucket */
+.bucket-scene{position:relative;width:100%;height:260px;background:#E8F8E8;border-radius:16px;margin:12px 0;display:flex;align-items:center;justify-content:center}
+.bucket{position:relative;width:100px;height:160px}
+.bucket-body{position:absolute;bottom:0;width:100px;height:140px;background:#8B6914;border-radius:0 0 10px 10px;overflow:hidden;border:3px solid #6B4F12}
+.bucket-rim{position:absolute;top:0;width:110px;left:-5px;height:20px;background:#A0781E;border-radius:6px;border:2px solid #6B4F12}
+.water{position:absolute;bottom:0;width:100%;background:linear-gradient(180deg,#64B5F6,#1E88E5);transition:height 1s ease;border-radius:0 0 8px 8px}
+.water-label{position:absolute;left:50%;transform:translateX(-50%);color:#fff;font-weight:bold;font-size:14px;bottom:4px;text-shadow:0 1px 2px rgba(0,0,0,.3);white-space:nowrap}
+.bucket-info{position:absolute;right:10px;top:10px;font-size:15px;font-weight:bold;color:#2E7D32;background:#fff;padding:4px 10px;border-radius:10px}
+/* Trees */
+.tree-scene{position:relative;width:100%;height:280px;background:#FFF8E1;border-radius:16px;margin:12px 0;overflow:hidden}
+.tree-row{display:flex;justify-content:space-around;align-items:flex-end;height:100%;padding:0 10px 20px}
+.tree-unit{display:flex;flex-direction:column;align-items:center;position:relative;width:22%}
+.tree-birds{font-size:13px;margin-bottom:4px;min-height:24px;text-align:center;font-weight:bold;color:#E65100}
+.tree-top{width:0;height:0;border-left:30px solid transparent;border-right:30px solid transparent;border-bottom:50px solid #4CAF50}
+.tree-trunk{width:14px;height:30px;background:#795548;border-radius:0 0 4px 4px}
+.tree-label{margin-top:4px;font-size:12px;color:#666}
+.flying-bird{position:absolute;font-size:16px;transition:all 1.2s ease;z-index:10}
 /* Practice */
-.practice { border-radius: 20px; padding: 20px; margin-top: 16px; }
-.q0 .practice { background: #D6EAF8; border: 2px dashed #5DADE2; }
-.q1 .practice { background: #D5F5E3; border: 2px dashed #58D68D; }
-.q2 .practice { background: #FDEBD0; border: 2px dashed #F0B27A; }
-.practice h3 { font-size: 16px; margin-bottom: 10px; }
-.practice .p-text { font-size: 15px; line-height: 1.8; margin-bottom: 12px; }
-.practice input { width: 80px; padding: 8px 12px; border-radius: 12px; border: 2px solid #BDC3C7; font-size: 18px; text-align: center; font-weight: 700; }
-.practice input:focus { outline: none; border-color: #8E44AD; }
-.check-btn { padding: 8px 20px; border-radius: 15px; border: none; background: #8E44AD; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; margin-left: 8px; }
-.feedback { font-size: 16px; margin-top: 10px; min-height: 24px; font-weight: 600; }
-.feedback.correct { color: #27AE60; }
-.feedback.wrong { color: #E74C3C; }
-
-/* Celebration */
-.celebrate { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 999; }
-.celebrate.show { display: block; }
-.confetti { position: absolute; font-size: 28px; animation: confettiFall 2s ease-in forwards; }
-@keyframes confettiFall { 0% { opacity: 1; transform: translateY(-20px) rotate(0deg); } 100% { opacity: 0; transform: translateY(100vh) rotate(720deg); } }
-
-.footer { text-align: center; padding: 20px; font-size: 13px; color: #AAB7B8; margin-top: 30px; }
+.practice-box{background:#FFFDE7;border-radius:16px;padding:16px;margin-top:12px;border:2px dashed #FFD54F}
+.practice-box h3{font-size:17px;margin-bottom:10px}
+.practice-input{width:80px;height:40px;font-size:20px;text-align:center;border:2px solid #ddd;border-radius:10px;margin:0 8px}
+.practice-result{font-size:18px;margin-top:10px;min-height:30px}
+.confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
+.confetti-piece{position:absolute;width:10px;height:10px;border-radius:2px;animation:confettiFall 2s ease forwards}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+footer{text-align:center;color:#999;font-size:13px;padding:20px 0}
+.hidden{display:none}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>🧠 数学思维训练</h1>
-  <div class="sub">逆推法 · 从后往前想 💡</div>
-</div>
-
 <div class="tabs">
-  <button class="tab active" data-q="0" onclick="switchQ(0)">🚌 公交车 ⭐⭐⭐</button>
-  <button class="tab" data-q="1" onclick="switchQ(1)">🪣 倒水 ⭐⭐⭐⭐</button>
-  <button class="tab" data-q="2" onclick="switchQ(2)">🐦 小鸟 ⭐⭐⭐⭐⭐</button>
+  <button class="tab active" data-t="0" onclick="switchTab(0)">🚌 公交车 ⭐⭐⭐</button>
+  <button class="tab" data-t="1" onclick="switchTab(1)">🪣 倒水 ⭐⭐⭐⭐</button>
+  <button class="tab" data-t="2" onclick="switchTab(2)">🐦 小鸟 ⭐⭐⭐⭐⭐</button>
 </div>
 
-<!-- Q0: Bus -->
-<div class="question q0 active" id="q0">
-  <div class="card">
-    <div class="stars">⭐⭐⭐</div>
-    <div class="q-title">🚌 公交车上下客 <button class="speak-btn" onclick="speak(q0Text)">🔊</button></div>
-    <div class="q-text" id="q0text">一辆公共汽车，到第一站下车10人。到第二站下车的人数比第一站少5人。到第三站上来8人后，车上现有13人。这辆公共汽车上原来有（<span class="blank">？</span>）人。</div>
+<!-- Problem 1: Bus -->
+<div class="problem active" id="p0">
+  <div class="card" style="border-top:4px solid #4A90D9">
+    <h2>🚌 公交车上下客 <span class="stars">⭐⭐⭐</span></h2>
+    <div class="typewriter-box" id="tw0"></div>
+    <div class="hidden" id="p0-start-wrap"><button class="btn btn-blue" onclick="startBus()">开始学习 →</button></div>
   </div>
-
-  <div class="card">
-    <div class="q-title">🎬 动画讲解 <button class="speak-btn" onclick="speak('看动画，一步一步想！')">🔊</button></div>
-    <div class="anim-area" id="bus-scene">
-      <div class="bus" id="bus">🚌</div>
-      <div class="bus-counter" id="bus-counter">车上：？人</div>
+  <div class="card hidden" id="p0-anim-card" style="border-top:4px solid #4A90D9">
+    <h2>🎬 看动画，理解题目</h2>
+    <div class="bus-scene" id="bus-scene">
+      <div class="bus">
+        <div class="window" style="left:15px"></div>
+        <div class="window" style="left:55px"></div>
+        <div class="window" style="left:95px"></div>
+        <div class="window" style="left:135px"></div>
+        <div class="wheel" style="left:20px"></div>
+        <div class="wheel" style="right:20px"></div>
+      </div>
+      <div class="bus-people" id="bus-people"></div>
+      <div class="bus-label" id="bus-label"></div>
+      <div class="bus-count" id="bus-count"></div>
     </div>
-    <div class="steps-area" id="steps0">
-      <div class="step" data-step="0">🤔 <b>先想想：</b>第三站上来8人后有13人，那上来之前有几人呢？<br>13 - 8 = <b>5人</b> <button class="speak-btn" onclick="speak('先想想，第三站上来8人后有13人，那上来之前有几人呢？13减8等于5人')">🔊</button></div>
-      <div class="step" data-step="1">👆 <b>对啦！</b>第二站下车比第一站少5人，第一站下了10人，所以第二站下了 10-5=<b>5人</b> <button class="speak-btn" onclick="speak('对啦！第二站下车比第一站少5人，第一站下了10人，所以第二站下了5人')">🔊</button></div>
-      <div class="step" data-step="2">🎉 <b>接下来：</b>往回加！5 + 5 + 10 = <b>20人！</b>原来车上有20个人！ <button class="speak-btn" onclick="speak('接下来，往回加！5加5加10等于20人！原来车上有20个人！')">🔊</button></div>
-    </div>
-    <button class="next-btn" id="nextBtn0" onclick="nextStep(0)">👉 下一步</button>
-    <button class="reset-btn" onclick="resetQ(0)">🔄 重来</button>
+    <div id="bus-steps"></div>
+    <button class="btn btn-blue" id="bus-next-btn" onclick="busNext()">下一步 →</button>
   </div>
-
-  <div class="card practice">
-    <h3>✏️ 练一练</h3>
-    <div class="p-text">一辆公共汽车，到第一站下车8人。到第二站下车的人数比第一站少3人。到第三站上来6人后，车上现有15人。原来有（ ）人。</div>
-    <div><input type="number" id="ans0" placeholder="?"><button class="check-btn" onclick="checkAns(0)">✅ 提交</button></div>
-    <div class="feedback" id="fb0"></div>
+  <div class="card hidden" id="p0-explain-card" style="border-top:4px solid #4A90D9">
+    <h2>🧠 逆推讲解</h2>
+    <div id="bus-explain-steps"></div>
+    <button class="btn btn-blue" id="bus-explain-btn" onclick="busExplainNext()">下一步 →</button>
+  </div>
+  <div class="card hidden" id="p0-practice" style="border-top:4px solid #4A90D9">
+    <div class="practice-box">
+      <h3>✏️ 变式练习</h3>
+      <p style="font-size:15px;line-height:1.7">一辆公共汽车，到第一站下车8人。到第二站下车的人数比第一站<b>多4人</b>。到第三站上来6人后，车上现有12人。原来有（ ）人。</p>
+      <button class="speak-btn" onclick="speak('一辆公共汽车，到第一站下车8人。到第二站下车的人数比第一站多4人。到第三站上来6人后，车上现有12人。原来有多少人？')">🔊</button>
+      <div style="margin-top:10px">
+        答案：<input class="practice-input" id="ans0" type="number"> 人
+        <button class="btn btn-blue btn-sm" onclick="checkAns(0,22)">确认 ✓</button>
+      </div>
+      <div class="practice-result" id="res0"></div>
+    </div>
   </div>
 </div>
 
-<!-- Q1: Water -->
-<div class="question q1" id="q1">
-  <div class="card">
-    <div class="stars">⭐⭐⭐⭐</div>
-    <div class="q-title">🪣 倒水问题 <button class="speak-btn" onclick="speak(q1Text)">🔊</button></div>
-    <div class="q-text">一桶水，第一次倒出一半，第二次又倒出剩下的一半，第三次又倒出5千克，桶里还剩2千克，原来桶里有水（<span class="blank">？</span>）千克。</div>
+<!-- Problem 2: Bucket -->
+<div class="problem" id="p1">
+  <div class="card" style="border-top:4px solid #7ED321">
+    <h2>🪣 倒水问题 <span class="stars">⭐⭐⭐⭐</span></h2>
+    <div class="typewriter-box" id="tw1"></div>
+    <div class="hidden" id="p1-start-wrap"><button class="btn btn-green" onclick="startBucket()">开始学习 →</button></div>
   </div>
+  <div class="card hidden" id="p1-anim-card" style="border-top:4px solid #7ED321">
+    <h2>🎬 看动画，理解题目</h2>
+    <div class="bucket-scene" id="bucket-scene">
+      <div class="bucket">
+        <div class="bucket-rim"></div>
+        <div class="bucket-body">
+          <div class="water" id="water" style="height:100%">
+            <div class="water-label" id="water-label">？千克</div>
+          </div>
+        </div>
+      </div>
+      <div class="bucket-info" id="bucket-info"></div>
+    </div>
+    <div id="bucket-steps"></div>
+    <button class="btn btn-green" id="bucket-next-btn" onclick="bucketNext()">下一步 →</button>
+  </div>
+  <div class="card hidden" id="p1-explain-card" style="border-top:4px solid #7ED321">
+    <h2>🧠 逆推讲解</h2>
+    <div id="bucket-explain-steps"></div>
+    <button class="btn btn-green" id="bucket-explain-btn" onclick="bucketExplainNext()">下一步 →</button>
+  </div>
+  <div class="card hidden" id="p1-practice" style="border-top:4px solid #7ED321">
+    <div class="practice-box">
+      <h3>✏️ 变式练习</h3>
+      <p style="font-size:15px;line-height:1.7">一桶水，第一次倒出一半，第二次又倒出3千克，桶里还剩5千克。原来有（ ）千克。</p>
+      <button class="speak-btn" onclick="speak('一桶水，第一次倒出一半，第二次又倒出3千克，桶里还剩5千克。原来有多少千克？')">🔊</button>
+      <div style="margin-top:10px">
+        答案：<input class="practice-input" id="ans1" type="number"> 千克
+        <button class="btn btn-green btn-sm" onclick="checkAns(1,16)">确认 ✓</button>
+      </div>
+      <div class="practice-result" id="res1"></div>
+    </div>
+  </div>
+</div>
 
-  <div class="card">
-    <div class="q-title">🎬 动画讲解 <button class="speak-btn" onclick="speak('我们从最后剩的水开始，倒着想！')">🔊</button></div>
-    <div class="anim-area" id="water-scene">
-      <div class="bucket-wrap">
-        <div class="bucket-body"><div class="water" id="water" style="height:14%"></div></div>
-        <div class="bucket-label" id="water-label">剩 2千克</div>
+<!-- Problem 3: Birds -->
+<div class="problem" id="p2">
+  <div class="card" style="border-top:4px solid #F5A623">
+    <h2>🐦 小鸟搬家 <span class="stars">⭐⭐⭐⭐⭐</span></h2>
+    <div class="typewriter-box" id="tw2"></div>
+    <div class="hidden" id="p2-start-wrap"><button class="btn btn-orange" onclick="startBirds()">开始学习 →</button></div>
+  </div>
+  <div class="card hidden" id="p2-anim-card" style="border-top:4px solid #F5A623">
+    <h2>🎬 看动画，理解题目</h2>
+    <div class="tree-scene" id="tree-scene">
+      <div class="tree-row" id="tree-row">
+        <div class="tree-unit"><div class="tree-birds" id="tb0">？只</div><div class="tree-top"></div><div class="tree-trunk"></div><div class="tree-label">树1</div></div>
+        <div class="tree-unit"><div class="tree-birds" id="tb1">？只</div><div class="tree-top"></div><div class="tree-trunk"></div><div class="tree-label">树2</div></div>
+        <div class="tree-unit"><div class="tree-birds" id="tb2">？只</div><div class="tree-top"></div><div class="tree-trunk"></div><div class="tree-label">树3</div></div>
+        <div class="tree-unit"><div class="tree-birds" id="tb3">？只</div><div class="tree-top"></div><div class="tree-trunk"></div><div class="tree-label">树4</div></div>
       </div>
     </div>
-    <div class="steps-area" id="steps1">
-      <div class="step" data-step="0">🤔 <b>从最后想：</b>第三次倒出5千克后剩2千克，那倒之前有 2+5=<b>7千克</b> <button class="speak-btn" onclick="speak('从最后想，第三次倒出5千克后剩2千克，那倒之前有2加5等于7千克')">🔊</button></div>
-      <div class="step" data-step="1">👆 <b>继续往前：</b>第二次倒出一半后剩7千克，那倒之前有 7×2=<b>14千克</b> <button class="speak-btn" onclick="speak('继续往前想，第二次倒出一半后剩7千克，那倒之前有7乘2等于14千克')">🔊</button></div>
-      <div class="step" data-step="2">🎉 <b>再往前：</b>第一次倒出一半后剩14千克，那原来有 14×2=<b>28千克！</b> <button class="speak-btn" onclick="speak('再往前想，第一次倒出一半后剩14千克，那原来有14乘2等于28千克！')">🔊</button></div>
-    </div>
-    <button class="next-btn" id="nextBtn1" onclick="nextStep(1)">👉 下一步</button>
-    <button class="reset-btn" onclick="resetQ(1)">🔄 重来</button>
+    <div id="bird-steps"></div>
+    <button class="btn btn-orange" id="bird-next-btn" onclick="birdNext()">下一步 →</button>
   </div>
-
-  <div class="card practice">
-    <h3>✏️ 练一练</h3>
-    <div class="p-text">一桶水，第一次倒出一半，第二次又倒出剩下的一半，第三次又倒出3千克，桶里还剩1千克，原来有水（ ）千克。</div>
-    <div><input type="number" id="ans1" placeholder="?"><button class="check-btn" onclick="checkAns(1)">✅ 提交</button></div>
-    <div class="feedback" id="fb1"></div>
+  <div class="card hidden" id="p2-explain-card" style="border-top:4px solid #F5A623">
+    <h2>🧠 逆推讲解</h2>
+    <div id="bird-explain-steps"></div>
+    <button class="btn btn-orange" id="bird-explain-btn" onclick="birdExplainNext()">下一步 →</button>
   </div>
-</div>
-
-<!-- Q2: Birds -->
-<div class="question q2" id="q2">
-  <div class="card">
-    <div class="stars">⭐⭐⭐⭐⭐</div>
-    <div class="q-title">🐦 小鸟转移 <button class="speak-btn" onclick="speak(q2Text)">🔊</button></div>
-    <div class="q-text">四棵树上共有40只鸟，若第一棵树上有3只鸟飞到第二棵树，第二棵树上有4只鸟飞到第三棵树，第三棵树上有5只鸟飞到第四棵树，这样四棵树上的鸟就一样多了，第三棵树上原来有（<span class="blank">？</span>）只鸟。</div>
-  </div>
-
-  <div class="card">
-    <div class="q-title">🎬 动画讲解 <button class="speak-btn" onclick="speak('四棵树，鸟飞来飞去，最后一样多！')">🔊</button></div>
-    <div class="anim-area" id="bird-scene">
-      <div class="tree-row">
-        <div class="tree-col" id="tree0"><div class="tree-label" id="tl0">?只</div><div class="tree-emoji">🌳</div></div>
-        <div class="tree-col" id="tree1"><div class="tree-label" id="tl1">?只</div><div class="tree-emoji">🌲</div></div>
-        <div class="tree-col" id="tree2"><div class="tree-label" id="tl2">?只</div><div class="tree-emoji">🌳</div></div>
-        <div class="tree-col" id="tree3"><div class="tree-label" id="tl3">?只</div><div class="tree-emoji">🌲</div></div>
+  <div class="card hidden" id="p2-practice" style="border-top:4px solid #F5A623">
+    <div class="practice-box">
+      <h3>✏️ 变式练习</h3>
+      <p style="font-size:15px;line-height:1.7">三棵树上共30只鸟。第一棵树有2只飞到第二棵，第二棵有3只飞到第三棵，这样三棵树一样多。第二棵树原来有（ ）只。</p>
+      <button class="speak-btn" onclick="speak('三棵树上共30只鸟。第一棵树有2只飞到第二棵，第二棵有3只飞到第三棵，这样三棵树一样多。第二棵树原来有多少只？')">🔊</button>
+      <div style="margin-top:10px">
+        答案：<input class="practice-input" id="ans2" type="number"> 只
+        <button class="btn btn-orange btn-sm" onclick="checkAns(2,11)">确认 ✓</button>
       </div>
+      <div class="practice-result" id="res2"></div>
     </div>
-    <div class="steps-area" id="steps2">
-      <div class="step" data-step="0">🤔 <b>先想：</b>最后每棵树一样多，40÷4=<b>每棵10只</b> <button class="speak-btn" onclick="speak('先想，最后每棵树一样多，40除以4等于每棵10只')">🔊</button></div>
-      <div class="step" data-step="1">👆 <b>第三棵树：</b>它飞走了5只到第四棵，又从第二棵飞来了4只 <button class="speak-btn" onclick="speak('看第三棵树，它飞走了5只到第四棵树，又从第二棵树飞来了4只')">🔊</button></div>
-      <div class="step" data-step="2">🎉 <b>所以：</b>原来 = 10 + 5（飞走的）- 4（飞来的）= <b>11只！</b> <button class="speak-btn" onclick="speak('所以原来等于10加5减4等于11只鸟！')">🔊</button></div>
-    </div>
-    <button class="next-btn" id="nextBtn2" onclick="nextStep(2)">👉 下一步</button>
-    <button class="reset-btn" onclick="resetQ(2)">🔄 重来</button>
-  </div>
-
-  <div class="card practice">
-    <h3>✏️ 练一练</h3>
-    <div class="p-text">四棵树上共有36只鸟，若第一棵树上有2只鸟飞到第二棵树，第二棵树上有3只鸟飞到第三棵树，第三棵树上有4只鸟飞到第四棵树，这样四棵树上的鸟就一样多了，第三棵树上原来有（ ）只鸟。</div>
-    <div><input type="number" id="ans2" placeholder="?"><button class="check-btn" onclick="checkAns(2)">✅ 提交</button></div>
-    <div class="feedback" id="fb2"></div>
   </div>
 </div>
 
-<div class="celebrate" id="celebrate"></div>
-
-<div class="footer">🦎 Coco Learning Park · 数学思维训练</div>
+<footer>🦎 Coco Learning Park · 数学思维训练</footer>
 
 <script>
-const q0Text = '一辆公共汽车，到第一站下车10人。到第二站下车的人数比第一站少5人。到第三站上来8人后，车上现有13人。这辆公共汽车上原来有多少人？';
-const q1Text = '一桶水，第一次倒出一半，第二次又倒出剩下的一半，第三次又倒出5千克，桶里还剩2千克，原来桶里有水多少千克？';
-const q2Text = '四棵树上共有40只鸟，若第一棵树上有3只鸟飞到第二棵树，第二棵树上有4只鸟飞到第三棵树，第三棵树上有5只鸟飞到第四棵树，这样四棵树上的鸟就一样多了，第三棵树上原来有多少只鸟？';
-
-const answers = [22, 16, 10]; // practice answers
-// Q0 practice: 下8人，下8-3=5人，上6人后15人 → 15-6=9, 9+5+8=22
-// Q1 practice: 剩1+倒3=4, 4*2=8, 8*2=16
-// Q2 practice: 36/4=9 each, tree3 orig = 9+4-3=10
-
-let currentStep = [0, 0, 0];
-const maxSteps = 3;
-
-function switchQ(n) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.question').forEach(q => q.classList.remove('active'));
-  document.querySelector(`.tab[data-q="${n}"]`).classList.add('active');
-  document.getElementById('q' + n).classList.add('active');
-}
-
-function speak(text) {
-  if (!('speechSynthesis' in window)) return;
+// TTS
+function speak(text){
+  if(!('speechSynthesis' in window))return;
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'zh-CN'; u.rate = 0.85;
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='zh-CN';u.rate=0.85;
   speechSynthesis.speak(u);
 }
 
-function nextStep(q) {
-  const s = currentStep[q];
-  if (s >= maxSteps) return;
-  const step = document.querySelector(`#steps${q} .step[data-step="${s}"]`);
-  step.classList.add('visible');
-  currentStep[q]++;
-  // Animate
-  if (q === 0) animBus(s);
-  if (q === 1) animWater(s);
-  if (q === 2) animBird(s);
-  if (currentStep[q] >= maxSteps) {
-    document.getElementById('nextBtn' + q).disabled = true;
-    document.getElementById('nextBtn' + q).textContent = '✅ 讲完啦！';
+// Tab switching
+let currentTab=0;
+const texts=[
+  '一辆公共汽车，到第一站下车10人。到第二站下车的人数比第一站少5人。到第三站上来8人后，车上现有13人。这辆公共汽车上原来有（ ）人。',
+  '一桶水，第一次倒出一半，第二次又倒出剩下的一半，第三次又倒出5千克，桶里还剩2千克，原来桶里有水（ ）千克。',
+  '四棵树上共有40只鸟，若第一棵树上有3只鸟飞到第二棵树，第二棵树上有4只鸟飞到第三棵树，第三棵树上有5只鸟飞到第四棵树，这样四棵树上的鸟就一样多了，第三棵树上原来有（ ）只鸟。'
+];
+const twDone=[false,false,false];
+
+function switchTab(i){
+  currentTab=i;
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.querySelectorAll('.problem').forEach((p,j)=>p.classList.toggle('active',j===i));
+  if(!twDone[i])startTypewriter(i);
+}
+
+function startTypewriter(idx){
+  if(twDone[idx])return;
+  twDone[idx]=true;
+  const el=document.getElementById('tw'+idx);
+  const text=texts[idx];
+  let pos=0;
+  el.innerHTML='<span class="typewriter-cursor"></span>';
+  speak(text);
+  const timer=setInterval(()=>{
+    if(pos>=text.length){
+      clearInterval(timer);
+      el.innerHTML=text;
+      document.getElementById('p'+idx+'-start-wrap').classList.remove('hidden');
+      return;
+    }
+    el.innerHTML=text.substring(0,pos+1)+'<span class="typewriter-cursor"></span>';
+    pos++;
+  },80);
+}
+
+// Start first tab typewriter
+setTimeout(()=>startTypewriter(0),300);
+
+// ========== BUS ==========
+let busStep=0;
+function startBus(){
+  document.getElementById('p0-anim-card').classList.remove('hidden');
+  busStep=0;
+  // Show initial unknown state
+  const pp=document.getElementById('bus-people');
+  pp.innerHTML='<span style="font-size:24px;color:#999">？</span>';
+  document.getElementById('bus-count').textContent='车上：？人';
+  document.getElementById('bus-label').textContent='出发！';
+}
+
+function makePeople(n,container){
+  container.innerHTML='';
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    d.className='person';
+    d.style.setProperty('--ox',(Math.random()*60-30)+'px');
+    container.appendChild(d);
   }
 }
 
-function resetQ(q) {
-  currentStep[q] = 0;
-  document.querySelectorAll(`#steps${q} .step`).forEach(s => s.classList.remove('visible'));
-  const btn = document.getElementById('nextBtn' + q);
-  btn.disabled = false; btn.textContent = '👉 下一步';
-  if (q === 0) { document.getElementById('bus-counter').textContent = '车上：？人'; }
-  if (q === 1) { document.getElementById('water').style.height = '14%'; document.getElementById('water-label').textContent = '剩 2千克'; }
-  if (q === 2) { ['tl0','tl1','tl2','tl3'].forEach(id => document.getElementById(id).textContent = '?只'); }
+const busStages=[
+  ()=>{
+    // Show 20 people initially
+    const pp=document.getElementById('bus-people');
+    makePeople(20,pp);
+    document.getElementById('bus-count').textContent='车上：20人（先看答案演示）';
+    document.getElementById('bus-label').textContent='开始有20人';
+    addStep('bus-steps','🚏 出发时车上有20人（我们先假设知道答案来验证）');
+    speak('出发时车上有20人，我们先看看整个过程');
+  },
+  ()=>{
+    // Station 1: 10 people get off
+    const pp=document.getElementById('bus-people');
+    const people=pp.querySelectorAll('.person');
+    for(let i=0;i<10;i++)people[i].classList.add('out');
+    document.getElementById('bus-label').textContent='第一站：下车10人';
+    document.getElementById('bus-count').textContent='车上：10人';
+    addStep('bus-steps','🚏 第一站：下车10人，车上剩 20-10=10人');
+    speak('第一站，下车10人，车上还剩10人');
+  },
+  ()=>{
+    // Station 2: 5 people get off
+    const pp=document.getElementById('bus-people');
+    makePeople(10,pp);
+    setTimeout(()=>{
+      const people=pp.querySelectorAll('.person');
+      for(let i=0;i<5;i++)people[i].classList.add('out');
+    },100);
+    document.getElementById('bus-label').textContent='第二站：下车5人';
+    document.getElementById('bus-count').textContent='车上：5人';
+    addStep('bus-steps','🚏 第二站：比第一站少5人，下车 10-5=5人，车上剩5人');
+    speak('第二站，下车人数比第一站少5人，就是下车5人，车上还剩5人');
+  },
+  ()=>{
+    // Station 3: 8 people get on
+    const pp=document.getElementById('bus-people');
+    makePeople(5,pp);
+    setTimeout(()=>{
+      for(let i=0;i<8;i++){
+        const d=document.createElement('div');
+        d.className='person in';
+        d.style.background='#4ECDC4';
+        pp.appendChild(d);
+      }
+    },200);
+    document.getElementById('bus-label').textContent='第三站：上车8人';
+    document.getElementById('bus-count').textContent='车上：13人 ✓';
+    addStep('bus-steps','🚏 第三站：上来8人，车上 5+8=13人 ✓ 和题目一致！');
+    speak('第三站，上来8人，车上5加8等于13人，和题目说的一样！');
+  },
+  ()=>{
+    // Done, show explain
+    document.getElementById('bus-next-btn').classList.add('hidden');
+    document.getElementById('p0-explain-card').classList.remove('hidden');
+    busExpStep=0;
+    speak('现在我们用逆推法，从后往前推，算出原来有多少人');
+  }
+];
+
+function busNext(){
+  if(busStep<busStages.length){busStages[busStep]();busStep++;}
 }
 
-// Bus animation
-function animBus(step) {
-  const c = document.getElementById('bus-counter');
-  if (step === 0) c.textContent = '车上：5人（第三站前）';
-  if (step === 1) c.textContent = '车上：5+5=10人（第二站前）';
-  if (step === 2) c.textContent = '车上：10+10=20人 🎉';
+let busExpStep=0;
+const busExplains=[
+  ()=>{
+    const pp=document.getElementById('bus-people');
+    makePeople(13,pp);
+    document.getElementById('bus-count').textContent='车上：13人';
+    addStep('bus-explain-steps','💡 第三站上来8人后有13人，上来之前有多少？13-8=<b>5人</b>');
+    speak('第三站上来8人后有13人，上来之前有多少？13减8等于5人');
+    // Animate: remove 8 green people
+    setTimeout(()=>{
+      const people=pp.querySelectorAll('.person');
+      for(let i=5;i<13;i++)people[i].classList.add('out');
+      document.getElementById('bus-count').textContent='车上：5人';
+      document.getElementById('bus-label').textContent='第三站之前：5人';
+    },800);
+  },
+  ()=>{
+    const pp=document.getElementById('bus-people');
+    makePeople(5,pp);
+    addStep('bus-explain-steps','💡 第二站下了5人，下之前有多少？5+5=<b>10人</b>');
+    speak('第二站下了5人，下之前有多少？5加5等于10人');
+    setTimeout(()=>{
+      for(let i=0;i<5;i++){
+        const d=document.createElement('div');
+        d.className='person in';
+        d.style.background='#FFD93D';
+        pp.appendChild(d);
+      }
+      document.getElementById('bus-count').textContent='车上：10人';
+      document.getElementById('bus-label').textContent='第二站之前：10人';
+    },800);
+  },
+  ()=>{
+    const pp=document.getElementById('bus-people');
+    makePeople(10,pp);
+    addStep('bus-explain-steps','💡 第一站下了10人，下之前有多少？10+10=<b>20人</b>');
+    speak('第一站下了10人，下之前有多少？10加10等于20人');
+    setTimeout(()=>{
+      for(let i=0;i<10;i++){
+        const d=document.createElement('div');
+        d.className='person in';
+        d.style.background='#FF6B6B';
+        pp.appendChild(d);
+      }
+      document.getElementById('bus-count').textContent='车上：20人 🎉';
+      document.getElementById('bus-label').textContent='原来：20人！';
+    },800);
+  },
+  ()=>{
+    addStep('bus-explain-steps','🎉 <b>原来有20人！</b> 厉害，逆推法就是从后往前一步步算回去！');
+    speak('对啦！原来有20人！逆推法就是从后往前，一步一步算回去！');
+    document.getElementById('bus-explain-btn').classList.add('hidden');
+    document.getElementById('p0-practice').classList.remove('hidden');
+  }
+];
+
+function busExplainNext(){
+  if(busExpStep<busExplains.length){busExplains[busExpStep]();busExpStep++;}
 }
 
-// Water animation
-function animWater(step) {
-  const w = document.getElementById('water');
-  const l = document.getElementById('water-label');
-  if (step === 0) { w.style.height = '25%'; l.textContent = '7千克（倒第三次前）'; }
-  if (step === 1) { w.style.height = '50%'; l.textContent = '14千克（倒第二次前）'; }
-  if (step === 2) { w.style.height = '100%'; l.textContent = '28千克 🎉 原来这么多！'; }
+// ========== BUCKET ==========
+let bktStep=0;
+function startBucket(){
+  document.getElementById('p1-anim-card').classList.remove('hidden');
+  bktStep=0;
+  document.getElementById('water').style.height='100%';
+  document.getElementById('water-label').textContent='？千克';
+  document.getElementById('bucket-info').textContent='';
 }
 
-// Bird animation
-function animBird(step) {
-  const tl = [document.getElementById('tl0'), document.getElementById('tl1'), document.getElementById('tl2'), document.getElementById('tl3')];
-  if (step === 0) { tl.forEach(t => t.textContent = '10只'); }
-  if (step === 1) { tl[2].textContent = '10只 → 飞走5，来4'; }
-  if (step === 2) {
-    tl[0].textContent = '13只'; tl[1].textContent = '9只';
-    tl[2].textContent = '11只 🎉'; tl[3].textContent = '7只';
+const bktStages=[
+  ()=>{
+    document.getElementById('water').style.height='100%';
+    document.getElementById('water-label').textContent='28千克';
+    document.getElementById('bucket-info').textContent='满桶：28千克';
+    addStep('bucket-steps','🪣 桶里装满水，一共28千克（先看答案验证）');
+    speak('桶里装满了28千克水，我们来看整个倒水过程');
+  },
+  ()=>{
+    document.getElementById('water').style.height='50%';
+    document.getElementById('water-label').textContent='14千克';
+    document.getElementById('bucket-info').textContent='倒出一半';
+    addStep('bucket-steps','🪣 第一次倒出一半：28÷2=14千克，剩14千克');
+    speak('第一次倒出一半，28除以2等于14，剩下14千克');
+  },
+  ()=>{
+    document.getElementById('water').style.height='25%';
+    document.getElementById('water-label').textContent='7千克';
+    document.getElementById('bucket-info').textContent='又倒出一半';
+    addStep('bucket-steps','🪣 第二次又倒出剩下的一半：14÷2=7千克，剩7千克');
+    speak('第二次又倒出剩下的一半，14除以2等于7，剩下7千克');
+  },
+  ()=>{
+    const h=Math.round((2/28)*100);
+    document.getElementById('water').style.height=h+'%';
+    document.getElementById('water-label').textContent='2千克';
+    document.getElementById('bucket-info').textContent='倒出5千克';
+    addStep('bucket-steps','🪣 第三次倒出5千克：7-5=2千克 ✓ 和题目一致！');
+    speak('第三次倒出5千克，7减5等于2千克，和题目说的一样！');
+  },
+  ()=>{
+    document.getElementById('bucket-next-btn').classList.add('hidden');
+    document.getElementById('p1-explain-card').classList.remove('hidden');
+    bktExpStep=0;
+    speak('现在逆推，从后往前算回去');
+  }
+];
+
+function bucketNext(){
+  if(bktStep<bktStages.length){bktStages[bktStep]();bktStep++;}
+}
+
+let bktExpStep=0;
+const bktExplains=[
+  ()=>{
+    const h=Math.round((2/28)*100);
+    document.getElementById('water').style.height=h+'%';
+    document.getElementById('water-label').textContent='2千克';
+    addStep('bucket-explain-steps','💡 第三次倒出5千克后剩2千克 → 倒之前有 2+5=<b>7千克</b>');
+    speak('第三次倒出5千克后剩2千克，那倒之前有多少？2加5等于7千克');
+    setTimeout(()=>{
+      document.getElementById('water').style.height=Math.round((7/28)*100)+'%';
+      document.getElementById('water-label').textContent='7千克';
+      document.getElementById('bucket-info').textContent='↑ 回到7千克';
+    },800);
+  },
+  ()=>{
+    addStep('bucket-explain-steps','💡 第二次倒出一半后剩7千克 → 7是一半，全部是 7×2=<b>14千克</b>');
+    speak('第二次倒出一半后剩7千克，7是一半，全部就是7乘以2等于14千克');
+    setTimeout(()=>{
+      document.getElementById('water').style.height='50%';
+      document.getElementById('water-label').textContent='14千克';
+      document.getElementById('bucket-info').textContent='↑ 回到14千克';
+    },800);
+  },
+  ()=>{
+    addStep('bucket-explain-steps','💡 第一次倒出一半后剩14千克 → 14×2=<b>28千克</b>');
+    speak('第一次倒出一半后剩14千克，14乘以2等于28千克');
+    setTimeout(()=>{
+      document.getElementById('water').style.height='100%';
+      document.getElementById('water-label').textContent='28千克';
+      document.getElementById('bucket-info').textContent='满了！28千克 🎉';
+    },800);
+  },
+  ()=>{
+    addStep('bucket-explain-steps','🎉 <b>原来有28千克！</b> 从后往前推，遇到"倒出一半"就乘以2！');
+    speak('对啦！原来有28千克！遇到倒出一半，就乘以2推回去！');
+    document.getElementById('bucket-explain-btn').classList.add('hidden');
+    document.getElementById('p1-practice').classList.remove('hidden');
+  }
+];
+
+function bucketExplainNext(){
+  if(bktExpStep<bktExplains.length){bktExplains[bktExpStep]();bktExpStep++;}
+}
+
+// ========== BIRDS ==========
+let birdStep=0;
+// Original: t1=13, t2=7, t3=11, t4=9 (sum=40, after transfers all=10)
+const birdOriginal=[13,7,11,9];
+let birdCurrent=[13,7,11,9];
+
+function startBirds(){
+  document.getElementById('p2-anim-card').classList.remove('hidden');
+  birdStep=0;
+  birdCurrent=[13,7,11,9];
+  for(let i=0;i<4;i++)document.getElementById('tb'+i).textContent='？只';
+}
+
+function updateBirdLabels(){
+  for(let i=0;i<4;i++){
+    document.getElementById('tb'+i).textContent=birdCurrent[i]+'只';
   }
 }
 
-// Check answers
-function checkAns(q) {
-  const input = document.getElementById('ans' + q);
-  const fb = document.getElementById('fb' + q);
-  const val = parseInt(input.value);
-  if (isNaN(val)) { fb.textContent = '请输入数字哦 😊'; fb.className = 'feedback wrong'; return; }
-  if (val === answers[q]) {
-    fb.textContent = '⭐ 太棒了，答对啦！🎉🎉🎉';
-    fb.className = 'feedback correct';
-    celebrate();
-  } else {
-    fb.textContent = '再想想哦 💪 从最后往前推！';
-    fb.className = 'feedback wrong';
+function flyBirds(fromIdx,toIdx,count,cb){
+  const scene=document.getElementById('tree-scene');
+  const units=document.querySelectorAll('.tree-unit');
+  const fromRect=units[fromIdx].getBoundingClientRect();
+  const toRect=units[toIdx].getBoundingClientRect();
+  const sceneRect=scene.getBoundingClientRect();
+  let done=0;
+  for(let i=0;i<count;i++){
+    const b=document.createElement('div');
+    b.className='flying-bird';
+    b.textContent='🐦';
+    b.style.left=(fromRect.left-sceneRect.left+fromRect.width/2-8)+'px';
+    b.style.top='30px';
+    scene.appendChild(b);
+    setTimeout(()=>{
+      b.style.left=(toRect.left-sceneRect.left+toRect.width/2-8+i*4)+'px';
+      b.style.top=(20+i*6)+'px';
+    },100+i*150);
+    setTimeout(()=>{
+      b.remove();
+      done++;
+      if(done===count&&cb)cb();
+    },1400+i*150);
   }
 }
 
-function celebrate() {
-  const el = document.getElementById('celebrate');
-  el.innerHTML = '';
-  el.classList.add('show');
-  const emojis = ['⭐','🎉','🌟','💫','🎊','✨','🥳','🏆'];
-  for (let i = 0; i < 30; i++) {
-    const c = document.createElement('div');
-    c.className = 'confetti';
-    c.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    c.style.left = Math.random() * 100 + '%';
-    c.style.animationDelay = Math.random() * 0.8 + 's';
-    el.appendChild(c);
+const birdStages=[
+  ()=>{
+    // Show original counts
+    updateBirdLabels();
+    addStep('bird-steps','🌳 四棵树上分别有：13、7、11、9只鸟（先看答案验证）');
+    speak('四棵树上分别有13只、7只、11只、9只鸟，一共40只');
+  },
+  ()=>{
+    // Step1: 3 from tree1 to tree2
+    addStep('bird-steps','🐦 3只鸟从树1飞到树2');
+    speak('3只鸟从第一棵树飞到第二棵树');
+    flyBirds(0,1,3,()=>{
+      birdCurrent[0]-=3;birdCurrent[1]+=3;
+      updateBirdLabels();
+    });
+  },
+  ()=>{
+    // Step2: 4 from tree2 to tree3
+    addStep('bird-steps','🐦 4只鸟从树2飞到树3');
+    speak('4只鸟从第二棵树飞到第三棵树');
+    flyBirds(1,2,4,()=>{
+      birdCurrent[1]-=4;birdCurrent[2]+=4;
+      updateBirdLabels();
+    });
+  },
+  ()=>{
+    // Step3: 5 from tree3 to tree4
+    addStep('bird-steps','🐦 5只鸟从树3飞到树4');
+    speak('5只鸟从第三棵树飞到第四棵树');
+    flyBirds(2,3,5,()=>{
+      birdCurrent[2]-=5;birdCurrent[3]+=5;
+      updateBirdLabels();
+    });
+  },
+  ()=>{
+    addStep('bird-steps','✅ 每棵树都是10只，一样多！');
+    speak('飞完之后，每棵树都是10只，一样多！');
+    for(let i=0;i<4;i++)document.getElementById('tb'+i).textContent='10只 ✓';
+    document.getElementById('bird-next-btn').classList.add('hidden');
+    document.getElementById('p2-explain-card').classList.remove('hidden');
+    birdExpStep=0;
   }
-  setTimeout(() => el.classList.remove('show'), 2500);
+];
+
+function birdNext(){
+  if(birdStep<birdStages.length){birdStages[birdStep]();birdStep++;}
+}
+
+let birdExpStep=0;
+const birdExplains=[
+  ()=>{
+    addStep('bird-explain-steps','💡 飞完后每棵树都是10只，一共还是40只（鸟只是换了树，没有多也没有少）');
+    speak('飞完后每棵树都是10只，鸟只是换了树，总数没有变');
+  },
+  ()=>{
+    addStep('bird-explain-steps','💡 第三棵树最后10只。它飞走了5只给树4，从树2飞来了4只');
+    speak('第三棵树最后有10只。它飞走了5只到第四棵树，从第二棵树飞来了4只');
+  },
+  ()=>{
+    addStep('bird-explain-steps','💡 原来 = 10 + 5（飞走的）- 4（飞来的）= <b>11只</b>');
+    speak('所以原来等于10加5减4等于11只');
+    // Animate tree3 number change
+    const tb=document.getElementById('tb2');
+    tb.textContent='10只';
+    setTimeout(()=>{tb.textContent='10+5=15';tb.style.color='#E65100';},800);
+    setTimeout(()=>{tb.textContent='15-4=11';},1600);
+    setTimeout(()=>{tb.textContent='11只 🎉';},2400);
+  },
+  ()=>{
+    addStep('bird-explain-steps','🎉 <b>第三棵树原来有11只鸟！</b> 飞走的加回来，飞来的减掉，就是原来的数！');
+    speak('对啦！第三棵树原来有11只鸟！飞走的加回来，飞来的减掉，就能算出原来的数量！');
+    document.getElementById('bird-explain-btn').classList.add('hidden');
+    document.getElementById('p2-practice').classList.remove('hidden');
+  }
+];
+
+function birdExplainNext(){
+  if(birdExpStep<birdExplains.length){birdExplains[birdExpStep]();birdExpStep++;}
+}
+
+// ========== HELPERS ==========
+function addStep(containerId,html){
+  const d=document.createElement('div');
+  d.className='step-box show';
+  d.innerHTML=html+' <button class="speak-btn" onclick="speak(this.parentElement.textContent)">🔊</button>';
+  document.getElementById(containerId).appendChild(d);
+}
+
+function checkAns(idx,correct){
+  const v=parseInt(document.getElementById('ans'+idx).value);
+  const res=document.getElementById('res'+idx);
+  if(v===correct){
+    res.innerHTML='⭐ 对啦！太厉害了！🎉';
+    speak('对啦！太厉害了！');
+    showConfetti();
+  }else{
+    res.innerHTML='再想想哦 💪 提示：试试从后往前推';
+    speak('再想想哦，试试从后往前推');
+  }
+}
+
+function showConfetti(){
+  const c=document.createElement('div');
+  c.className='confetti';
+  const colors=['#FF6B6B','#4ECDC4','#FFD93D','#95E1D3','#F38181','#AA96DA','#FCBAD3'];
+  for(let i=0;i<50;i++){
+    const p=document.createElement('div');
+    p.className='confetti-piece';
+    p.style.left=Math.random()*100+'%';
+    p.style.background=colors[Math.floor(Math.random()*colors.length)];
+    p.style.animationDelay=Math.random()*1+'s';
+    p.style.width=(6+Math.random()*8)+'px';
+    p.style.height=(6+Math.random()*8)+'px';
+    c.appendChild(p);
+  }
+  document.body.appendChild(c);
+  setTimeout(()=>c.remove(),2500);
 }
 </script>
 </body>
