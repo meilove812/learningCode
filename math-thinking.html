@@ -3,805 +3,609 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🧠 数学思维训练 · 逆推法</title>
+<title>🧠 数学思维训练</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  background: linear-gradient(135deg, #E8F4FD 0%, #F0E6FF 50%, #FFF3E0 100%);
-  min-height: 100vh; padding: 12px; color: #333;
-}
-h1, h2, h3, .title-font {
-  font-family: 'Comic Sans MS', 'PingFang SC', cursive, sans-serif;
-}
-.header {
-  text-align: center; padding: 20px 10px 10px;
-}
-.header h1 { font-size: 1.6em; color: #4A90D9; }
-.header p { font-size: 0.9em; color: #888; margin-top: 4px; }
-
-/* Tabs */
-.tabs { display: flex; gap: 8px; justify-content: center; margin: 16px 0; flex-wrap: wrap; }
-.tab-btn {
-  padding: 10px 18px; border-radius: 20px; border: none; font-size: 1em;
-  cursor: pointer; font-weight: 600; transition: all .3s; opacity: 0.6;
-}
-.tab-btn.active { opacity: 1; transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-.tab-btn:nth-child(1) { background: #E8F4FD; color: #4A90D9; }
-.tab-btn:nth-child(1).active { background: #4A90D9; color: #fff; }
-.tab-btn:nth-child(2) { background: #E8F8E0; color: #5BA51B; }
-.tab-btn:nth-child(2).active { background: #7ED321; color: #fff; }
-.tab-btn:nth-child(3) { background: #FFF3E0; color: #E08A00; }
-.tab-btn:nth-child(3).active { background: #F5A623; color: #fff; }
-
-/* Problem area */
-.problem-area { display: none; max-width: 600px; margin: 0 auto; }
-.problem-area.active { display: block; }
-
-/* Cards */
-.card {
-  background: #fff; border-radius: 16px; padding: 20px; margin: 12px 0;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08); position: relative;
-}
-.card.blue-tint { border-left: 4px solid #4A90D9; }
-.card.green-tint { border-left: 4px solid #7ED321; }
-.card.orange-tint { border-left: 4px solid #F5A623; }
-
-/* Progress */
-.progress-bar {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  margin: 10px 0; font-size: 0.85em; color: #888;
-}
-.progress-dot {
-  width: 10px; height: 10px; border-radius: 50%; background: #ddd; transition: background .3s;
-}
-.progress-dot.done { background: #7ED321; }
-.progress-dot.current { background: #4A90D9; animation: pulse 1s infinite; }
-@keyframes pulse { 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.3); } }
-
-/* Blackboard style animation area */
-.anim-box {
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  border-radius: 12px; padding: 16px; margin: 12px 0; min-height: 80px;
-  border: 2px dashed #dee2e6; position: relative; overflow: hidden;
-}
-
-/* Teacher speech */
-.teacher-say {
-  background: #FFFDE7; border-radius: 12px; padding: 14px 16px; margin: 10px 0;
-  font-size: 1.05em; line-height: 1.6; position: relative;
-  border: 1px solid #FFF9C4;
-}
-.teacher-say::before { content: '👩‍🏫 '; }
-
-/* Input area */
-.answer-row {
-  display: flex; align-items: center; gap: 10px; margin: 12px 0; flex-wrap: wrap;
-}
-.answer-input {
-  width: 100px; padding: 10px 14px; font-size: 1.2em; border-radius: 12px;
-  border: 2px solid #ddd; text-align: center; outline: none; transition: border .3s;
-}
-.answer-input:focus { border-color: #4A90D9; }
-.check-btn {
-  padding: 10px 20px; border-radius: 12px; border: none; background: #4A90D9;
-  color: #fff; font-size: 1em; cursor: pointer; font-weight: 600;
-}
-.check-btn:active { transform: scale(0.95); }
-.feedback { font-size: 0.95em; margin-top: 6px; min-height: 1.4em; }
-.feedback.correct { color: #7ED321; font-weight: 600; }
-.feedback.wrong { color: #F5A623; }
-
-/* Buttons */
-.action-btn {
-  display: inline-block; padding: 12px 28px; border-radius: 24px; border: none;
-  font-size: 1.05em; cursor: pointer; font-weight: 600; transition: all .3s;
-  margin: 6px 4px;
-}
-.btn-blue { background: #4A90D9; color: #fff; }
-.btn-green { background: #7ED321; color: #fff; }
-.btn-orange { background: #F5A623; color: #fff; }
-.btn-gray { background: #e0e0e0; color: #666; }
-.action-btn:active { transform: scale(0.95); }
-.speak-btn {
-  background: none; border: none; font-size: 1.3em; cursor: pointer; vertical-align: middle;
-}
-
-/* Typewriter cursor */
-.typewriter-cursor { animation: blink .7s infinite; }
-@keyframes blink { 0%,100%{ opacity: 1; } 50%{ opacity: 0; } }
-
-/* Summary card */
-.summary-card {
-  background: linear-gradient(135deg, #E8F4FD, #E8F8E0); border-radius: 16px;
-  padding: 20px; margin: 16px 0; text-align: center;
-}
-.summary-card h3 { color: #4A90D9; margin-bottom: 12px; font-size: 1.2em; }
-.summary-card ul { list-style: none; text-align: left; padding: 0 10px; }
-.summary-card li { padding: 6px 0; font-size: 1em; line-height: 1.5; }
-.summary-card li::before { content: '✅ '; }
-
-/* Bus animation */
-.bus-scene { position: relative; height: 140px; margin: 10px 0; }
-.bus-body {
-  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-  width: 220px; height: 80px; background: #4A90D9; border-radius: 10px 10px 5px 5px;
-  border: 2px solid #3A7BC8;
-}
-.bus-window {
-  position: absolute; top: 10px; width: 30px; height: 25px; background: #E8F4FD;
-  border-radius: 4px; border: 1px solid #3A7BC8;
-}
-.bus-wheel {
-  position: absolute; bottom: -10px; width: 22px; height: 22px;
-  background: #333; border-radius: 50%; border: 3px solid #666;
-}
-.bus-people {
-  position: absolute; top: 42px; left: 10px; right: 10px; display: flex;
-  flex-wrap: wrap; gap: 3px; justify-content: center;
-}
-.person-dot {
-  width: 14px; height: 14px; border-radius: 50%; transition: all .5s;
-}
-.person-dot.original { background: #3A7BC8; }
-.person-dot.new-person { background: #E74C3C; }
-.person-dot.leaving {
-  transform: translateY(-60px); opacity: 0;
-}
-
-/* Water bucket */
-.bucket-scene { position: relative; height: 160px; display: flex; justify-content: center; align-items: flex-end; }
-.bucket {
-  position: relative; width: 90px; height: 120px;
-  border: 3px solid #8B7355; border-top: none; border-radius: 0 0 10px 10px;
-  background: #FFF8F0; overflow: hidden;
-}
-.bucket-rim {
-  position: absolute; top: -6px; left: -6px; right: -6px; height: 8px;
-  background: #8B7355; border-radius: 4px;
-}
-.water {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  background: linear-gradient(180deg, #64B5F6, #1E88E5);
-  transition: height 1s ease; border-radius: 0 0 7px 7px;
-}
-.water-label {
-  position: absolute; bottom: 0; left: 0; right: 0; text-align: center;
-  color: #fff; font-weight: 700; font-size: 0.9em; padding: 4px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-}
-.scale-marks { position: absolute; top: 0; right: -25px; height: 120px; display: flex; flex-direction: column; justify-content: space-between; font-size: 0.7em; color: #999; }
-
-/* Tree & birds */
-.tree-scene { display: flex; justify-content: space-around; align-items: flex-end; height: 170px; padding: 0 5px; }
-.tree-group { text-align: center; position: relative; width: 22%; }
-.tree-trunk { width: 12px; height: 40px; background: #8B6914; margin: 0 auto; border-radius: 2px; }
-.tree-crown {
-  width: 50px; height: 50px; background: #7ED321; border-radius: 50%;
-  margin: 0 auto -5px; position: relative;
-}
-.tree-birds { min-height: 30px; font-size: 0.85em; margin-bottom: 4px; }
-.tree-count {
-  display: inline-block; background: #FFF3E0; border-radius: 10px; padding: 2px 8px;
-  font-weight: 700; font-size: 0.9em; margin-top: 4px; transition: all .3s;
-}
-.flying-bird {
-  position: absolute; font-size: 1.1em; transition: all 1.2s ease-in-out; z-index: 5;
-}
-
-/* Confetti */
-.confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
-.confetti-piece {
-  position: absolute; width: 10px; height: 10px; top: -20px;
-  animation: confetti-fall 3s ease-in forwards;
-}
-@keyframes confetti-fall {
-  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-}
-
-/* Step hidden */
-.step { display: none; }
-.step.visible { display: block; animation: fadeIn .5s; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Practice section */
-.practice-card {
-  background: linear-gradient(135deg, #FFF8E1, #FFF3E0); border-radius: 16px;
-  padding: 20px; margin: 16px 0; border: 2px solid #FFE082;
-}
-.practice-card h3 { color: #F5A623; margin-bottom: 10px; }
-
-/* Final summary */
-.final-summary {
-  background: linear-gradient(135deg, #E8F4FD, #E8F8E0, #FFF3E0);
-  border-radius: 20px; padding: 24px; margin: 16px 0; text-align: center;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-}
-
-.footer {
-  text-align: center; padding: 20px; color: #aaa; font-size: 0.85em;
-}
-.footer .deco { font-size: 1.5em; letter-spacing: 8px; margin-bottom: 6px; }
-
-/* Responsive */
-@media (max-width: 400px) {
-  .bus-body { width: 180px; height: 65px; }
-  .tree-crown { width: 40px; height: 40px; }
-}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #e0f0ff 0%, #f0e6ff 50%, #fff5e6 100%); min-height:100vh; padding:12px; }
+.header { text-align:center; padding:16px 0 8px; }
+.header h1 { font-size:1.6em; }
+.tabs { display:flex; gap:8px; justify-content:center; margin:12px 0; flex-wrap:wrap; }
+.tab { padding:10px 18px; border-radius:20px; border:none; font-size:1em; cursor:pointer; font-weight:600; transition:.2s; }
+.tab.active { transform:scale(1.05); color:#fff; }
+.tab[data-t="0"] { background:#d0e8ff; color:#2a6cb8; }
+.tab[data-t="0"].active { background:#3b82f6; }
+.tab[data-t="1"] { background:#d0f0d0; color:#2a8a2a; }
+.tab[data-t="1"].active { background:#22c55e; }
+.tab[data-t="2"] { background:#ffe8cc; color:#c06000; }
+.tab[data-t="2"].active { background:#f59e0b; }
+.card { background:#fff; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.08); padding:20px; margin:0 auto 16px; max-width:600px; }
+.question-box { background:linear-gradient(135deg,#f8f9ff,#fff); border:2px dashed #c0c8e0; border-radius:12px; padding:16px; margin-bottom:16px; font-size:1.05em; line-height:1.7; }
+.step { display:none; animation: fadeIn .4s; }
+.step.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+.teacher { background:#f0f7ff; border-radius:12px; padding:12px 14px; margin-bottom:12px; font-size:1em; line-height:1.6; border-left:4px solid #3b82f6; }
+.teacher.green { background:#f0fff0; border-left-color:#22c55e; }
+.teacher.orange { background:#fff8f0; border-left-color:#f59e0b; }
+.emoji-area { background:#f8faff; border-radius:12px; padding:14px; margin:10px 0; min-height:50px; display:flex; flex-wrap:wrap; gap:4px; align-items:center; transition: all .3s; }
+.emoji-area.bus { background:linear-gradient(135deg,#e8f4fd,#d0e8ff); border:2px solid #90c0f0; }
+.emoji-area.bucket { background:linear-gradient(135deg,#e8fde8,#d0f0d8); border:2px solid #90d090; }
+.emoji-area.tree { background:linear-gradient(135deg,#fdf8e8,#f0e8d0); border:2px solid #d0c090; }
+.ej { font-size:1.8em; display:inline-flex; width:40px; height:40px; align-items:center; justify-content:center; border-radius:8px; transition: all .5s; position:relative; }
+.ej.green-bg { background:#d0ffd0; }
+.ej.red-bg { background:#ffd0d0; text-decoration:line-through; }
+.ej.fade-out { opacity:0; transform:scale(.3); width:0; margin:0; padding:0; overflow:hidden; }
+.ej.fly-in { animation: flyIn .6s ease-out; }
+@keyframes flyIn { from{opacity:0;transform:translateX(40px) scale(.5)} to{opacity:1;transform:none} }
+.ej.pop-in { animation: popIn .4s ease-out; }
+@keyframes popIn { from{opacity:0;transform:scale(0)} to{opacity:1;transform:scale(1)} }
+.label { font-size:.75em; color:#888; text-align:center; margin-top:4px; }
+.input-row { display:flex; align-items:center; gap:10px; margin:12px 0; flex-wrap:wrap; }
+.input-row input { width:80px; height:44px; font-size:1.3em; text-align:center; border:2px solid #c0c8e0; border-radius:12px; outline:none; }
+.input-row input:focus { border-color:#3b82f6; }
+.btn { padding:10px 22px; border-radius:12px; border:none; font-size:1em; font-weight:600; cursor:pointer; transition:.2s; }
+.btn:active { transform:scale(.95); }
+.btn-blue { background:#3b82f6; color:#fff; }
+.btn-green { background:#22c55e; color:#fff; }
+.btn-orange { background:#f59e0b; color:#fff; }
+.btn-gray { background:#e0e0e0; color:#666; }
+.feedback { padding:10px 14px; border-radius:10px; margin:8px 0; font-weight:600; font-size:1em; display:none; }
+.feedback.correct { display:block; background:#d0ffd0; color:#16a34a; }
+.feedback.wrong { display:block; background:#ffe0e0; color:#dc2626; }
+.summary-card { background:linear-gradient(135deg,#fffde0,#fff8cc); border:2px solid #f0d860; border-radius:14px; padding:16px; margin-top:14px; text-align:center; font-size:1.1em; line-height:1.8; }
+.progress { display:flex; gap:6px; justify-content:center; margin:10px 0; }
+.dot { width:12px; height:12px; border-radius:50%; background:#ddd; transition:.3s; }
+.dot.done { background:#22c55e; }
+.dot.current { background:#3b82f6; transform:scale(1.3); }
+.speak-btn { background:none; border:none; font-size:1.3em; cursor:pointer; vertical-align:middle; }
+.next-btn { display:block; margin:14px auto 0; }
+.section-title { font-size:1.1em; font-weight:700; margin:18px 0 8px; text-align:center; }
+.practice-card { background:#fff; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,.08); padding:20px; margin:16px auto; max-width:600px; display:none; }
+.confetti { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:999; display:none; }
+.footer { text-align:center; padding:20px 0 10px; color:#aaa; font-size:.85em; }
+.row-label { font-size:.8em; color:#999; margin:4px 0 2px; }
+@media(max-width:400px){ .ej{font-size:1.5em;width:32px;height:32px;} }
 </style>
 </head>
 <body>
 
 <div class="header">
   <h1>🧠 数学思维训练</h1>
-  <p>学会"逆推法"——从结果倒着想！</p>
+  <p style="color:#888;font-size:.9em">数图标，找答案！</p>
 </div>
 
 <div class="tabs">
-  <button class="tab-btn active" onclick="switchProblem(0)">🚌 公交车 ⭐⭐⭐</button>
-  <button class="tab-btn" onclick="switchProblem(1)">🪣 倒水 ⭐⭐⭐⭐</button>
-  <button class="tab-btn" onclick="switchProblem(2)">🐦 小鸟 ⭐⭐⭐⭐⭐</button>
+  <button class="tab active" data-t="0" onclick="switchTopic(0)">🚌 公交车 ⭐⭐⭐</button>
+  <button class="tab" data-t="1" onclick="switchTopic(1)">💧 倒水 ⭐⭐⭐⭐</button>
+  <button class="tab" data-t="2" onclick="switchTopic(2)">🐦 小鸟 ⭐⭐⭐⭐⭐</button>
 </div>
 
-<!-- ============ PROBLEM 1: BUS ============ -->
-<div class="problem-area active" id="prob0">
-  <div class="progress-bar" id="prog0"></div>
-
-  <!-- Step 0: Typewriter -->
-  <div class="step visible" id="p0s0">
-    <div class="card blue-tint">
-      <h3 class="title-font">🚌 公交车上下客</h3>
-      <p id="p0-typewriter" style="font-size:1.05em; line-height:1.8; min-height:80px;"></p>
-      <div style="text-align:center; margin-top:14px;">
-        <button class="action-btn btn-blue" id="p0-start-btn" style="display:none;" onclick="goStep(0,1)">开始思考 →</button>
-      </div>
+<!-- ===== TOPIC 0: BUS ===== -->
+<div id="topic0" class="topic-panel">
+  <div class="card">
+    <div class="question-box">
+      🚌 一辆公共汽车，到第一站下车10人。到第二站下车的人数比第一站少5人。到第三站上来8人后，车上现有13人。<br>原来有（ <b>？</b> ）人。
+      <button class="speak-btn" onclick="speak('一辆公共汽车，到第一站下车10人。到第二站下车的人数比第一站少5人。到第三站上来8人后，车上现有13人。原来有几人？')">🔊</button>
     </div>
+    <div class="progress" id="prog0"></div>
+    <div id="bus-steps"></div>
   </div>
-
-  <!-- Step 1 -->
-  <div class="step" id="p0s1">
-    <div class="teacher-say">这道题信息好多对不对？别急，我们从最后往前想 🤔</div>
-    <div class="teacher-say">最后车上有13人，第三站上来了8人。那<b>上来之前</b>车上有几人呢？</div>
-    <div class="anim-box">
-      <div class="bus-scene" id="bus-scene-1"></div>
+  <div class="practice-card" id="prac0">
+    <div class="section-title">✏️ 练一练</div>
+    <div class="question-box">
+      🚌 一辆公共汽车，到第一站下车6人。到第二站下车3人。到第三站上来4人后，车上现有10人。<br>原来有（ <b>？</b> ）人。
+      <button class="speak-btn" onclick="speak('一辆公共汽车，到第一站下车6人。到第二站下车3人。到第三站上来4人后，车上现有10人。原来有几人？')">🔊</button>
     </div>
-    <div class="answer-row">
-      <span>上来之前有</span>
-      <input class="answer-input" id="p0a1" type="number" placeholder="?">
-      <span>人</span>
-      <button class="check-btn" onclick="checkAns(0,1,5)">确认</button>
-      <button class="speak-btn" onclick="speak('最后车上有13人，第三站上来了8人，上来之前车上有几人？')">🔊</button>
-    </div>
-    <div class="feedback" id="p0f1"></div>
-  </div>
-
-  <!-- Step 2 -->
-  <div class="step" id="p0s2">
-    <div class="teacher-say">现在车上只有5人了。第二站下了几人？题目说比第一站少5人，第一站下了10人…</div>
-    <div class="answer-row">
-      <span>第二站下了</span>
-      <input class="answer-input" id="p0a2" type="number" placeholder="?">
-      <span>人</span>
-      <button class="check-btn" onclick="checkAns(0,2,5)">确认</button>
-      <button class="speak-btn" onclick="speak('第二站下车人数比第一站少5人，第一站下了10人，第二站下了几人？')">🔊</button>
-    </div>
-    <div class="feedback" id="p0f2"></div>
-  </div>
-
-  <!-- Step 3 -->
-  <div class="step" id="p0s3">
-    <div class="teacher-say">对！10-5=5人。那第二站下车之前呢？5（车上）+5（下车的）=10人。<br>第一站下了10人，下之前呢？</div>
-    <div class="anim-box">
-      <div class="bus-scene" id="bus-scene-3"></div>
-    </div>
-    <div class="answer-row">
-      <span>原来有</span>
-      <input class="answer-input" id="p0a3" type="number" placeholder="?">
-      <span>人</span>
-      <button class="check-btn" onclick="checkAns(0,3,20)">确认</button>
-      <button class="speak-btn" onclick="speak('第一站下了10人，下之前有多少人？10加10等于多少？')">🔊</button>
-    </div>
-    <div class="feedback" id="p0f3"></div>
-  </div>
-
-  <!-- Step 4: Summary -->
-  <div class="step" id="p0s4">
-    <div class="summary-card">
-      <h3>🎉 太棒了！答案是20人！</h3>
-      <ul>
-        <li>最后13人 → 减去上来的8人 → 5人</li>
-        <li>5人 → 加回第二站下的5人 → 10人</li>
-        <li>10人 → 加回第一站下的10人 → <b>20人</b></li>
-      </ul>
-      <p style="margin-top:12px; font-size:1.1em;">🔑 <b>解题秘诀：从后往前推！这就叫"逆推法"！</b></p>
-    </div>
-    <div style="text-align:center;">
-      <button class="action-btn btn-blue" onclick="goStep(0,5)">做练习题 ✏️</button>
-    </div>
-  </div>
-
-  <!-- Step 5: Practice -->
-  <div class="step" id="p0s5">
-    <div class="practice-card">
-      <h3>✏️ 练一练</h3>
-      <p style="line-height:1.7;">一辆公共汽车，到第一站下车<b>8</b>人。到第二站下车的人数比第一站<b>多4</b>人。到第三站上来<b>6</b>人后，车上现有<b>12</b>人。原来有（ ）人。</p>
-      <button class="speak-btn" onclick="speak('一辆公共汽车，到第一站下车8人。到第二站下车的人数比第一站多4人。到第三站上来6人后，车上现有12人。原来有多少人？')">🔊 听题</button>
-      <div class="answer-row" style="margin-top:10px;">
-        <span>原来有</span>
-        <input class="answer-input" id="p0pa" type="number" placeholder="?">
-        <span>人</span>
-        <button class="check-btn" onclick="checkPractice(0,22)">确认</button>
-      </div>
-      <div class="feedback" id="p0pf"></div>
-    </div>
+    <div id="prac0-area"></div>
   </div>
 </div>
 
-<!-- ============ PROBLEM 2: WATER ============ -->
-<div class="problem-area" id="prob1">
-  <div class="progress-bar" id="prog1"></div>
-
-  <div class="step visible" id="p1s0">
-    <div class="card green-tint">
-      <h3 class="title-font">🪣 倒水问题</h3>
-      <p id="p1-typewriter" style="font-size:1.05em; line-height:1.8; min-height:80px;"></p>
-      <div style="text-align:center; margin-top:14px;">
-        <button class="action-btn btn-green" id="p1-start-btn" style="display:none;" onclick="goStep(1,1)">开始思考 →</button>
-      </div>
+<!-- ===== TOPIC 1: WATER ===== -->
+<div id="topic1" class="topic-panel" style="display:none">
+  <div class="card">
+    <div class="question-box">
+      💧 一桶水，第一次倒出一半，第二次又倒出剩下的一半，第三次又倒出5千克，桶里还剩2千克。<br>原来有（ <b>？</b> ）千克。
+      <button class="speak-btn" onclick="speak('一桶水，第一次倒出一半，第二次又倒出剩下的一半，第三次又倒出5千克，桶里还剩2千克。原来有几千克？')">🔊</button>
     </div>
+    <div class="progress" id="prog1"></div>
+    <div id="water-steps"></div>
   </div>
-
-  <div class="step" id="p1s1">
-    <div class="teacher-say">这道题要倒好多次水，我们还是从最后往前想 🤔</div>
-    <div class="teacher-say">最后剩<b>2千克</b>，第三次倒出了<b>5千克</b>。倒之前有多少？</div>
-    <div class="anim-box">
-      <div class="bucket-scene" id="bucket-1">
-        <div class="bucket">
-          <div class="bucket-rim"></div>
-          <div class="water" id="water1" style="height:17%;"><div class="water-label">2千克</div></div>
-        </div>
-      </div>
+  <div class="practice-card" id="prac1">
+    <div class="section-title">✏️ 练一练</div>
+    <div class="question-box">
+      💧 一桶水，第一次倒出一半，第二次又倒出3千克，桶里还剩5千克。<br>原来有（ <b>？</b> ）千克。
+      <button class="speak-btn" onclick="speak('一桶水，第一次倒出一半，第二次又倒出3千克，桶里还剩5千克。原来有几千克？')">🔊</button>
     </div>
-    <div class="answer-row">
-      <span>倒之前有</span>
-      <input class="answer-input" id="p1a1" type="number" placeholder="?">
-      <span>千克</span>
-      <button class="check-btn" onclick="checkAns(1,1,7)">确认</button>
-      <button class="speak-btn" onclick="speak('最后剩2千克，第三次倒出了5千克，倒之前有多少千克？')">🔊</button>
-    </div>
-    <div class="feedback" id="p1f1"></div>
-  </div>
-
-  <div class="step" id="p1s2">
-    <div class="teacher-say">对！2+5=7千克。第二次是倒出一半后剩7千克，那倒之前有多少？<br>💡 提示：7千克是一半，全部是？</div>
-    <div class="anim-box">
-      <div class="bucket-scene" id="bucket-2">
-        <div class="bucket">
-          <div class="bucket-rim"></div>
-          <div class="water" id="water2" style="height:25%;"><div class="water-label">7千克</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="answer-row">
-      <span>倒之前有</span>
-      <input class="answer-input" id="p1a2" type="number" placeholder="?">
-      <span>千克</span>
-      <button class="check-btn" onclick="checkAns(1,2,14)">确认</button>
-      <button class="speak-btn" onclick="speak('7千克是一半，全部是多少千克？')">🔊</button>
-    </div>
-    <div class="feedback" id="p1f2"></div>
-  </div>
-
-  <div class="step" id="p1s3">
-    <div class="teacher-say">厉害！7×2=14千克。第一次也是倒出一半后剩14千克，原来呢？</div>
-    <div class="anim-box">
-      <div class="bucket-scene" id="bucket-3">
-        <div class="bucket">
-          <div class="bucket-rim"></div>
-          <div class="water" id="water3" style="height:50%;"><div class="water-label">14千克</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="answer-row">
-      <span>原来有</span>
-      <input class="answer-input" id="p1a3" type="number" placeholder="?">
-      <span>千克</span>
-      <button class="check-btn" onclick="checkAns(1,3,28)">确认</button>
-      <button class="speak-btn" onclick="speak('14千克是一半，原来有多少千克？')">🔊</button>
-    </div>
-    <div class="feedback" id="p1f3"></div>
-  </div>
-
-  <div class="step" id="p1s4">
-    <div class="summary-card">
-      <h3>🎉 逆推法又赢了！答案是28千克！</h3>
-      <ul>
-        <li>剩2千克 → 加回倒出的5千克 → 7千克</li>
-        <li>7千克是一半 → ×2 → 14千克</li>
-        <li>14千克是一半 → ×2 → <b>28千克</b></li>
-      </ul>
-      <p style="margin-top:12px; font-size:1.1em;">🔑 <b>倒出就加回去，倒一半就乘2！</b></p>
-    </div>
-    <div style="text-align:center;">
-      <button class="action-btn btn-green" onclick="goStep(1,5)">做练习题 ✏️</button>
-    </div>
-  </div>
-
-  <div class="step" id="p1s5">
-    <div class="practice-card">
-      <h3>✏️ 练一练</h3>
-      <p style="line-height:1.7;">一桶水，第一次倒出一半，第二次又倒出<b>3千克</b>，桶里还剩<b>5千克</b>。原来有（ ）千克。</p>
-      <button class="speak-btn" onclick="speak('一桶水，第一次倒出一半，第二次又倒出3千克，桶里还剩5千克。原来有多少千克？')">🔊 听题</button>
-      <div class="teacher-say" style="font-size:0.9em;">💡 提示：剩5加倒出的3等于多少？那是一半…</div>
-      <div class="answer-row">
-        <span>原来有</span>
-        <input class="answer-input" id="p1pa" type="number" placeholder="?">
-        <span>千克</span>
-        <button class="check-btn" onclick="checkPractice(1,16)">确认</button>
-      </div>
-      <div class="feedback" id="p1pf"></div>
-    </div>
+    <div id="prac1-area"></div>
   </div>
 </div>
 
-<!-- ============ PROBLEM 3: BIRDS ============ -->
-<div class="problem-area" id="prob2">
-  <div class="progress-bar" id="prog2"></div>
-
-  <div class="step visible" id="p2s0">
-    <div class="card orange-tint">
-      <h3 class="title-font">🐦 小鸟转移</h3>
-      <p id="p2-typewriter" style="font-size:1.05em; line-height:1.8; min-height:80px;"></p>
-      <div style="text-align:center; margin-top:14px;">
-        <button class="action-btn btn-orange" id="p2-start-btn" style="display:none;" onclick="goStep(2,1)">开始思考 →</button>
-      </div>
+<!-- ===== TOPIC 2: BIRDS ===== -->
+<div id="topic2" class="topic-panel" style="display:none">
+  <div class="card">
+    <div class="question-box">
+      🐦 四棵树上共有40只鸟。第一棵树有3只飞到第二棵，第二棵有4只飞到第三棵，第三棵有5只飞到第四棵，最后一样多。<br>第三棵树原来有（ <b>？</b> ）只。
+      <button class="speak-btn" onclick="speak('四棵树上共有40只鸟。第一棵树有3只飞到第二棵，第二棵有4只飞到第三棵，第三棵有5只飞到第四棵，最后一样多。第三棵树原来有几只？')">🔊</button>
     </div>
+    <div class="progress" id="prog2"></div>
+    <div id="bird-steps"></div>
   </div>
-
-  <div class="step" id="p2s1">
-    <div class="teacher-say">四棵树一共<b>40只鸟</b>，飞来飞去最后一样多。每棵树几只？</div>
-    <div class="anim-box">
-      <div class="tree-scene" id="tree-scene-1">
-        <div class="tree-group"><div class="tree-birds">🐦🐦🐦</div><div class="tree-crown"></div><div class="tree-trunk"></div><div class="tree-count">?</div></div>
-        <div class="tree-group"><div class="tree-birds">🐦🐦🐦</div><div class="tree-crown"></div><div class="tree-trunk"></div><div class="tree-count">?</div></div>
-        <div class="tree-group"><div class="tree-birds">🐦🐦🐦</div><div class="tree-crown"></div><div class="tree-trunk"></div><div class="tree-count">?</div></div>
-        <div class="tree-group"><div class="tree-birds">🐦🐦🐦</div><div class="tree-crown"></div><div class="tree-trunk"></div><div class="tree-count">?</div></div>
-      </div>
+  <div class="practice-card" id="prac2">
+    <div class="section-title">✏️ 练一练</div>
+    <div class="question-box">
+      🐦 三棵树上共30只鸟。第一棵树有2只飞到第二棵，第二棵有3只飞到第三棵，这样三棵树一样多。<br>第二棵树原来有（ <b>？</b> ）只。
+      <button class="speak-btn" onclick="speak('三棵树上共30只鸟。第一棵树有2只飞到第二棵，第二棵有3只飞到第三棵，这样三棵树一样多。第二棵树原来有几只？')">🔊</button>
     </div>
-    <div class="answer-row">
-      <span>每棵树</span>
-      <input class="answer-input" id="p2a1" type="number" placeholder="?">
-      <span>只</span>
-      <button class="check-btn" onclick="checkAns(2,1,10)">确认</button>
-      <button class="speak-btn" onclick="speak('四棵树一共40只鸟，最后一样多，每棵树几只？')">🔊</button>
-    </div>
-    <div class="feedback" id="p2f1"></div>
-  </div>
-
-  <div class="step" id="p2s2">
-    <div class="teacher-say">对！40÷4=10只。现在看第三棵树：<br>第三棵树最后<b>10只</b>。它飞走了<b>5只</b>到第四棵，又从第二棵飞来了<b>4只</b>。<br>飞走的要<b>加回来</b>，飞来的要<b>减回去</b>：10+5-4=？</div>
-    <div class="anim-box">
-      <div class="tree-scene" id="tree-scene-2">
-        <div class="tree-group"><div class="tree-birds"></div><div class="tree-crown"></div><div class="tree-trunk"></div><div class="tree-count" style="background:#E8F4FD;">10</div></div>
-        <div class="tree-group"><div class="tree-birds"><span style="color:#E74C3C;">→4只→</span></div><div class="tree-crown"></div><div class="tree-trunk"></div><div class="tree-count" style="background:#E8F4FD;">10</div></div>
-        <div class="tree-group"><div class="tree-birds"><span style="color:#4A90D9;">+4</span> <span style="color:#E74C3C;">-5→</span></div><div class="tree-crown"></div><div class="tree-trunk"></div><div class="tree-count" style="background:#FFF3E0;">10→?</div></div>
-        <div class="tree-group"><div class="tree-birds"><span style="color:#4A90D9;">+5</span></div><div class="tree-crown"></div><div class="tree-trunk"></div><div class="tree-count" style="background:#E8F4FD;">10</div></div>
-      </div>
-    </div>
-    <div class="answer-row">
-      <span>第三棵树原来</span>
-      <input class="answer-input" id="p2a2" type="number" placeholder="?">
-      <span>只</span>
-      <button class="check-btn" onclick="checkAns(2,2,11)">确认</button>
-      <button class="speak-btn" onclick="speak('第三棵树最后10只，飞走了5只，飞来了4只。10加5减4等于几？')">🔊</button>
-    </div>
-    <div class="feedback" id="p2f2"></div>
-  </div>
-
-  <div class="step" id="p2s3">
-    <div class="summary-card">
-      <h3>🎉 第三棵树原来有11只鸟！</h3>
-      <ul>
-        <li>最终每棵10只（40÷4=10）</li>
-        <li>第三棵飞走5只 → 加回来 → 10+5=15</li>
-        <li>第三棵飞来4只 → 减回去 → 15-4=<b>11只</b></li>
-      </ul>
-      <p style="margin-top:12px; font-size:1.1em;">🔑 <b>飞走的加回来，飞来的减回去！</b></p>
-    </div>
-    <div style="text-align:center;">
-      <button class="action-btn btn-orange" onclick="goStep(2,4)">做练习题 ✏️</button>
-    </div>
-  </div>
-
-  <div class="step" id="p2s4">
-    <div class="practice-card">
-      <h3>✏️ 练一练</h3>
-      <p style="line-height:1.7;">三棵树上共<b>30只鸟</b>。第一棵树有<b>2只</b>飞到第二棵，第二棵有<b>3只</b>飞到第三棵，这样三棵树一样多。第二棵树原来有（ ）只。</p>
-      <button class="speak-btn" onclick="speak('三棵树上共30只鸟。第一棵树有2只飞到第二棵，第二棵有3只飞到第三棵，这样三棵树一样多。第二棵树原来有几只？')">🔊 听题</button>
-      <div class="teacher-say" style="font-size:0.9em;">💡 提示：最终每棵几只？第二棵收到了2只又飞走了3只…</div>
-      <div class="answer-row">
-        <span>第二棵原来</span>
-        <input class="answer-input" id="p2pa" type="number" placeholder="?">
-        <span>只</span>
-        <button class="check-btn" onclick="checkPractice(2,11)">确认</button>
-      </div>
-      <div class="feedback" id="p2pf"></div>
-    </div>
+    <div id="prac2-area"></div>
   </div>
 </div>
 
-<!-- Final Summary (shown after all 3 practices done) -->
-<div id="final-summary" style="display:none; max-width:600px; margin:0 auto;">
-  <div class="final-summary">
-    <h2 class="title-font" style="color:#4A90D9;">🔑 今天学会了什么？</h2>
-    <div style="text-align:left; padding:16px 10px;">
-      <p style="margin:10px 0; font-size:1.05em; line-height:1.7;">
-        ✅ <b>逆推法</b>：从结果往前推<br>
-        ✅ 遇到"倒出一半"：<b>×2</b> 倒回去<br>
-        ✅ 遇到"下车N人"：<b>+N</b> 加回去<br>
-        ✅ 遇到"分一样多"：先算 <b>总数÷份数</b><br>
-        ✅ 飞走的 <b>加回来</b>，飞来的 <b>减回去</b>
-      </p>
-    </div>
-    <p style="font-size:1.3em; margin-top:10px;">🌟 你真是数学小天才！🌟</p>
-  </div>
-</div>
+<canvas class="confetti" id="confetti"></canvas>
 
-<div class="footer">
-  <div class="deco">📐 ✏️ 🧮</div>
-  🦎 Coco Learning Park · 数学思维训练
-</div>
+<div class="footer">🦎 Coco Learning Park · 数学思维训练</div>
 
 <script>
-// ============ STATE ============
-const totalSteps = { 0: 6, 1: 6, 2: 5 };
-const currentStep = { 0: 0, 1: 0, 2: 0 };
-const practicesDone = { 0: false, 1: false, 2: false };
-let currentProblem = 0;
-let typewriterStarted = { 0: false, 1: false, 2: false };
-
-const problemTexts = [
-  '一辆公共汽车，到第一站下车10人。到第二站下车的人数比第一站少5人。到第三站上来8人后，车上现有13人。这辆公共汽车上原来有（ ）人。',
-  '一桶水，第一次倒出一半，第二次又倒出剩下的一半，第三次又倒出5千克，桶里还剩2千克，原来桶里有水（ ）千克。',
-  '四棵树上共有40只鸟，若第一棵树上有3只鸟飞到第二棵树，第二棵树上有4只鸟飞到第三棵树，第三棵树上有5只鸟飞到第四棵树，这样四棵树上的鸟就一样多了，第三棵树上原来有（ ）只鸟。'
-];
-
-const wrongHints = {
-  '0-1': '再想想，13个人里8个是刚上来的，去掉这8个还剩几个？',
-  '0-2': '第一站下了10人，比第一站少5人，就是10-5=？',
-  '0-3': '第一站下了10人，车上还剩10人，下之前就是10+10=？',
-  '1-1': '剩2千克，又倒出了5千克，加在一起是多少？',
-  '1-2': '7千克只是一半哦，全部就是7×2=？',
-  '1-3': '14千克也只是一半，14×2=？',
-  '2-1': '40只鸟分成4份一样多，40÷4=？',
-  '2-2': '飞走的加回来，飞来的减回去：10+5-4=？'
-};
-
-const correctMsgs = {
-  '0-1': '太棒了！13-8=5，上来之前只有5人 🎉',
-  '0-2': '对！10-5=5人。下车之前车上有5+5=10人',
-  '0-3': '厉害！10+10=20人！原来车上有20人！🎉',
-  '1-1': '对！2+5=7千克 🎉',
-  '1-2': '厉害！7×2=14千克！🎉',
-  '1-3': '太棒了！14×2=28千克！原来有28千克水！🎉',
-  '2-1': '对！40÷4=10只 🎉',
-  '2-2': '厉害！10+5-4=11只！第三棵树原来有11只鸟！🎉'
-};
-
-// ============ SWITCH PROBLEM ============
-function switchProblem(idx) {
-  currentProblem = idx;
-  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
-  document.querySelectorAll('.problem-area').forEach((p,i) => p.classList.toggle('active', i===idx));
-  if (!typewriterStarted[idx]) {
-    typewriterStarted[idx] = true;
-    startTypewriter(idx);
-  }
-  updateProgress(idx);
-}
-
-// ============ TYPEWRITER ============
-function startTypewriter(probIdx) {
-  const el = document.getElementById(`p${probIdx}-typewriter`);
-  const text = problemTexts[probIdx];
-  const btn = document.getElementById(`p${probIdx}-start-btn`);
-  let i = 0;
-  el.innerHTML = '<span class="typewriter-cursor">|</span>';
-  const iv = setInterval(() => {
-    if (i < text.length) {
-      el.innerHTML = text.substring(0, i+1) + '<span class="typewriter-cursor">|</span>';
-      i++;
-    } else {
-      clearInterval(iv);
-      el.innerHTML = text;
-      btn.style.display = 'inline-block';
-      speak(text);
-    }
-  }, 60);
-}
-
-// ============ PROGRESS ============
-function updateProgress(probIdx) {
-  const bar = document.getElementById(`prog${probIdx}`);
-  const total = totalSteps[probIdx];
-  const cur = currentStep[probIdx];
-  let html = '';
-  for (let i = 0; i < total; i++) {
-    let cls = 'progress-dot';
-    if (i < cur) cls += ' done';
-    else if (i === cur) cls += ' current';
-    html += `<div class="${cls}"></div>`;
-  }
-  html += ` <span>${cur+1}/${total}</span>`;
-  bar.innerHTML = html;
-}
-
-// ============ GO STEP ============
-function goStep(probIdx, stepIdx) {
-  currentStep[probIdx] = stepIdx;
-  const steps = document.querySelectorAll(`#prob${probIdx} .step`);
-  steps.forEach((s, i) => s.classList.toggle('visible', i === stepIdx));
-  updateProgress(probIdx);
-
-  // Animate specific steps
-  if (probIdx === 0 && stepIdx === 1) animateBus1();
-  if (probIdx === 0 && stepIdx === 3) animateBus3();
-  if (probIdx === 1 && stepIdx === 1) animateWater(1, 17);
-  if (probIdx === 1 && stepIdx === 2) animateWater(2, 25);
-  if (probIdx === 1 && stepIdx === 3) animateWater(3, 50);
-
-  // Auto speak teacher text
-  const teacherEls = document.querySelectorAll(`#p${probIdx}s${stepIdx} .teacher-say`);
-  if (teacherEls.length > 0) {
-    const text = teacherEls[0].textContent.replace('👩‍🏫 ', '');
-    setTimeout(() => speak(text), 500);
-  }
-}
-
-// ============ CHECK ANSWER ============
-function checkAns(probIdx, stepIdx, correct) {
-  const input = document.getElementById(`p${probIdx}a${stepIdx}`);
-  const fb = document.getElementById(`p${probIdx}f${stepIdx}`);
-  const val = parseInt(input.value);
-  if (isNaN(val)) { fb.innerHTML = '请输入数字哦 😊'; fb.className = 'feedback wrong'; return; }
-
-  if (val === correct) {
-    fb.innerHTML = correctMsgs[`${probIdx}-${stepIdx}`];
-    fb.className = 'feedback correct';
-    speak(correctMsgs[`${probIdx}-${stepIdx}`].replace(/🎉/g,''));
-    input.disabled = true;
-    setTimeout(() => goStep(probIdx, stepIdx + 1), 2000);
-  } else {
-    fb.innerHTML = '💪 ' + (wrongHints[`${probIdx}-${stepIdx}`] || '再想想哦！');
-    fb.className = 'feedback wrong';
-    speak(wrongHints[`${probIdx}-${stepIdx}`] || '再想想哦');
-    input.value = '';
-    input.focus();
-  }
-}
-
-// ============ CHECK PRACTICE ============
-function checkPractice(probIdx, correct) {
-  const input = document.getElementById(`p${probIdx}pa`);
-  const fb = document.getElementById(`p${probIdx}pf`);
-  const val = parseInt(input.value);
-  if (isNaN(val)) { fb.innerHTML = '请输入数字哦 😊'; fb.className = 'feedback wrong'; return; }
-
-  if (val === correct) {
-    fb.innerHTML = '⭐ 完全正确！你已经掌握逆推法了！🎉🎉🎉';
-    fb.className = 'feedback correct';
-    speak('太棒了！完全正确！');
-    input.disabled = true;
-    practicesDone[probIdx] = true;
-    showConfetti();
-    checkAllDone();
-  } else {
-    const hints = {
-      0: '还是从后往前推！12-6=6（上来之前），6+12=18（第二站下车前），18+？=？先算第二站下了几人：8+4=12人',
-      1: '剩5加倒出的3等于8千克，8千克是一半，原来是…',
-      2: '最终每棵10只。第二棵收到了2只又飞走了3只：10-2+3=？'
-    };
-    fb.innerHTML = '💪 再想想！' + (hints[probIdx] ? '<br>💡 ' + hints[probIdx] : '');
-    fb.className = 'feedback wrong';
-    input.value = '';
-    input.focus();
-  }
-}
-
-function checkAllDone() {
-  if (practicesDone[0] && practicesDone[1] && practicesDone[2]) {
-    document.getElementById('final-summary').style.display = 'block';
-    document.getElementById('final-summary').scrollIntoView({ behavior: 'smooth' });
-  }
-}
-
-// ============ BUS ANIMATIONS ============
-function animateBus1() {
-  const scene = document.getElementById('bus-scene-1');
-  scene.innerHTML = `
-    <div class="bus-body">
-      <div class="bus-window" style="left:15px;"></div>
-      <div class="bus-window" style="left:55px;"></div>
-      <div class="bus-window" style="left:95px;"></div>
-      <div class="bus-window" style="left:135px;"></div>
-      <div class="bus-window" style="left:175px;"></div>
-      <div class="bus-wheel" style="left:20px;"></div>
-      <div class="bus-wheel" style="right:20px;"></div>
-      <div class="bus-people" id="bus-people-1"></div>
-    </div>`;
-  const pp = document.getElementById('bus-people-1');
-  for (let i = 0; i < 13; i++) {
-    const d = document.createElement('div');
-    d.className = 'person-dot ' + (i < 5 ? 'original' : 'new-person');
-    pp.appendChild(d);
-  }
-}
-
-function animateBus3() {
-  const scene = document.getElementById('bus-scene-3');
-  scene.innerHTML = `
-    <div class="bus-body">
-      <div class="bus-window" style="left:15px;"></div>
-      <div class="bus-window" style="left:55px;"></div>
-      <div class="bus-window" style="left:95px;"></div>
-      <div class="bus-window" style="left:135px;"></div>
-      <div class="bus-window" style="left:175px;"></div>
-      <div class="bus-wheel" style="left:20px;"></div>
-      <div class="bus-wheel" style="right:20px;"></div>
-      <div class="bus-people" id="bus-people-3"></div>
-    </div>`;
-  const pp = document.getElementById('bus-people-3');
-  for (let i = 0; i < 20; i++) {
-    const d = document.createElement('div');
-    d.className = 'person-dot original';
-    pp.appendChild(d);
-  }
-}
-
-// ============ WATER ANIMATION ============
-function animateWater(id, targetPct) {
-  const w = document.getElementById('water' + id);
-  if (w) {
-    setTimeout(() => { w.style.height = targetPct + '%'; }, 300);
-  }
-}
-
-// ============ CONFETTI ============
-function showConfetti() {
-  const c = document.createElement('div');
-  c.className = 'confetti-container';
-  document.body.appendChild(c);
-  const colors = ['#FF6B6B','#4ECDC4','#FFE66D','#A8E6CF','#FF8B94','#4A90D9','#7ED321','#F5A623'];
-  for (let i = 0; i < 60; i++) {
-    const p = document.createElement('div');
-    p.className = 'confetti-piece';
-    p.style.left = Math.random()*100 + '%';
-    p.style.background = colors[Math.floor(Math.random()*colors.length)];
-    p.style.animationDelay = Math.random()*2 + 's';
-    p.style.borderRadius = Math.random()>.5 ? '50%' : '2px';
-    p.style.width = (6+Math.random()*8)+'px';
-    p.style.height = (6+Math.random()*8)+'px';
-    c.appendChild(p);
-  }
-  setTimeout(() => c.remove(), 4000);
-}
-
-// ============ TTS ============
+// ===== TTS =====
 function speak(text) {
   if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
+  speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'zh-CN'; u.rate = 0.85; u.pitch = 1.1;
-  const voices = speechSynthesis.getVoices();
-  const zh = voices.find(v => v.lang.startsWith('zh'));
-  if (zh) u.voice = zh;
+  u.lang = 'zh-CN'; u.rate = 0.85;
   speechSynthesis.speak(u);
 }
 
-// Init
-switchProblem(0);
-updateProgress(0); updateProgress(1); updateProgress(2);
+// ===== TABS =====
+let currentTopic = 0;
+function switchTopic(t) {
+  currentTopic = t;
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', +b.dataset.t === t));
+  document.querySelectorAll('.topic-panel').forEach((p,i) => p.style.display = i===t ? '' : 'none');
+}
+
+// ===== CONFETTI =====
+function showConfetti() {
+  const c = document.getElementById('confetti');
+  c.style.display = 'block';
+  const ctx = c.getContext('2d');
+  c.width = window.innerWidth; c.height = window.innerHeight;
+  const pieces = Array.from({length:80}, () => ({
+    x: Math.random()*c.width, y: -20-Math.random()*200,
+    r: 4+Math.random()*6, color: ['#f44','#4a4','#48f','#fa4','#f4a','#4ff'][Math.floor(Math.random()*6)],
+    vy: 2+Math.random()*3, vx: (Math.random()-.5)*3, rot: Math.random()*360
+  }));
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0,0,c.width,c.height);
+    pieces.forEach(p => {
+      p.y += p.vy; p.x += p.vx; p.rot += 3;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color; ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r);
+      ctx.restore();
+    });
+    if (++frame < 120) requestAnimationFrame(draw);
+    else { ctx.clearRect(0,0,c.width,c.height); c.style.display='none'; }
+  }
+  draw();
+}
+
+// ===== EMOJI HELPERS =====
+function makeEmojis(emoji, count, cls='') {
+  return Array.from({length:count}, (_,i) =>
+    `<span class="ej ${cls}" style="animation-delay:${i*60}ms">${emoji}</span>`
+  ).join('');
+}
+
+function emojiRow(emoji, count, cls='', perRow=10) {
+  let html = '';
+  for (let i=0; i<count; i++) {
+    if (i>0 && i%perRow===0) html += '<br>';
+    html += `<span class="ej ${cls}" style="animation-delay:${i*50}ms">${emoji}</span>`;
+  }
+  return html;
+}
+
+// ===== STEP ENGINE =====
+class StepEngine {
+  constructor(containerId, progressId, steps, onComplete) {
+    this.container = document.getElementById(containerId);
+    this.progEl = document.getElementById(progressId);
+    this.steps = steps;
+    this.current = 0;
+    this.onComplete = onComplete;
+    this.render();
+  }
+  render() {
+    // progress dots
+    this.progEl.innerHTML = this.steps.map((_,i) =>
+      `<div class="dot ${i<this.current?'done':''} ${i===this.current?'current':''}"></div>`
+    ).join('');
+    // steps
+    let html = '';
+    this.steps.forEach((s,i) => {
+      html += `<div class="step ${i===this.current?'active':''}" id="${this.container.id}-s${i}">${s.html(i===this.current)}</div>`;
+    });
+    this.container.innerHTML = html;
+    // auto speak
+    if (this.steps[this.current] && this.steps[this.current].speakText) {
+      setTimeout(() => speak(this.steps[this.current].speakText), 300);
+    }
+  }
+  checkAnswer(stepIdx, inputId, correct, onCorrect) {
+    const v = parseInt(document.getElementById(inputId).value);
+    const fbId = inputId + '-fb';
+    if (v === correct) {
+      document.getElementById(fbId).className = 'feedback correct';
+      document.getElementById(fbId).textContent = '✅ 太棒了！';
+      if (onCorrect) setTimeout(onCorrect, 800);
+    } else {
+      document.getElementById(fbId).className = 'feedback wrong';
+      document.getElementById(fbId).textContent = this.steps[stepIdx].hint || '❌ 再数数看？';
+    }
+  }
+  next() {
+    if (this.current < this.steps.length - 1) {
+      this.current++;
+      this.render();
+    } else if (this.onComplete) {
+      this.onComplete();
+    }
+  }
+}
+
+// ===== TOPIC 0: BUS =====
+const busSteps = [
+  {
+    speakText: '这道题信息好多！我们从最后往前推。先看最后车上有多少人。',
+    html: () => `
+      <div class="teacher">👩‍🏫 这道题信息好多！我们从最后往前推，先看最后车上有多少人。 <button class="speak-btn" onclick="speak('这道题信息好多！我们从最后往前推，先看最后车上有多少人。')">🔊</button></div>
+      <div class="row-label">🚌 车上现在有 13 人：</div>
+      <div class="emoji-area bus">${emojiRow('😊',13,'pop-in')}</div>
+      <button class="btn btn-blue next-btn" onclick="busEngine.next()">下一步 →</button>
+    `
+  },
+  {
+    speakText: '第三站上来了8人。最后8个是刚上来的，我们把他们找出来！去掉这8个，车上还剩几个？数一数蓝色的！',
+    hint: '❌ 数数蓝色的😊有几个？',
+    html: (active) => `
+      <div class="teacher">👩‍🏫 第三站上来了8人。最后8个是刚上来的！<br>去掉红色的，车上还剩几个？数蓝色的😊！ <button class="speak-btn" onclick="speak('第三站上来了8人。去掉红色的，车上还剩几个？数蓝色的！')">🔊</button></div>
+      <div class="row-label">🚌 13人中，后8个是刚上来的（红色）：</div>
+      <div class="emoji-area bus">
+        ${makeEmojis('😊',5)}
+        ${makeEmojis('😊',8,'red-bg')}
+      </div>
+      <div style="text-align:center;margin:6px 0;font-size:1.3em">⬇️ 去掉红色的</div>
+      <div class="emoji-area bus">${makeEmojis('😊',5,'pop-in')}</div>
+      <div class="input-row">还剩 <input type="number" id="bus1" min="0" max="20"> 人 <button class="btn btn-blue" onclick="busEngine.checkAnswer(1,'bus1',5,()=>busEngine.next())">确认</button></div>
+      <div class="feedback" id="bus1-fb"></div>
+    `
+  },
+  {
+    speakText: '第二站下了几个人？题目说比第一站少5人，第一站下了10人。所以第二站下了5人。下车的人要加回去！',
+    hint: '❌ 数数所有的😊有几个？',
+    html: () => `
+      <div class="teacher">👩‍🏫 第二站下了几人？比第一站少5人，第一站下了10人。<br>10-5=5，第二站下了5人。下车的要加回去！ <button class="speak-btn" onclick="speak('第二站下了5人。下车的要加回去！')">🔊</button></div>
+      <div class="row-label">第二站前先算人数：5人 + 5个下车的加回来</div>
+      <div class="emoji-area bus">
+        ${makeEmojis('😊',5)}
+        ${makeEmojis('😊',5,'green-bg fly-in')}
+      </div>
+      <div class="input-row">现在共 <input type="number" id="bus2" min="0" max="30"> 人 <button class="btn btn-blue" onclick="busEngine.checkAnswer(2,'bus2',10,()=>busEngine.next())">确认</button></div>
+      <div class="feedback" id="bus2-fb"></div>
+    `
+  },
+  {
+    speakText: '第一站下了10人，这10人也要加回去！数一数所有的😊！',
+    hint: '❌ 数数所有的😊有几个？两排，每排10个！',
+    html: () => `
+      <div class="teacher">👩‍🏫 第一站下了10人，也要加回去！数一数所有😊！ <button class="speak-btn" onclick="speak('第一站下了10人，也要加回去！数一数所有的😊！')">🔊</button></div>
+      <div class="row-label">10人 + 10个下车的加回来：</div>
+      <div class="emoji-area bus">
+        ${emojiRow('😊',10,'',10)}<br>
+        ${emojiRow('😊',10,'green-bg fly-in',10)}
+      </div>
+      <div class="input-row">原来共 <input type="number" id="bus3" min="0" max="40"> 人 <button class="btn btn-blue" onclick="busEngine.checkAnswer(3,'bus3',20,()=>busEngine.next())">确认</button></div>
+      <div class="feedback" id="bus3-fb"></div>
+    `
+  },
+  {
+    speakText: '太棒了！原来车上有20个人！秘诀是从后往前推，下车的加回去，上车的减回来！',
+    html: () => `
+      <div class="summary-card">
+        🎉 原来车上有 <b>20</b> 人！<br><br>
+        <div class="emoji-area bus" style="justify-content:center">
+          ${emojiRow('😊',20,'pop-in',10)}
+        </div>
+        <br>🔑 <b>秘诀：从后往前推！<br>下车的加回去，上车的减回来！</b>
+        <button class="speak-btn" onclick="speak('秘诀是从后往前推！下车的加回去，上车的减回来！')">🔊</button>
+      </div>
+      <button class="btn btn-green next-btn" onclick="showPractice(0)">开始练习 ✏️</button>
+    `
+  }
+];
+
+// ===== TOPIC 1: WATER =====
+const waterSteps = [
+  {
+    speakText: '从最后往前推！最后桶里剩2千克。',
+    html: () => `
+      <div class="teacher green">👩‍🏫 从最后往前推！最后桶里剩2千克。 <button class="speak-btn" onclick="speak('从最后往前推！最后桶里剩2千克。')">🔊</button></div>
+      <div class="row-label">桶里剩的水：</div>
+      <div class="emoji-area bucket">${makeEmojis('💧',2,'pop-in')}</div>
+      <button class="btn btn-green next-btn" onclick="waterEngine.next()">下一步 →</button>
+    `
+  },
+  {
+    speakText: '第三次倒出了5千克。倒出去的要加回来！数数现在有几个💧？',
+    hint: '❌ 数数所有的💧有几个？',
+    html: () => `
+      <div class="teacher green">👩‍🏫 第三次倒出了5千克，倒出去的加回来！ <button class="speak-btn" onclick="speak('第三次倒出了5千克，倒出去的加回来！')">🔊</button></div>
+      <div class="row-label">2个💧 + 加回5个：</div>
+      <div class="emoji-area bucket">
+        ${makeEmojis('💧',2)}
+        ${makeEmojis('💧',5,'green-bg fly-in')}
+      </div>
+      <div class="input-row">现在共 <input type="number" id="w1" min="0" max="40"> 千克 <button class="btn btn-green" onclick="waterEngine.checkAnswer(1,'w1',7,()=>waterEngine.next())">确认</button></div>
+      <div class="feedback" id="w1-fb"></div>
+    `
+  },
+  {
+    speakText: '7千克是第二次倒完后剩的。第二次倒了一半，7千克是一半，全部是多少？一半变全部，乘以2！',
+    hint: '❌ 7个💧再来7个💧，一共几个？',
+    html: () => `
+      <div class="teacher green">👩‍🏫 7千克是一半！一半变全部 ×2 ！再来7个💧！ <button class="speak-btn" onclick="speak('7千克是一半，一半变全部，乘以2！')">🔊</button></div>
+      <div class="row-label">原来的7个：</div>
+      <div class="emoji-area bucket">${makeEmojis('💧',7)}</div>
+      <div style="text-align:center;font-size:1.2em;margin:4px 0">＋ 复制一份（×2）</div>
+      <div class="emoji-area bucket">${makeEmojis('💧',7,'green-bg pop-in')}</div>
+      <div class="input-row">全部共 <input type="number" id="w2" min="0" max="40"> 千克 <button class="btn btn-green" onclick="waterEngine.checkAnswer(2,'w2',14,()=>waterEngine.next())">确认</button></div>
+      <div class="feedback" id="w2-fb"></div>
+    `
+  },
+  {
+    speakText: '14千克也是一半！第一次也倒了一半，14再乘以2！',
+    hint: '❌ 14个💧再来14个💧，一共几个？数一数，每排7个！',
+    html: () => `
+      <div class="teacher green">👩‍🏫 14千克也是一半！再 ×2 ！ <button class="speak-btn" onclick="speak('14千克也是一半！再乘以2！')">🔊</button></div>
+      <div class="row-label">14个💧：</div>
+      <div class="emoji-area bucket">${emojiRow('💧',14,'',7)}</div>
+      <div style="text-align:center;font-size:1.2em;margin:4px 0">＋ 复制一份（×2）</div>
+      <div class="emoji-area bucket">${emojiRow('💧',14,'green-bg pop-in',7)}</div>
+      <div class="input-row">原来共 <input type="number" id="w3" min="0" max="40"> 千克 <button class="btn btn-green" onclick="waterEngine.checkAnswer(3,'w3',28,()=>waterEngine.next())">确认</button></div>
+      <div class="feedback" id="w3-fb"></div>
+    `
+  },
+  {
+    speakText: '太棒了！原来桶里有28千克水！秘诀是倒出就加回来，倒出一半就乘以2！',
+    html: () => `
+      <div class="summary-card">
+        🎉 原来桶里有 <b>28</b> 千克水！<br><br>
+        <div class="emoji-area bucket" style="justify-content:center">
+          ${emojiRow('💧',28,'pop-in',7)}
+        </div>
+        <br>🔑 <b>倒出就加回来！倒出一半就 ×2 ！</b>
+        <button class="speak-btn" onclick="speak('倒出就加回来！倒出一半就乘以2！')">🔊</button>
+      </div>
+      <button class="btn btn-green next-btn" onclick="showPractice(1)">开始练习 ✏️</button>
+    `
+  }
+];
+
+// ===== TOPIC 2: BIRDS =====
+const birdSteps = [
+  {
+    speakText: '40只鸟分在4棵树上，最后一样多，每棵树几只？',
+    hint: '❌ 40个🐦分4份，每份几个？',
+    html: () => `
+      <div class="teacher orange">👩‍🏫 40只🐦分4棵树，最后一样多。每棵树几只？ <button class="speak-btn" onclick="speak('40只鸟分4棵树，最后一样多，每棵树几只？')">🔊</button></div>
+      <div class="row-label">40只🐦：</div>
+      <div class="emoji-area tree">${emojiRow('🐦',40,'pop-in',10)}</div>
+      <div style="text-align:center;font-size:1.2em;margin:6px 0">⬇️ 平均分4份</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0">
+        <div class="emoji-area tree"><span style="font-size:.8em;color:#888">🌳1</span>${makeEmojis('🐦',10)}</div>
+        <div class="emoji-area tree"><span style="font-size:.8em;color:#888">🌳2</span>${makeEmojis('🐦',10)}</div>
+        <div class="emoji-area tree"><span style="font-size:.8em;color:#888">🌳3</span>${makeEmojis('🐦',10)}</div>
+        <div class="emoji-area tree"><span style="font-size:.8em;color:#888">🌳4</span>${makeEmojis('🐦',10)}</div>
+      </div>
+      <div class="input-row">每棵树 <input type="number" id="b0" min="0" max="40"> 只 <button class="btn btn-orange" onclick="birdEngine.checkAnswer(0,'b0',10,()=>birdEngine.next())">确认</button></div>
+      <div class="feedback" id="b0-fb"></div>
+    `
+  },
+  {
+    speakText: '好！每棵树10只。现在看第三棵树。第三棵树飞走了5只到第四棵。飞走的要加回来！',
+    html: () => `
+      <div class="teacher orange">👩‍🏫 每棵树最后10只🐦。看第三棵树！<br>第三棵飞走了5只到第四棵 → 飞走的加回来！ <button class="speak-btn" onclick="speak('第三棵树飞走了5只到第四棵。飞走的要加回来！')">🔊</button></div>
+      <div class="row-label">🌳3 最后10只 + 飞走的5只加回来：</div>
+      <div class="emoji-area tree">
+        ${makeEmojis('🐦',10)}
+        ${makeEmojis('🐦',5,'green-bg fly-in')}
+      </div>
+      <div class="row-label">现在🌳3 有 15 只🐦</div>
+      <button class="btn btn-orange next-btn" onclick="birdEngine.next()">下一步 →</button>
+    `
+  },
+  {
+    speakText: '第二棵飞来了4只到第三棵。飞来的要减回去！15只减去4只，还剩几只？数一数！',
+    hint: '❌ 15个🐦去掉4个红色的，还剩几个？',
+    html: () => `
+      <div class="teacher orange">👩‍🏫 第二棵飞来了4只到第三棵 → 飞来的减回去！ <button class="speak-btn" onclick="speak('第二棵飞来了4只到第三棵。飞来的要减回去！')">🔊</button></div>
+      <div class="row-label">🌳3 有15只，减去飞来的4只（红色）：</div>
+      <div class="emoji-area tree">
+        ${makeEmojis('🐦',11)}
+        ${makeEmojis('🐦',4,'red-bg')}
+      </div>
+      <div style="text-align:center;margin:6px 0;font-size:1.3em">⬇️ 去掉红色的</div>
+      <div class="emoji-area tree">${makeEmojis('🐦',11,'pop-in')}</div>
+      <div class="input-row">第三棵树原来 <input type="number" id="b2" min="0" max="40"> 只 <button class="btn btn-orange" onclick="birdEngine.checkAnswer(2,'b2',11,()=>birdEngine.next())">确认</button></div>
+      <div class="feedback" id="b2-fb"></div>
+    `
+  },
+  {
+    speakText: '太棒了！第三棵树原来有11只鸟！秘诀是飞走的加回来，飞来的减回去！',
+    html: () => `
+      <div class="summary-card">
+        🎉 第三棵树原来有 <b>11</b> 只🐦！<br><br>
+        <div class="emoji-area tree" style="justify-content:center">
+          ${makeEmojis('🐦',11,'pop-in')}
+        </div>
+        <br>🔑 <b>飞走的加回来，飞来的减回去！</b>
+        <button class="speak-btn" onclick="speak('飞走的加回来，飞来的减回去！')">🔊</button>
+      </div>
+      <button class="btn btn-orange next-btn" onclick="showPractice(2)">开始练习 ✏️</button>
+    `
+  }
+];
+
+// ===== PRACTICE =====
+function showPractice(t) {
+  document.getElementById('prac'+t).style.display = 'block';
+  document.getElementById('prac'+t).scrollIntoView({behavior:'smooth'});
+  if (t===0) initPrac0();
+  if (t===1) initPrac1();
+  if (t===2) initPrac2();
+}
+
+function initPrac0() {
+  // 10-4=6, 6+3=9, 9+6=15
+  const el = document.getElementById('prac0-area');
+  el.innerHTML = `
+    <div class="teacher">👩‍🏫 从最后往前推！车上现有10人，第三站上来了4人。去掉4个，剩几个？ <button class="speak-btn" onclick="speak('车上现有10人，第三站上来了4人。去掉4个剩几个？')">🔊</button></div>
+    <div class="emoji-area bus">${makeEmojis('😊',6)} ${makeEmojis('😊',4,'red-bg')}</div>
+    <div class="input-row">剩 <input type="number" id="p0a" min="0" max="20"> 人 <button class="btn btn-blue" onclick="checkPrac0a()">确认</button></div>
+    <div class="feedback" id="p0a-fb"></div>
+    <div id="p0b-zone" style="display:none"></div>
+    <div id="p0c-zone" style="display:none"></div>
+  `;
+}
+function checkPrac0a() {
+  const v = parseInt(document.getElementById('p0a').value);
+  if (v===6) {
+    document.getElementById('p0a-fb').className='feedback correct'; document.getElementById('p0a-fb').textContent='✅ 对！';
+    setTimeout(()=>{
+      const z = document.getElementById('p0b-zone'); z.style.display='block';
+      z.innerHTML = `
+        <div class="teacher">👩‍🏫 第二站下了3人，加回去！ <button class="speak-btn" onclick="speak('第二站下了3人，加回去！')">🔊</button></div>
+        <div class="emoji-area bus">${makeEmojis('😊',6)} ${makeEmojis('😊',3,'green-bg fly-in')}</div>
+        <div class="input-row">现在 <input type="number" id="p0b" min="0" max="30"> 人 <button class="btn btn-blue" onclick="checkPrac0b()">确认</button></div>
+        <div class="feedback" id="p0b-fb"></div>
+      `;
+      z.scrollIntoView({behavior:'smooth'});
+    },600);
+  } else { document.getElementById('p0a-fb').className='feedback wrong'; document.getElementById('p0a-fb').textContent='❌ 数数没有红色的😊有几个？'; }
+}
+function checkPrac0b() {
+  const v = parseInt(document.getElementById('p0b').value);
+  if (v===9) {
+    document.getElementById('p0b-fb').className='feedback correct'; document.getElementById('p0b-fb').textContent='✅ 对！';
+    setTimeout(()=>{
+      const z = document.getElementById('p0c-zone'); z.style.display='block';
+      z.innerHTML = `
+        <div class="teacher">👩‍🏫 第一站下了6人，也加回去！ <button class="speak-btn" onclick="speak('第一站下了6人，也加回去！')">🔊</button></div>
+        <div class="emoji-area bus">${makeEmojis('😊',9)} ${makeEmojis('😊',6,'green-bg fly-in')}</div>
+        <div class="input-row">原来共 <input type="number" id="p0c" min="0" max="30"> 人 <button class="btn btn-blue" onclick="checkPrac0c()">确认</button></div>
+        <div class="feedback" id="p0c-fb"></div>
+      `;
+      z.scrollIntoView({behavior:'smooth'});
+    },600);
+  } else { document.getElementById('p0b-fb').className='feedback wrong'; document.getElementById('p0b-fb').textContent='❌ 数数所有😊有几个？'; }
+}
+function checkPrac0c() {
+  const v = parseInt(document.getElementById('p0c').value);
+  if (v===15) {
+    document.getElementById('p0c-fb').className='feedback correct'; document.getElementById('p0c-fb').textContent='🎉 答对啦！原来有15人！';
+    showConfetti();
+  } else { document.getElementById('p0c-fb').className='feedback wrong'; document.getElementById('p0c-fb').textContent='❌ 数数所有😊有几个？'; }
+}
+
+function initPrac1() {
+  // 5+3=8, 8×2=16
+  const el = document.getElementById('prac1-area');
+  el.innerHTML = `
+    <div class="teacher green">👩‍🏫 从最后往前推！桶里剩5千克，第二次倒出了3千克，加回来！ <button class="speak-btn" onclick="speak('桶里剩5千克，第二次倒出了3千克，加回来！')">🔊</button></div>
+    <div class="emoji-area bucket">${makeEmojis('💧',5)} ${makeEmojis('💧',3,'green-bg fly-in')}</div>
+    <div class="input-row">共 <input type="number" id="p1a" min="0" max="30"> 千克 <button class="btn btn-green" onclick="checkPrac1a()">确认</button></div>
+    <div class="feedback" id="p1a-fb"></div>
+    <div id="p1b-zone" style="display:none"></div>
+  `;
+}
+function checkPrac1a() {
+  const v = parseInt(document.getElementById('p1a').value);
+  if (v===8) {
+    document.getElementById('p1a-fb').className='feedback correct'; document.getElementById('p1a-fb').textContent='✅ 对！8千克！';
+    setTimeout(()=>{
+      const z = document.getElementById('p1b-zone'); z.style.display='block';
+      z.innerHTML = `
+        <div class="teacher green">👩‍🏫 8千克是一半！×2 ！再来8个💧！ <button class="speak-btn" onclick="speak('8千克是一半！乘以2！')">🔊</button></div>
+        <div class="emoji-area bucket">${makeEmojis('💧',8)}</div>
+        <div style="text-align:center;font-size:1.2em">＋ 复制一份（×2）</div>
+        <div class="emoji-area bucket">${makeEmojis('💧',8,'green-bg pop-in')}</div>
+        <div class="input-row">原来共 <input type="number" id="p1b" min="0" max="30"> 千克 <button class="btn btn-green" onclick="checkPrac1b()">确认</button></div>
+        <div class="feedback" id="p1b-fb"></div>
+      `;
+      z.scrollIntoView({behavior:'smooth'});
+    },600);
+  } else { document.getElementById('p1a-fb').className='feedback wrong'; document.getElementById('p1a-fb').textContent='❌ 数数所有💧有几个？'; }
+}
+function checkPrac1b() {
+  const v = parseInt(document.getElementById('p1b').value);
+  if (v===16) {
+    document.getElementById('p1b-fb').className='feedback correct'; document.getElementById('p1b-fb').textContent='🎉 答对啦！原来有16千克！';
+    showConfetti();
+  } else { document.getElementById('p1b-fb').className='feedback wrong'; document.getElementById('p1b-fb').textContent='❌ 上面8个加下面8个，一共几个？'; }
+}
+
+function initPrac2() {
+  // 30÷3=10, 10+3-2=11
+  const el = document.getElementById('prac2-area');
+  el.innerHTML = `
+    <div class="teacher orange">👩‍🏫 30只🐦分3棵树，最后一样多。每棵树几只？ <button class="speak-btn" onclick="speak('30只鸟分3棵树，最后一样多，每棵几只？')">🔊</button></div>
+    <div class="emoji-area tree">${emojiRow('🐦',30,'pop-in',10)}</div>
+    <div class="input-row">每棵树 <input type="number" id="p2a" min="0" max="30"> 只 <button class="btn btn-orange" onclick="checkPrac2a()">确认</button></div>
+    <div class="feedback" id="p2a-fb"></div>
+    <div id="p2b-zone" style="display:none"></div>
+    <div id="p2c-zone" style="display:none"></div>
+  `;
+}
+function checkPrac2a() {
+  const v = parseInt(document.getElementById('p2a').value);
+  if (v===10) {
+    document.getElementById('p2a-fb').className='feedback correct'; document.getElementById('p2a-fb').textContent='✅ 对！';
+    setTimeout(()=>{
+      const z = document.getElementById('p2b-zone'); z.style.display='block';
+      z.innerHTML = `
+        <div class="teacher orange">👩‍🏫 🌳2 飞走了3只到🌳3 → 飞走的加回来！ <button class="speak-btn" onclick="speak('第二棵飞走了3只到第三棵，飞走的加回来！')">🔊</button></div>
+        <div class="emoji-area tree">${makeEmojis('🐦',10)} ${makeEmojis('🐦',3,'green-bg fly-in')}</div>
+        <div class="row-label">🌳2 现在有 13 只</div>
+        <button class="btn btn-orange" onclick="showPrac2c()" style="display:block;margin:10px auto">下一步 →</button>
+      `;
+      z.scrollIntoView({behavior:'smooth'});
+    },600);
+  } else { document.getElementById('p2a-fb').className='feedback wrong'; document.getElementById('p2a-fb').textContent='❌ 30个分3份，每份几个？'; }
+}
+function showPrac2c() {
+  const z = document.getElementById('p2c-zone'); z.style.display='block';
+  z.innerHTML = `
+    <div class="teacher orange">👩‍🏫 🌳1 飞来了2只到🌳2 → 飞来的减回去！ <button class="speak-btn" onclick="speak('第一棵飞来了2只，飞来的减回去！')">🔊</button></div>
+    <div class="emoji-area tree">${makeEmojis('🐦',11)} ${makeEmojis('🐦',2,'red-bg')}</div>
+    <div class="input-row">🌳2 原来 <input type="number" id="p2c" min="0" max="30"> 只 <button class="btn btn-orange" onclick="checkPrac2c()">确认</button></div>
+    <div class="feedback" id="p2c-fb"></div>
+  `;
+  z.scrollIntoView({behavior:'smooth'});
+}
+function checkPrac2c() {
+  const v = parseInt(document.getElementById('p2c').value);
+  if (v===11) {
+    document.getElementById('p2c-fb').className='feedback correct'; document.getElementById('p2c-fb').textContent='🎉 答对啦！第二棵原来有11只！';
+    showConfetti();
+  } else { document.getElementById('p2c-fb').className='feedback wrong'; document.getElementById('p2c-fb').textContent='❌ 13只去掉2个红色的，还剩几个？'; }
+}
+
+// ===== INIT =====
+let busEngine, waterEngine, birdEngine;
+function init() {
+  busEngine = new StepEngine('bus-steps','prog0', busSteps);
+  waterEngine = new StepEngine('water-steps','prog1', waterSteps);
+  birdEngine = new StepEngine('bird-steps','prog2', birdSteps);
+}
+init();
 </script>
 </body>
 </html>
