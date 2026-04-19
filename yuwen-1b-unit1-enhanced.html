@@ -302,29 +302,13 @@ var STROKE_NUM=['一','二','三','四','五','六','七','八','九','十','十
 async function playStrokeWithVoice(ch){
   if(!hw)return;
   strokeAnimStop=false;
-  // Get total strokes
-  var resp=await fetch('https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/'+ch+'.json');
-  var data=await resp.json();
-  var total=data.strokes.length;
-  // Step 1: announce
   speechSynthesis.cancel();
-  await speakCN(ch+'，一共'+total+'笔');
+  // Step 1: announce the character
+  await speakCN(ch);
   if(strokeAnimStop)return;
-  await delay(400);
-  // Step 2: animate with voice - use animateCharacter for real animation
-  // Calculate per-stroke duration (animateCharacter default ~400ms per stroke + 200ms pause)
-  var perStroke=600; // ms per stroke in animateCharacter
+  await delay(300);
+  // Step 2: play the real HanziWriter animation
   hw.hideCharacter();
-  // Start voice announcements on a timer
-  for(var i=0;i<total;i++){
-    if(strokeAnimStop)break;
-    (function(idx){
-      setTimeout(function(){
-        if(!strokeAnimStop) speakCN('第'+STROKE_NUM[idx]+'笔');
-      }, idx*perStroke);
-    })(i);
-  }
-  // Start the real animation
   await new Promise(function(resolve){
     hw.animateCharacter({
       onComplete:function(){resolve()}
@@ -333,7 +317,8 @@ async function playStrokeWithVoice(ch){
   // Step 3: done
   if(strokeAnimStop)return;
   await delay(300);
-  await speakCN(ch+'，写完了！真棒！');
+  await speakCN(ch+'，写完了！');
+}
 }
 function closeModal(){
   strokeAnimStop=true;
