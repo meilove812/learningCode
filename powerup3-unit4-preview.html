@@ -698,7 +698,7 @@ let goalTwInterval=null;
 const SPEAK_RATE_EN = 0.9;
 const SPEAK_RATE_ZH = 0.85;
 const SPEAK_RATE_GOAL_EN = 0.75;
-const SPEAK_RATE_GOAL_ZH = 0.75;
+const SPEAK_RATE_GOAL_ZH = 0.85;
 
 const goalData=[
   ["Today we'll learn 6 past tense verbs: flew, drove, sailed, fished, threw, caught.",
@@ -732,8 +732,8 @@ function calculateDelay(text, lang) {
     const estDuration = (words / 3) * 1000;
     return Math.max(estDuration / words, 120); // 每词至少120ms
   } else {
-    const estDuration = (text.length / 3) * 1000;
-    return Math.max(estDuration / text.length, 100);
+    const estDuration = (text.length / 5) * 1000; // 中文约5字/秒，加快
+    return Math.max(estDuration / text.length, 80); // 中文至少80ms
   }
 }
 
