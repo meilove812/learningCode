@@ -212,23 +212,22 @@ function typewrite(element, text, speed) {
     const ttsText = text.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '').trim();
     
     // Bug 1 fix: Calculate charDelay based on estimated TTS duration
-    // Chinese TTS at rate=0.85 is roughly 3.5 chars/sec
+    // Chinese TTS at rate=1.0 is roughly 5 chars/sec
     let charDelay;
     if (speed) {
-      // If explicit speed given, use it as minimum but also consider TTS
-      const estimatedDuration = ttsText.length / 3.5 * 1000;
+      const estimatedDuration = ttsText.length / 5 * 1000;
       const ttsDelay = ttsText.length > 0 ? estimatedDuration / text.length : speed;
-      charDelay = Math.max(ttsDelay, speed, 80);
+      charDelay = Math.max(ttsDelay, speed, 60);
     } else {
-      const estimatedDuration = ttsText.length / 3.5 * 1000;
-      charDelay = Math.max(estimatedDuration / text.length, 80);
+      const estimatedDuration = ttsText.length / 5 * 1000;
+      charDelay = Math.max(estimatedDuration / text.length, 60);
     }
     
     // Start TTS
     if ('speechSynthesis' in window && ttsText && audioUnlocked) {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(ttsText);
-      u.lang = 'zh-CN'; u.rate = 0.85;
+      u.lang = 'zh-CN'; u.rate = 1.0;
       speechSynthesis.speak(u);
     }
 
@@ -272,7 +271,7 @@ function speak(text) {
   if (!('speechSynthesis' in window) || !audioUnlocked) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'zh-CN'; u.rate = 0.85;
+  u.lang = 'zh-CN'; u.rate = 1.0;
   speechSynthesis.speak(u);
 }
 
@@ -447,7 +446,8 @@ function typewriteQuestion(t) {
 }
 function typewritePracticeQ(t) {
   const el = document.getElementById('pq'+t+'-text');
-  if (el) typewrite(el, practiceTexts[t]);
+  if (el) return typewrite(el, practiceTexts[t]);
+  return Promise.resolve();
 }
 
 // ===== TOPIC 0: BUS =====
@@ -704,10 +704,14 @@ const birdSteps = [
 function showPractice(t) {
   document.getElementById('prac'+t).style.display = 'block';
   document.getElementById('prac'+t).scrollIntoView({behavior:'smooth'});
-  typewritePracticeQ(t);
-  if (t===0) trackedTimeout(initPrac0, 800);
-  if (t===1) trackedTimeout(initPrac1, 800);
-  if (t===2) trackedTimeout(initPrac2, 800);
+  // Wait for practice question to finish reading, then start explanation
+  typewritePracticeQ(t).then(function(){
+    trackedTimeout(function(){
+      if (t===0) initPrac0();
+      if (t===1) initPrac1();
+      if (t===2) initPrac2();
+    }, 800);
+  });
 }
 
 async function initPrac0() {
