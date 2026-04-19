@@ -813,6 +813,7 @@ function speakGoal(i){
 
 // Tab switching
 function switchTab(i){
+  playAllStop=true;
   speechSynthesis.cancel();
   clearGoalTimers();
   document.querySelectorAll('.tabs button').forEach((b,j)=>b.classList.toggle('active',j===i));
@@ -900,33 +901,33 @@ function checkQuiz(qid,el,correct){
 }
 
 // 连续播放：英文→停0.8秒→中文→停1.2秒→下一行
+let playAllStop=false;
 async function playAllLines(panelIdx){
+  playAllStop=false;
   speechSynthesis.cancel();
   const panel=document.getElementById('panel'+panelIdx);
   const rows=panel.querySelectorAll('.line-row');
   for(let i=0;i<rows.length;i++){
+    if(playAllStop)break;
     const enEl=rows[i].querySelector('.line-en');
     if(!enEl)continue;
     const enText=enEl.textContent.trim();
-    // highlight current row
     rows[i].style.background='#ede7f6';
     if(i>0)rows[i-1].style.background='';
-    // 读英文
+    if(playAllStop)break;
     await speakText(enText,'en-US',SPEAK_RATE_EN);
-    // 停0.8秒
+    if(playAllStop)break;
     await new Promise(r=>setTimeout(r,800));
-    // 读中文翻译
     const cnEl=rows[i].querySelector('.line-cn');
     if(cnEl){
       const cnText=cnEl.textContent.replace(/🔊/g,'').trim();
-      if(cnText){
+      if(cnText && !playAllStop){
         await speakText(cnText,'zh-CN',SPEAK_RATE_ZH);
       }
     }
-    // 停1.2秒再下一行
+    if(playAllStop)break;
     await new Promise(r=>setTimeout(r,1200));
   }
-  // 清除最后一行高亮
   if(rows.length>0)rows[rows.length-1].style.background='';
 }
 </script>
