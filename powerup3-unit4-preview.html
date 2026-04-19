@@ -694,6 +694,10 @@ let audioUnlocked=false;
 let goalTimers=[];
 let goalTwInterval=null;
 
+// 全局语速常量
+const SPEAK_RATE_EN = 0.75;
+const SPEAK_RATE_ZH = 0.75;
+
 const goalData=[
   ["Today we'll learn 6 past tense verbs: flew, drove, sailed, fished, threw, caught.",
    "🎯 预习目标：学会6个过去式动词——flew飞、drove开车、sailed航行、fished钓鱼、threw扔、caught抓到，能听懂歌曲大意"],
@@ -704,6 +708,30 @@ const goalData=[
   ["Today we'll learn about two carnivorous plants: the Venus flytrap and the Sundew.",
    "🎯 预习目标：认识两种食虫植物——Venus flytrap捕蝇草和Sundew茅膏菜，知道它们怎么抓虫子"]
 ];
+
+// 统一 speakText 封装，返回 Promise
+function speakText(text, lang, rate) {
+  return new Promise(resolve => {
+    if (!text || !text.trim()) { resolve(); return; }
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang;
+    u.rate = rate || SPEAK_RATE_EN;
+    u.onend = resolve;
+    u.onerror = resolve;
+    speechSynthesis.speak(u);
+  });
+}
+
+// 动态计算 typewriter delay，匹配朗读时长
+function calculateDelay(text, lang) {
+  if (lang === 'en') {
+    const estDuration = (text.length / 15) * 1000; // 英文约15字符/秒 at rate=0.75
+    return Math.max(estDuration / text.length, 50); // 至少50ms
+  } else {
+    const estDuration = (text.length / 3) * 1000; // 中文约3字/秒 at rate=0.75
+    return Math.max(estDuration / text.length, 100); // 至少100ms
+  }
+}
 
 function unlockAudio(){
   const u=new SpeechSynthesisUtterance('');
@@ -734,7 +762,7 @@ function typewriteEl(el,text,charDelay,cb){
   },charDelay);
 }
 
-function triggerGoal(i){
+async function triggerGoal(i){
   if(!audioUnlocked)return;
   speechSynthesis.cancel();
   clearGoalTimers();
@@ -744,21 +772,17 @@ function triggerGoal(i){
   const cnEl=card.querySelector('.goal-cn');
   enEl.textContent='';cnEl.textContent='';
   const [enText,cnText]=goalData[i];
-  typewriteEl(enEl,enText,50,()=>{
-    goalTimers.push(setTimeout(()=>{
-      typewriteEl(cnEl,cnText,80);
-    },300));
-  });
-  const uEn=new SpeechSynthesisUtterance(enText);
-  uEn.lang='en-US';uEn.rate=0.85;
-  uEn.onend=()=>{
-    goalTimers.push(setTimeout(()=>{
-      const uCn=new SpeechSynthesisUtterance(cnText);
-      uCn.lang='zh-CN';uCn.rate=0.85;
-      speechSynthesis.speak(uCn);
-    },500));
-  };
-  speechSynthesis.speak(uEn);
+  // 动态计算 delay
+  const enDelay = calculateDelay(enText, 'en');
+  const cnDelay = calculateDelay(cnText, 'zh');
+  // 同时开始 typewriter 和朗读英文
+  typewriteEl(enEl, enText, enDelay);
+  await speakText(enText, 'en-US', SPEAK_RATE_EN);
+  // 停1秒
+  await new Promise(r => setTimeout(r, 1000));
+  // 开始中文 typewriter 和朗读
+  typewriteEl(cnEl, cnText, cnDelay);
+  await speakText(cnText, 'zh-CN', SPEAK_RATE_ZH);
 }
 
 function speakGoal(i){
@@ -775,12 +799,9 @@ function switchTab(i){
   if(audioUnlocked) triggerGoal(i);
 }
 
-// TTS helpers
-function speakEnText(el,text){
+// TTS helpers — 行朗读：英文+停顿+中文
+async function speakEnText(el,text){
   speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang='en-US';u.rate=0.85;
-  speechSynthesis.speak(u);
   // pulse animation
   if(el.classList.contains('speak-btn')){
     el.classList.remove('speaking');
@@ -789,14 +810,27 @@ function speakEnText(el,text){
   }
   // highlight row
   const row=el.closest('.line-row')||el.closest('.line-item')||el.closest('.vocab-chip')||el.closest('.part');
-  if(row){row.style.background='#ede7f6';setTimeout(()=>row.style.background='',800);}
+  if(row){row.style.background='#ede7f6';setTimeout(()=>row.style.background='',2000);}
+  // 读英文
+  await speakText(text, 'en-US', SPEAK_RATE_EN);
+  // 如果有中文翻译，停0.8秒后读中文
+  if(row && row.querySelector){
+    const cnEl=row.querySelector('.line-cn');
+    if(cnEl){
+      const cnText=cnEl.textContent.replace(/🔊/g,'').trim();
+      if(cnText){
+        await new Promise(r=>setTimeout(r,800));
+        await speakText(cnText,'zh-CN',SPEAK_RATE_ZH);
+      }
+    }
+  }
 }
 
 function speakCnText(el,text){
   event.stopPropagation();
   speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(text);
-  u.lang='zh-CN';u.rate=0.9;
+  u.lang='zh-CN';u.rate=SPEAK_RATE_ZH;
   speechSynthesis.speak(u);
   if(el.classList.contains('speak-btn-sm')){
     el.style.background='#bdbdbd';
@@ -804,8 +838,8 @@ function speakCnText(el,text){
   }
 }
 
-// 改进1: 关键词点击朗读（英文+中文）
-function speakKeyword(el){
+// 关键词点击朗读：英文→停0.8秒→中文
+async function speakKeyword(el){
   event.stopPropagation();
   speechSynthesis.cancel();
   const en=el.dataset.en;
@@ -813,18 +847,12 @@ function speakKeyword(el){
   // animate
   el.style.transform='scale(1.1)';
   setTimeout(()=>el.style.transform='',200);
-  // speak English
-  const uEn=new SpeechSynthesisUtterance(en);
-  uEn.lang='en-US';uEn.rate=0.8;
-  uEn.onend=()=>{
-    // 1s delay then speak Chinese
-    setTimeout(()=>{
-      const uZh=new SpeechSynthesisUtterance(zh);
-      uZh.lang='zh-CN';uZh.rate=0.9;
-      speechSynthesis.speak(uZh);
-    },800);
-  };
-  speechSynthesis.speak(uEn);
+  // 读英文
+  await speakText(en, 'en-US', SPEAK_RATE_EN);
+  // 停0.8秒
+  await new Promise(r=>setTimeout(r,800));
+  // 读中文
+  await speakText(zh, 'zh-CN', SPEAK_RATE_ZH);
 }
 
 // Quiz
@@ -850,25 +878,35 @@ function checkQuiz(qid,el,correct){
   }
 }
 
-// Play all lines in a panel
-function playAllLines(panelIdx){
+// 连续播放：英文→停0.8秒→中文→停1.2秒→下一行
+async function playAllLines(panelIdx){
   speechSynthesis.cancel();
   const panel=document.getElementById('panel'+panelIdx);
   const rows=panel.querySelectorAll('.line-row');
-  let i=0;
-  function next(){
-    if(i>=rows.length)return;
+  for(let i=0;i<rows.length;i++){
     const enEl=rows[i].querySelector('.line-en');
-    if(!enEl){i++;next();return;}
-    const text=enEl.textContent.trim();
-    const u=new SpeechSynthesisUtterance(text);
-    u.lang='en-US';u.rate=0.85;
-    u.onend=()=>{i++;setTimeout(next,400)};
+    if(!enEl)continue;
+    const enText=enEl.textContent.trim();
+    // highlight current row
     rows[i].style.background='#ede7f6';
     if(i>0)rows[i-1].style.background='';
-    speechSynthesis.speak(u);
+    // 读英文
+    await speakText(enText,'en-US',SPEAK_RATE_EN);
+    // 停0.8秒
+    await new Promise(r=>setTimeout(r,800));
+    // 读中文翻译
+    const cnEl=rows[i].querySelector('.line-cn');
+    if(cnEl){
+      const cnText=cnEl.textContent.replace(/🔊/g,'').trim();
+      if(cnText){
+        await speakText(cnText,'zh-CN',SPEAK_RATE_ZH);
+      }
+    }
+    // 停1.2秒再下一行
+    await new Promise(r=>setTimeout(r,1200));
   }
-  next();
+  // 清除最后一行高亮
+  if(rows.length>0)rows[rows.length-1].style.background='';
 }
 </script>
 </body>
