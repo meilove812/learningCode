@@ -80,15 +80,27 @@ body { font-family: -apple-system, 'Segoe UI', sans-serif; background: linear-gr
 .tree-crown::after { width:38px; height:30px; top:-3px; left:-8px; }
 .tree-trunk { width:10px; height:24px; background:#795548; border-radius:0 0 4px 4px; margin:0 auto; }
 .tree-label { font-size:.75em; color:#888; margin-top:4px; font-weight:600; }
-/* Typewriter cursor blink */
 .tw-cursor::after { content:'▎'; animation: blink .6s infinite; color:#3b82f6; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-/* Hidden until typewritten */
 .tw-hidden { visibility:hidden; min-height:1.6em; }
+/* Welcome screen */
+.welcome-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #e0f0ff 0%, #f0e6ff 50%, #fff5e6 100%); z-index:1000; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:20px; }
+.welcome-overlay h1 { font-size:2em; }
+.welcome-overlay .start-btn { padding:16px 40px; border-radius:20px; border:none; font-size:1.3em; font-weight:700; cursor:pointer; background:linear-gradient(135deg,#3b82f6,#8b5cf6); color:#fff; box-shadow:0 4px 20px rgba(59,130,246,.4); transition:.2s; }
+.welcome-overlay .start-btn:active { transform:scale(.95); }
 @media(max-width:400px){ .ej{font-size:1em;width:30px;height:30px;} .tree-crown{width:40px;height:32px;} .tree-crown::before{width:28px;height:28px;top:-10px;left:6px;} .tree-crown::after{width:30px;height:24px;top:-2px;left:-6px;} .tree-trunk{width:8px;height:18px;} }
 </style>
 </head>
 <body>
+
+<!-- Bug 2 fix: Welcome screen to unlock audio -->
+<div class="welcome-overlay" id="welcomeScreen">
+  <h1>🧮 数学思维训练</h1>
+  <p style="color:#666;font-size:1.1em">数图标，找答案！</p>
+  <button class="start-btn" onclick="startApp()">开始学习 🎯</button>
+</div>
+
+<div id="mainApp" style="display:none">
 
 <div class="header">
   <h1>🧠 数学思维训练</h1>
@@ -104,13 +116,13 @@ body { font-family: -apple-system, 'Segoe UI', sans-serif; background: linear-gr
 <!-- ===== TOPIC 0: BUS ===== -->
 <div id="topic0" class="topic-panel">
   <div class="card">
-    <div class="question-box" id="q0-text" class="tw-hidden"></div>
+    <div class="question-box" id="q0-text"></div>
     <div class="progress" id="prog0"></div>
     <div id="bus-steps"></div>
   </div>
   <div class="practice-card" id="prac0">
     <div class="section-title">✏️ 练一练</div>
-    <div class="question-box" id="pq0-text" class="tw-hidden"></div>
+    <div class="question-box" id="pq0-text"></div>
     <div id="prac0-area"></div>
   </div>
 </div>
@@ -118,13 +130,13 @@ body { font-family: -apple-system, 'Segoe UI', sans-serif; background: linear-gr
 <!-- ===== TOPIC 1: WATER ===== -->
 <div id="topic1" class="topic-panel" style="display:none">
   <div class="card">
-    <div class="question-box" id="q1-text" class="tw-hidden"></div>
+    <div class="question-box" id="q1-text"></div>
     <div class="progress" id="prog1"></div>
     <div id="water-steps"></div>
   </div>
   <div class="practice-card" id="prac1">
     <div class="section-title">✏️ 练一练</div>
-    <div class="question-box" id="pq1-text" class="tw-hidden"></div>
+    <div class="question-box" id="pq1-text"></div>
     <div id="prac1-area"></div>
   </div>
 </div>
@@ -132,13 +144,13 @@ body { font-family: -apple-system, 'Segoe UI', sans-serif; background: linear-gr
 <!-- ===== TOPIC 2: BIRDS ===== -->
 <div id="topic2" class="topic-panel" style="display:none">
   <div class="card">
-    <div class="question-box" id="q2-text" class="tw-hidden"></div>
+    <div class="question-box" id="q2-text"></div>
     <div class="progress" id="prog2"></div>
     <div id="bird-steps"></div>
   </div>
   <div class="practice-card" id="prac2">
     <div class="section-title">✏️ 练一练</div>
-    <div class="question-box" id="pq2-text" class="tw-hidden"></div>
+    <div class="question-box" id="pq2-text"></div>
     <div id="prac2-area"></div>
   </div>
 </div>
@@ -147,15 +159,48 @@ body { font-family: -apple-system, 'Segoe UI', sans-serif; background: linear-gr
 
 <div class="footer">🦎 Coco Learning Park · 数学思维训练</div>
 
+</div><!-- mainApp -->
+
 <script>
-// ===== TYPEWRITER + TTS =====
-// Active typewriter state for skip support
+// ===== Bug 2: Welcome screen + audio unlock =====
+let audioUnlocked = false;
+function startApp() {
+  // Unlock speech synthesis with silent utterance
+  if ('speechSynthesis' in window) {
+    const u = new SpeechSynthesisUtterance('');
+    u.volume = 0;
+    speechSynthesis.speak(u);
+  }
+  audioUnlocked = true;
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = '';
+  init();
+}
+
+// ===== Bug 3: Global timer tracking for cleanup =====
+let activeTimers = [];
+function clearAllTimers() {
+  speechSynthesis.cancel();
+  activeTimers.forEach(t => clearTimeout(t));
+  activeTimers = [];
+  // Also cancel any active typewriter
+  if (twActive && twActive.timer) {
+    clearInterval(twActive.timer);
+    if (twActive.element) twActive.element.classList.remove('tw-cursor');
+    twActive = null;
+  }
+}
+
+// ===== Bug 1: Typewriter with dynamic speed matching TTS =====
 let twActive = null;
 
-function typewrite(element, text, speed = 60) {
+function typewrite(element, text, speed) {
   return new Promise(resolve => {
     // Cancel any previous typewriter
-    if (twActive && twActive.timer) clearInterval(twActive.timer);
+    if (twActive && twActive.timer) {
+      clearInterval(twActive.timer);
+      if (twActive.element) twActive.element.classList.remove('tw-cursor');
+    }
     
     element.textContent = '';
     element.style.visibility = 'visible';
@@ -166,8 +211,21 @@ function typewrite(element, text, speed = 60) {
     // Strip emoji for cleaner TTS
     const ttsText = text.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '').trim();
     
+    // Bug 1 fix: Calculate charDelay based on estimated TTS duration
+    // Chinese TTS at rate=0.85 is roughly 3.5 chars/sec
+    let charDelay;
+    if (speed) {
+      // If explicit speed given, use it as minimum but also consider TTS
+      const estimatedDuration = ttsText.length / 3.5 * 1000;
+      const ttsDelay = ttsText.length > 0 ? estimatedDuration / text.length : speed;
+      charDelay = Math.max(ttsDelay, speed, 80);
+    } else {
+      const estimatedDuration = ttsText.length / 3.5 * 1000;
+      charDelay = Math.max(estimatedDuration / text.length, 80);
+    }
+    
     // Start TTS
-    if ('speechSynthesis' in window && ttsText) {
+    if ('speechSynthesis' in window && ttsText && audioUnlocked) {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(ttsText);
       u.lang = 'zh-CN'; u.rate = 0.85;
@@ -203,30 +261,38 @@ function typewrite(element, text, speed = 60) {
         twActive = null;
         resolve();
       }
-    }, speed);
+    }, charDelay);
 
     twActive = { timer, element, skipHandler };
   });
 }
 
-// Simple speak (for manual 🔊 buttons)
+// Simple speak (for manual buttons)
 function speak(text) {
-  if (!('speechSynthesis' in window)) return;
+  if (!('speechSynthesis' in window) || !audioUnlocked) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'zh-CN'; u.rate = 0.85;
   speechSynthesis.speak(u);
 }
 
-// ===== TABS =====
+// Tracked setTimeout
+function trackedTimeout(fn, ms) {
+  const id = setTimeout(fn, ms);
+  activeTimers.push(id);
+  return id;
+}
+
+// ===== TABS (Bug 3: cancel speech + timers on switch) =====
 let currentTopic = 0;
 function switchTopic(t) {
-  speechSynthesis.cancel();
-  if (twActive && twActive.timer) clearInterval(twActive.timer);
+  clearAllTimers(); // Bug 3 fix
   currentTopic = t;
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', +b.dataset.t === t));
   document.querySelectorAll('.topic-panel').forEach((p,i) => p.style.display = i===t ? '' : 'none');
-  // Re-init to restart typewriter for the chosen topic
+  // Hide practice cards when switching
+  document.querySelectorAll('.practice-card').forEach(p => p.style.display = 'none');
+  // Re-init
   if (t===0) { busEngine = new StepEngine('bus-steps','prog0', busSteps); typewriteQuestion(0); }
   if (t===1) { waterEngine = new StepEngine('water-steps','prog1', waterSteps); typewriteQuestion(1); }
   if (t===2) { birdEngine = new StepEngine('bird-steps','prog2', birdSteps); typewriteQuestion(2); }
@@ -283,7 +349,7 @@ function treeWithBirds(label, blueCount, greenCount, redCount) {
   return `<div class="tree-col"><div class="tree-birds">${birds}</div>${makeTree(label)}</div>`;
 }
 
-// ===== TYPEWRITER-AWARE STEP ENGINE =====
+// ===== STEP ENGINE (Bug 4: auto-trigger first step after question typewrite) =====
 class StepEngine {
   constructor(containerId, progressId, steps, onComplete) {
     this.container = document.getElementById(containerId);
@@ -312,9 +378,8 @@ class StepEngine {
     for (const item of seq) {
       const el = document.getElementById(item.id);
       if (!el) continue;
-      await typewrite(el, item.text, item.speed || 60);
+      await typewrite(el, item.text, item.speed || undefined);
       if (item.afterDelay) await new Promise(r => setTimeout(r, item.afterDelay));
-      // Show post-typewriter content if specified
       if (item.showAfter) {
         const targets = Array.isArray(item.showAfter) ? item.showAfter : [item.showAfter];
         targets.forEach(tid => {
@@ -331,11 +396,10 @@ class StepEngine {
     if (v === correct) {
       const fbEl = document.getElementById(fbId);
       fbEl.className = 'feedback correct';
-      // Typewrite the correct feedback
       const correctText = step.correctText || '太棒了！';
       fbEl.style.display = 'block';
       typewrite(fbEl, '✅ ' + correctText, 50).then(() => {
-        if (onCorrect) setTimeout(onCorrect, 500);
+        if (onCorrect) trackedTimeout(onCorrect, 500);
       });
     } else {
       const fbEl = document.getElementById(fbId);
@@ -355,7 +419,7 @@ class StepEngine {
   }
 }
 
-// ===== QUESTION TYPEWRITER =====
+// ===== QUESTION TYPEWRITER (Bug 4: auto-start first step after question) =====
 const questionTexts = [
   '🚌 一辆公共汽车，到第一站下车10人。到第二站下车的人数比第一站少5人。到第三站上来8人后，车上现有13人。原来有（ ？ ）人。',
   '💧 一桶水，第一次倒出一半，第二次又倒出剩下的一半，第三次又倒出5千克，桶里还剩2千克。原来有（ ？ ）千克。',
@@ -367,18 +431,29 @@ const practiceTexts = [
   '🐦 三棵树上共30只鸟。第一棵树有2只飞到第二棵，第二棵有3只飞到第三棵，这样三棵树一样多。第二棵树原来有（ ？ ）只。'
 ];
 
+// Bug 4 fix: after question typewrite completes, auto-trigger first step with 1s delay
 function typewriteQuestion(t) {
   const el = document.getElementById('q'+t+'-text');
-  if (el) typewrite(el, questionTexts[t], 80);
+  if (el) {
+    typewrite(el, questionTexts[t]).then(() => {
+      // Auto-trigger first step after 1s delay
+      trackedTimeout(() => {
+        if (t===0 && busEngine) busEngine.runTypewriterSequence(busEngine.steps[0].twSequence);
+        if (t===1 && waterEngine) waterEngine.runTypewriterSequence(waterEngine.steps[0].twSequence);
+        if (t===2 && birdEngine) birdEngine.runTypewriterSequence(birdEngine.steps[0].twSequence);
+      }, 1000);
+    });
+  }
 }
 function typewritePracticeQ(t) {
   const el = document.getElementById('pq'+t+'-text');
-  if (el) typewrite(el, practiceTexts[t], 60);
+  if (el) typewrite(el, practiceTexts[t]);
 }
 
 // ===== TOPIC 0: BUS =====
 const busSteps = [
   {
+    // Bug 4: twSequence NOT auto-run on render (we trigger it from typewriteQuestion callback)
     twSequence: [
       { id:'bus-t0', text:'👩‍🏫 这道题信息好多！我们从最后往前推 🤔 先看最后车上有多少人。', showAfter:['bus-v0','bus-n0'] }
     ],
@@ -630,9 +705,9 @@ function showPractice(t) {
   document.getElementById('prac'+t).style.display = 'block';
   document.getElementById('prac'+t).scrollIntoView({behavior:'smooth'});
   typewritePracticeQ(t);
-  if (t===0) setTimeout(initPrac0, 800);
-  if (t===1) setTimeout(initPrac1, 800);
-  if (t===2) setTimeout(initPrac2, 800);
+  if (t===0) trackedTimeout(initPrac0, 800);
+  if (t===1) trackedTimeout(initPrac1, 800);
+  if (t===2) trackedTimeout(initPrac2, 800);
 }
 
 async function initPrac0() {
@@ -656,7 +731,7 @@ function checkPrac0a() {
   if (v===6) {
     fb.className='feedback correct'; fb.style.display='block';
     typewrite(fb, '✅ 对了！剩6个蓝色的', 50).then(()=>{
-      setTimeout(async ()=>{
+      trackedTimeout(async ()=>{
         const z = document.getElementById('p0b-zone'); z.style.display='block';
         z.innerHTML = `
           <div class="teacher" id="pt0b" style="visibility:hidden"></div>
@@ -679,7 +754,7 @@ function checkPrac0b() {
   if (v===9) {
     fb.className='feedback correct'; fb.style.display='block';
     typewrite(fb, '✅ 对了！一共9个', 50).then(()=>{
-      setTimeout(async ()=>{
+      trackedTimeout(async ()=>{
         const z = document.getElementById('p0c-zone'); z.style.display='block';
         z.innerHTML = `
           <div class="teacher" id="pt0c" style="visibility:hidden"></div>
@@ -726,7 +801,7 @@ function checkPrac1a() {
   if (v===8) {
     fb.className='feedback correct'; fb.style.display='block';
     typewrite(fb, '✅ 对了！8千克！', 50).then(()=>{
-      setTimeout(async ()=>{
+      trackedTimeout(async ()=>{
         const z = document.getElementById('p1b-zone'); z.style.display='block';
         z.innerHTML = `
           <div class="teacher green" id="pt1b" style="visibility:hidden"></div>
@@ -779,7 +854,7 @@ function checkPrac2a() {
   if (v===10) {
     fb.className='feedback correct'; fb.style.display='block';
     typewrite(fb, '✅ 对了！每棵10只！', 50).then(()=>{
-      setTimeout(async ()=>{
+      trackedTimeout(async ()=>{
         const z = document.getElementById('p2b-zone'); z.style.display='block';
         z.innerHTML = `
           <div class="teacher orange" id="pt2b" style="visibility:hidden"></div>
@@ -820,16 +895,47 @@ function checkPrac2c() {
   } else { fb.className='feedback wrong'; fb.style.display='block'; typewrite(fb,'13只去掉2个红色的，数数蓝色的还剩几个？',50); }
 }
 
-// ===== INIT =====
+// ===== INIT (Bug 4: StepEngine render does NOT auto-run twSequence for step 0) =====
 let busEngine, waterEngine, birdEngine;
+
+// Override StepEngine to not auto-run twSequence on initial render (step 0)
+// Only auto-run for steps > 0 (after user clicks "下一步")
+const OrigStepEngine = StepEngine;
+
+class PatchedStepEngine extends OrigStepEngine {
+  constructor(containerId, progressId, steps, onComplete) {
+    super(containerId, progressId, steps, onComplete);
+  }
+  render() {
+    this.progEl.innerHTML = this.steps.map((_,i) =>
+      `<div class="dot ${i<this.current?'done':''} ${i===this.current?'current':''}"></div>`
+    ).join('');
+    let html = '';
+    this.steps.forEach((s,i) => {
+      html += `<div class="step ${i===this.current?'active':''}" id="${this.container.id}-s${i}">${s.html(i===this.current)}</div>`;
+    });
+    this.container.innerHTML = html;
+    // Only auto-run twSequence for steps AFTER the first one
+    // Step 0's twSequence is triggered by typewriteQuestion callback
+    if (this.current > 0) {
+      const step = this.steps[this.current];
+      if (step && step.twSequence) {
+        this.runTypewriterSequence(step.twSequence);
+      }
+    }
+  }
+}
+
+// Replace StepEngine
+StepEngine = PatchedStepEngine;
+
 function init() {
   busEngine = new StepEngine('bus-steps','prog0', busSteps);
   waterEngine = new StepEngine('water-steps','prog1', waterSteps);
   birdEngine = new StepEngine('bird-steps','prog2', birdSteps);
-  // Typewrite the first question
+  // Bug 4: typewriteQuestion triggers first step's twSequence after question finishes
   typewriteQuestion(0);
 }
-init();
 </script>
 </body>
 </html>
