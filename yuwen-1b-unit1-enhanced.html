@@ -260,34 +260,56 @@ function openModal(ch,mode){
   var target=document.getElementById('hw-target');
   target.innerHTML='';
   var tbox=document.querySelector('.tian-big');var bw=tbox.offsetWidth-6;
-  hw=HanziWriter.create(target,ch,{width:bw,height:bw,padding:8,showOutline:true,strokeAnimationSpeed:1,delayBetweenStrokes:300,
+  hw=HanziWriter.create(target,ch,{width:bw,height:bw,padding:8,showOutline:true,strokeAnimationSpeed:0.6,delayBetweenStrokes:500,
     charDataLoader:function(c,onLoad){fetch('https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/'+c+'.json').then(function(r){return r.json()}).then(onLoad)}
   });
-  if(mode==='stroke')setTimeout(function(){
-    var u=new SpeechSynthesisUtterance(ch);
+  if(mode==='stroke')setTimeout(function(){animateWithVoice(ch)},400);
+  else if(mode==='quiz')setTimeout(function(){startQuiz()},400);
+}
+var strokeVoiceTimers=[];
+var STROKE_NUM=['一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十'];
+function animateWithVoice(ch){
+  speechSynthesis.cancel();
+  strokeVoiceTimers.forEach(function(t){clearTimeout(t)});
+  strokeVoiceTimers=[];
+  // fetch stroke count
+  fetch('https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/'+ch+'.json')
+  .then(function(r){return r.json()})
+  .then(function(data){
+    var total=data.strokes.length;
+    // strokeAnimationSpeed=0.6 → 每笔动画约667ms + delay500ms = 每笔约1167ms
+    var perStroke=1167;
+    // 先读字名
+    var u=new SpeechSynthesisUtterance(ch+'，一共'+total+'笔');
     u.lang='zh-CN';u.rate=0.85;
     speechSynthesis.speak(u);
-    hw.animateCharacter({onComplete:function(){
-      var u2=new SpeechSynthesisUtterance(ch+'，写完了');
-      u2.lang='zh-CN';u2.rate=0.85;
-      speechSynthesis.speak(u2);
-    }});
-  },400);
-  else if(mode==='quiz')setTimeout(function(){startQuiz()},400);
+    // 等读完再开始动画
+    u.onend=function(){
+      hw.animateCharacter({onComplete:function(){
+        var u2=new SpeechSynthesisUtterance(ch+'，写完了！');
+        u2.lang='zh-CN';u2.rate=0.85;
+        speechSynthesis.speak(u2);
+      }});
+      // 每笔开始时读笔画序号
+      for(var i=0;i<total;i++){
+        (function(idx){
+          var t=setTimeout(function(){
+            var uv=new SpeechSynthesisUtterance('第'+STROKE_NUM[idx]+'笔');
+            uv.lang='zh-CN';uv.rate=1;
+            speechSynthesis.speak(uv);
+          }, idx*perStroke+100);
+          strokeVoiceTimers.push(t);
+        })(i);
+      }
+    };
+  });
 }
 function doAnimate(){
   if(hw){
     document.getElementById('modeHint').textContent='👀 看老师写';
-    speechSynthesis.cancel();
-    var u=new SpeechSynthesisUtterance(currentChar);
-    u.lang='zh-CN';u.rate=0.85;
-    speechSynthesis.speak(u);
     hw.hideCharacter();
-    hw.animateCharacter({onComplete:function(){
-      var u2=new SpeechSynthesisUtterance(currentChar+'，写完了');
-      u2.lang='zh-CN';u2.rate=0.85;
-      speechSynthesis.speak(u2);
-    }});
+    animateWithVoice(currentChar);
+  }
   }
 }
 function doQuiz(){
@@ -308,6 +330,8 @@ function showReward(){
 }
 function closeModal(){
   speechSynthesis.cancel();
+  strokeVoiceTimers.forEach(function(t){clearTimeout(t)});
+  strokeVoiceTimers=[];
   document.getElementById('modalOverlay').classList.remove('show');
   if(hw){hw=null}
   document.getElementById('hw-target').innerHTML='';
