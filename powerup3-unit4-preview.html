@@ -22,12 +22,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .card{background:#fff;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
 .card h3{font-size:1.05em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.line-item{padding:10px 12px;border-radius:12px;margin-bottom:8px;cursor:pointer;transition:background .2s;border-left:4px solid #7c4dff}
-.line-item:hover{background:#f5f0ff}
-.line-item:active{background:#ede7f6}
+
+/* 改进4: 预习目标卡片 */
+.goal-card{background:#E3F2FD;border-left:4px solid #42A5F5;border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:.92em;color:#1565C0;line-height:1.6}
+.goal-card strong{color:#0D47A1}
+
+/* 改进2: 朗读按钮 */
+.line-row{display:flex;align-items:flex-start;padding:10px 8px;border-radius:12px;margin-bottom:8px;border-left:4px solid #7c4dff;transition:background .2s}
+.line-row:hover{background:#f5f0ff}
+.speak-btn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#E3F2FD;border:2px solid #42A5F5;border-radius:50%;cursor:pointer;font-size:16px;margin-right:8px;transition:all .2s;flex-shrink:0;margin-top:2px}
+.speak-btn:active{background:#42A5F5;transform:scale(.9)}
+.speak-btn.speaking{animation:pulse .5s ease}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(66,165,245,.4)}100%{box-shadow:0 0 0 12px rgba(66,165,245,0)}}
+.speak-btn-sm{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:#f5f5f5;border:1.5px solid #bdbdbd;border-radius:50%;cursor:pointer;font-size:12px;margin-left:6px;transition:all .2s;flex-shrink:0;vertical-align:middle}
+.speak-btn-sm:active{background:#bdbdbd;transform:scale(.9)}
+.line-content{flex:1;min-width:0}
 .line-en{font-size:1.15em;font-weight:600;color:#333;margin-bottom:3px}
-.line-cn{font-size:.9em;color:#888;margin-bottom:4px}
-.line-key{display:inline-block;background:#fff9c4;border-radius:8px;padding:2px 8px;font-size:.82em;color:#f57f17;font-weight:600;margin-top:2px}
+.line-cn{font-size:.9em;color:#888;margin-bottom:4px;display:flex;align-items:center;flex-wrap:wrap}
+
+/* 改进1: 可点击关键词 */
+.keyword{background:#FFF9C4;padding:2px 6px;border-radius:4px;cursor:pointer;display:inline-block;transition:transform .2s;border-bottom:2px solid #FBC02D;font-weight:600;font-size:.88em;color:#f57f17;margin-top:2px;line-height:1.6}
+.keyword:active{transform:scale(1.1)}
+.keyword::before{content:'🔊 ';font-size:.75em}
+.keyword .phonetic{font-family:'Courier New',monospace;color:#999;font-weight:400;font-size:.85em;margin:0 2px}
+
+.line-key{display:inline-block;margin-top:4px}
+
 .vocab-grid{display:flex;flex-wrap:wrap;gap:8px}
 .vocab-chip{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:12px;padding:8px 14px;cursor:pointer;transition:transform .15s,box-shadow .15s;text-align:center;min-width:90px}
 .vocab-chip:active{transform:scale(.95)}
@@ -54,7 +74,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .play-all-btn{display:block;width:100%;border:none;border-radius:14px;padding:14px;font-size:1em;font-weight:700;color:#fff;cursor:pointer;margin-top:12px;transition:transform .15s}
 .play-all-btn:active{transform:scale(.97)}
 .footer{text-align:center;padding:20px;font-size:.82em;color:#999;margin-top:20px}
-.speaker-icon{display:inline-block;width:20px;height:20px;margin-right:4px;vertical-align:middle;opacity:.5}
 .sentence-block{margin-bottom:14px}
 .sentence-block .verse-label{font-size:.8em;color:#b388ff;font-weight:700;margin-bottom:6px;text-transform:uppercase}
 </style>
@@ -77,88 +96,149 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="panel active" id="panel0">
   <div class="section-title">🎵 歌曲：Carefully, Slowly, Quickly</div>
 
+  <div class="goal-card">🎯 <strong>预习小目标：</strong>学会6个过去式动词（flew/drove/sailed/fished/threw/caught），能听懂歌曲大意</div>
+
   <div class="card">
     <div class="sentence-block"><div class="verse-label">🎶 第一段 — Carefully 小心地</div></div>
-    <div class="line-item" onclick="speakEn(this,'Carefully, carefully, carefully, carefully')">
-      <div class="line-en">🔊 Carefully, carefully, carefully, carefully</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'小心地，小心地')">小心地，小心地</div>
-      <span class="line-key">🔑 carefully = 小心地</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Carefully, carefully, carefully, carefully')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Carefully, carefully, carefully, carefully</div>
+        <div class="line-cn">小心地，小心地 <span class="speak-btn-sm" onclick="speakCnText(this,'小心地，小心地')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="carefully" data-zh="小心地" data-phonetic="/ˈkerflɪ/" onclick="speakKeyword(this)">carefully <span class="phonetic">/ˈkerflɪ/</span></span> = 小心地</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'We flew to the jungle.')">
-      <div class="line-en">🔊 We flew to the jungle.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们飞到了丛林。')">我们飞到了丛林。</div>
-      <span class="line-key">🔑 flew (fly的过去式) = 飞 · jungle = 丛林</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'We flew to the jungle.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">We flew to the jungle.</div>
+        <div class="line-cn">我们飞到了丛林。 <span class="speak-btn-sm" onclick="speakCnText(this,'我们飞到了丛林。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="flew" data-zh="飞（fly的过去式）" data-phonetic="/fluː/" onclick="speakKeyword(this)">flew <span class="phonetic">/fluː/</span></span> = 飞 · <span class="keyword" data-en="jungle" data-zh="丛林" data-phonetic="/ˈdʒʌŋɡl/" onclick="speakKeyword(this)">jungle <span class="phonetic">/ˈdʒʌŋɡl/</span></span> = 丛林</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'We drove to the beach')">
-      <div class="line-en">🔊 We drove to the beach</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们开车到了海滩。')">我们开车到了海滩。</div>
-      <span class="line-key">🔑 drove (drive的过去式) = 开车 · beach = 海滩</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'We drove to the beach')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">We drove to the beach</div>
+        <div class="line-cn">我们开车到了海滩。 <span class="speak-btn-sm" onclick="speakCnText(this,'我们开车到了海滩。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="drove" data-zh="开车（drive的过去式）" data-phonetic="/droʊv/" onclick="speakKeyword(this)">drove <span class="phonetic">/droʊv/</span></span> = 开车 · <span class="keyword" data-en="beach" data-zh="海滩" data-phonetic="/biːtʃ/" onclick="speakKeyword(this)">beach <span class="phonetic">/biːtʃ/</span></span> = 海滩</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'And we sailed on the sea.')">
-      <div class="line-en">🔊 And we sailed on the sea.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们在海上航行。')">我们在海上航行。</div>
-      <span class="line-key">🔑 sailed = 航行 · sea = 大海</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'And we sailed on the sea.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">And we sailed on the sea.</div>
+        <div class="line-cn">我们在海上航行。 <span class="speak-btn-sm" onclick="speakCnText(this,'我们在海上航行。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="sailed" data-zh="航行" data-phonetic="/seɪld/" onclick="speakKeyword(this)">sailed <span class="phonetic">/seɪld/</span></span> = 航行 · <span class="keyword" data-en="sea" data-zh="大海" data-phonetic="/siː/" onclick="speakKeyword(this)">sea <span class="phonetic">/siː/</span></span> = 大海</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'Yes, we did')">
-      <div class="line-en">🔊 Yes, we did ...</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'是的，我们做到了')">是的，我们做到了...</div>
-      <span class="line-key">🔑 did = do的过去式</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Yes, we did')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Yes, we did ...</div>
+        <div class="line-cn">是的，我们做到了... <span class="speak-btn-sm" onclick="speakCnText(this,'是的，我们做到了')">🔊</span></div>
+      </div>
     </div>
   </div>
 
   <div class="card">
     <div class="sentence-block"><div class="verse-label">🎶 第二段 — Slowly 慢慢地</div></div>
-    <div class="line-item" onclick="speakEn(this,'Slowly, slowly, slowly, slowly')">
-      <div class="line-en">🔊 Slowly, slowly, slowly, slowly</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'慢慢地，慢慢地')">慢慢地，慢慢地</div>
-      <span class="line-key">🔑 slowly = 慢慢地</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Slowly, slowly, slowly, slowly')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Slowly, slowly, slowly, slowly</div>
+        <div class="line-cn">慢慢地，慢慢地 <span class="speak-btn-sm" onclick="speakCnText(this,'慢慢地，慢慢地')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="slowly" data-zh="慢慢地" data-phonetic="/ˈsloʊli/" onclick="speakKeyword(this)">slowly <span class="phonetic">/ˈsloʊli/</span></span> = 慢慢地</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'We fished in a river.')">
-      <div class="line-en">🔊 We fished in a river.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们在河里钓鱼。')">我们在河里钓鱼。</div>
-      <span class="line-key">🔑 fished = 钓鱼 · river = 河</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'We fished in a river.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">We fished in a river.</div>
+        <div class="line-cn">我们在河里钓鱼。 <span class="speak-btn-sm" onclick="speakCnText(this,'我们在河里钓鱼。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="fished" data-zh="钓鱼" data-phonetic="/fɪʃt/" onclick="speakKeyword(this)">fished <span class="phonetic">/fɪʃt/</span></span> = 钓鱼 · <span class="keyword" data-en="river" data-zh="河" data-phonetic="/ˈrɪvər/" onclick="speakKeyword(this)">river <span class="phonetic">/ˈrɪvər/</span></span> = 河</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'We threw our nets')">
-      <div class="line-en">🔊 We threw our nets</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们撒了网。')">我们撒了网。</div>
-      <span class="line-key">🔑 threw (throw的过去式) = 扔/撒 · nets = 渔网</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'We threw our nets')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">We threw our nets</div>
+        <div class="line-cn">我们撒了网。 <span class="speak-btn-sm" onclick="speakCnText(this,'我们撒了网。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="threw" data-zh="扔/撒（throw的过去式）" data-phonetic="/θruː/" onclick="speakKeyword(this)">threw <span class="phonetic">/θruː/</span></span> = 扔/撒 · <span class="keyword" data-en="nets" data-zh="渔网" data-phonetic="/nets/" onclick="speakKeyword(this)">nets <span class="phonetic">/nets/</span></span> = 渔网</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'And we caught some fish.')">
-      <div class="line-en">🔊 And we caught some fish.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们抓到了一些鱼。')">我们抓到了一些鱼。</div>
-      <span class="line-key">🔑 caught (catch的过去式) = 抓到</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'And we caught some fish.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">And we caught some fish.</div>
+        <div class="line-cn">我们抓到了一些鱼。 <span class="speak-btn-sm" onclick="speakCnText(this,'我们抓到了一些鱼。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="caught" data-zh="抓到（catch的过去式）" data-phonetic="/kɔːt/" onclick="speakKeyword(this)">caught <span class="phonetic">/kɔːt/</span></span> = 抓到</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'Yes, we did')">
-      <div class="line-en">🔊 Yes, we did ...</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'是的，我们做到了')">是的，我们做到了...</div>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Yes, we did')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Yes, we did ...</div>
+        <div class="line-cn">是的，我们做到了... <span class="speak-btn-sm" onclick="speakCnText(this,'是的，我们做到了')">🔊</span></div>
+      </div>
     </div>
   </div>
 
   <div class="card">
     <div class="sentence-block"><div class="verse-label">🎶 第三段 — Quickly 快快地</div></div>
-    <div class="line-item" onclick="speakEn(this,'Quickly, quickly, quickly, quickly')">
-      <div class="line-en">🔊 Quickly, quickly, quickly, quickly</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'快快地，快快地')">快快地，快快地</div>
-      <span class="line-key">🔑 quickly = 快速地</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Quickly, quickly, quickly, quickly')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Quickly, quickly, quickly, quickly</div>
+        <div class="line-cn">快快地，快快地 <span class="speak-btn-sm" onclick="speakCnText(this,'快快地，快快地')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="quickly" data-zh="快速地" data-phonetic="/ˈkwɪkli/" onclick="speakKeyword(this)">quickly <span class="phonetic">/ˈkwɪkli/</span></span> = 快速地</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'We learnt to dance.')">
-      <div class="line-en">🔊 We learnt to dance.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们学会了跳舞。')">我们学会了跳舞。</div>
-      <span class="line-key">🔑 learnt (learn的过去式) = 学会</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'We learnt to dance.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">We learnt to dance.</div>
+        <div class="line-cn">我们学会了跳舞。 <span class="speak-btn-sm" onclick="speakCnText(this,'我们学会了跳舞。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="learnt" data-zh="学会（learn的过去式）" data-phonetic="/lɜːrnt/" onclick="speakKeyword(this)">learnt <span class="phonetic">/lɜːrnt/</span></span> = 学会</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'We bounced and hopped.')">
-      <div class="line-en">🔊 We bounced and hopped.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们蹦蹦跳跳。')">我们蹦蹦跳跳。</div>
-      <span class="line-key">🔑 bounced = 弹跳 · hopped = 单脚跳</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'We bounced and hopped.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">We bounced and hopped.</div>
+        <div class="line-cn">我们蹦蹦跳跳。 <span class="speak-btn-sm" onclick="speakCnText(this,'我们蹦蹦跳跳。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="bounced" data-zh="弹跳" data-phonetic="/baʊnst/" onclick="speakKeyword(this)">bounced <span class="phonetic">/baʊnst/</span></span> = 弹跳 · <span class="keyword" data-en="hopped" data-zh="单脚跳" data-phonetic="/hɒpt/" onclick="speakKeyword(this)">hopped <span class="phonetic">/hɒpt/</span></span> = 单脚跳</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'And we skipped and kicked.')">
-      <div class="line-en">🔊 And we skipped and kicked.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'我们跳绳又踢腿。')">我们跳绳又踢腿。</div>
-      <span class="line-key">🔑 skipped = 蹦跳 · kicked = 踢</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'And we skipped and kicked.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">And we skipped and kicked.</div>
+        <div class="line-cn">我们跳绳又踢腿。 <span class="speak-btn-sm" onclick="speakCnText(this,'我们跳绳又踢腿。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="skipped" data-zh="蹦跳" data-phonetic="/skɪpt/" onclick="speakKeyword(this)">skipped <span class="phonetic">/skɪpt/</span></span> = 蹦跳 · <span class="keyword" data-en="kicked" data-zh="踢" data-phonetic="/kɪkt/" onclick="speakKeyword(this)">kicked <span class="phonetic">/kɪkt/</span></span> = 踢</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'Yes, we did')">
-      <div class="line-en">🔊 Yes, we did ...</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'是的，我们做到了')">是的，我们做到了...</div>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Yes, we did')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Yes, we did ...</div>
+        <div class="line-cn">是的，我们做到了... <span class="speak-btn-sm" onclick="speakCnText(this,'是的，我们做到了')">🔊</span></div>
+      </div>
     </div>
   </div>
 
@@ -206,22 +286,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="panel" id="panel1">
   <div class="section-title">🐾 动物比较 — Comparative Adverbs</div>
 
+  <div class="goal-card">🎯 <strong>预习小目标：</strong>学会用"比较级"说动物谁更快、谁爬得更好</div>
+
   <div class="card">
     <h3>📖 例句讲解</h3>
-    <div class="line-item" onclick="speakEn(this,'Elephants can move faster than snakes.')">
-      <div class="line-en">🔊 Elephants can move faster than snakes.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'大象比蛇移动得更快。')">大象比蛇移动得更快。</div>
-      <span class="line-key">🔑 faster = 更快 (fast的比较级)</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Elephants can move faster than snakes.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Elephants can move faster than snakes.</div>
+        <div class="line-cn">大象比蛇移动得更快。 <span class="speak-btn-sm" onclick="speakCnText(this,'大象比蛇移动得更快。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="faster" data-zh="更快（fast的比较级）" data-phonetic="/ˈfæstər/" onclick="speakKeyword(this)">faster <span class="phonetic">/ˈfæstər/</span></span> = 更快</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'Monkeys can climb better than tigers.')">
-      <div class="line-en">🔊 Monkeys can climb better than tigers.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'猴子比老虎爬得更好。')">猴子比老虎爬得更好。</div>
-      <span class="line-key">🔑 better = 更好 (well的比较级)</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Monkeys can climb better than tigers.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Monkeys can climb better than tigers.</div>
+        <div class="line-cn">猴子比老虎爬得更好。 <span class="speak-btn-sm" onclick="speakCnText(this,'猴子比老虎爬得更好。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="better" data-zh="更好（well的比较级）" data-phonetic="/ˈbetər/" onclick="speakKeyword(this)">better <span class="phonetic">/ˈbetər/</span></span> = 更好</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'Bears can run more quickly than monkeys.')">
-      <div class="line-en">🔊 Bears can run more quickly than monkeys.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'熊比猴子跑得更快。')">熊比猴子跑得更快。</div>
-      <span class="line-key">🔑 more quickly = 更快地 (长副词用more)</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Bears can run more quickly than monkeys.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Bears can run more quickly than monkeys.</div>
+        <div class="line-cn">熊比猴子跑得更快。 <span class="speak-btn-sm" onclick="speakCnText(this,'熊比猴子跑得更快。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="quickly" data-zh="快速地" data-phonetic="/ˈkwɪkli/" onclick="speakKeyword(this)">quickly <span class="phonetic">/ˈkwɪkli/</span></span> = 快速地（长副词用more）</div>
+      </div>
     </div>
   </div>
 
@@ -237,38 +331,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div class="section-title">🦁 动物词汇</div>
   <div class="card">
     <div class="vocab-grid">
-      <div class="vocab-chip" onclick="speakEn(this,'elephant')"><span class="emoji">🐘</span><span class="en">elephant</span><span class="cn">大象</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'bat')"><span class="emoji">🦇</span><span class="en">bat</span><span class="cn">蝙蝠</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'tiger')"><span class="emoji">🐅</span><span class="en">tiger</span><span class="cn">老虎</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'snake')"><span class="emoji">🐍</span><span class="en">snake</span><span class="cn">蛇</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'monkey')"><span class="emoji">🐒</span><span class="en">monkey</span><span class="cn">猴子</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'bear')"><span class="emoji">🐻</span><span class="en">bear</span><span class="cn">熊</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'elephant')"><span class="emoji">🐘</span><span class="en">elephant</span><span class="cn">大象</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'bat')"><span class="emoji">🦇</span><span class="en">bat</span><span class="cn">蝙蝠</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'tiger')"><span class="emoji">🐅</span><span class="en">tiger</span><span class="cn">老虎</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'snake')"><span class="emoji">🐍</span><span class="en">snake</span><span class="cn">蛇</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'monkey')"><span class="emoji">🐒</span><span class="en">monkey</span><span class="cn">猴子</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'bear')"><span class="emoji">🐻</span><span class="en">bear</span><span class="cn">熊</span></div>
     </div>
   </div>
 
   <div class="section-title">🏃 动作词汇</div>
   <div class="card">
     <div class="vocab-grid">
-      <div class="vocab-chip" onclick="speakEn(this,'move')"><span class="emoji">👟</span><span class="en">move</span><span class="cn">移动</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'run')"><span class="emoji">🏃</span><span class="en">run</span><span class="cn">跑</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'jump')"><span class="emoji">🦘</span><span class="en">jump</span><span class="cn">跳</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'fly')"><span class="emoji">🕊️</span><span class="en">fly</span><span class="cn">飞</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'swim')"><span class="emoji">🏊</span><span class="en">swim</span><span class="cn">游泳</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'climb')"><span class="emoji">🧗</span><span class="en">climb</span><span class="cn">爬</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'move')"><span class="emoji">👟</span><span class="en">move</span><span class="cn">移动</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'run')"><span class="emoji">🏃</span><span class="en">run</span><span class="cn">跑</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'jump')"><span class="emoji">🦘</span><span class="en">jump</span><span class="cn">跳</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'fly')"><span class="emoji">🕊️</span><span class="en">fly</span><span class="cn">飞</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'swim')"><span class="emoji">🏊</span><span class="en">swim</span><span class="cn">游泳</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'climb')"><span class="emoji">🧗</span><span class="en">climb</span><span class="cn">爬</span></div>
     </div>
   </div>
 
   <div class="section-title">💨 副词词汇</div>
   <div class="card">
     <div class="vocab-grid">
-      <div class="vocab-chip" onclick="speakEn(this,'well')"><span class="emoji">👍</span><span class="en">well</span><span class="cn">好地</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'loudly')"><span class="emoji">📢</span><span class="en">loudly</span><span class="cn">大声地</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'quietly')"><span class="emoji">🤫</span><span class="en">quietly</span><span class="cn">安静地</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'quickly')"><span class="emoji">⚡</span><span class="en">quickly</span><span class="cn">快速地</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'slowly')"><span class="emoji">🐢</span><span class="en">slowly</span><span class="cn">慢慢地</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'carefully')"><span class="emoji">🔍</span><span class="en">carefully</span><span class="cn">小心地</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'hard')"><span class="emoji">💪</span><span class="en">hard</span><span class="cn">努力地</span></div>
-      <div class="vocab-chip" onclick="speakEn(this,'fast')"><span class="emoji">🚀</span><span class="en">fast</span><span class="cn">快地</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'well')"><span class="emoji">👍</span><span class="en">well</span><span class="cn">好地</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'loudly')"><span class="emoji">📢</span><span class="en">loudly</span><span class="cn">大声地</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'quietly')"><span class="emoji">🤫</span><span class="en">quietly</span><span class="cn">安静地</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'quickly')"><span class="emoji">⚡</span><span class="en">quickly</span><span class="cn">快速地</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'slowly')"><span class="emoji">🐢</span><span class="en">slowly</span><span class="cn">慢慢地</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'carefully')"><span class="emoji">🔍</span><span class="en">carefully</span><span class="cn">小心地</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'hard')"><span class="emoji">💪</span><span class="en">hard</span><span class="cn">努力地</span></div>
+      <div class="vocab-chip" onclick="speakEnText(this,'fast')"><span class="emoji">🚀</span><span class="en">fast</span><span class="cn">快地</span></div>
     </div>
   </div>
 
@@ -306,63 +400,95 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="panel" id="panel2">
   <div class="section-title">🌱 课文：From the Roots to the Flower</div>
 
+  <div class="goal-card">🎯 <strong>预习小目标：</strong>记住植物的5个部分（roots/stem/leaves/flowers/fruit），读懂课文</div>
+
   <div class="card">
-    <div class="line-item" onclick="speakEn(this,'Plants are living things and grow almost everywhere')">
-      <div class="line-en">🔊 Plants are living things and grow almost everywhere</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'植物是有生命的东西，几乎到处都能生长')">植物是有生命的东西，几乎到处都能生长</div>
-      <span class="line-key">🔑 living things = 有生命的东西 · everywhere = 到处</span>
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Plants are living things and grow almost everywhere')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Plants are living things and grow almost everywhere</div>
+        <div class="line-cn">植物是有生命的东西，几乎到处都能生长 <span class="speak-btn-sm" onclick="speakCnText(this,'植物是有生命的东西，几乎到处都能生长')">🔊</span></div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'from the bottom of the sea to the highest mountain.')">
-      <div class="line-en">🔊 – from the bottom of the sea to the highest mountain.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'从海底到最高的山顶。')">——从海底到最高的山顶。</div>
-      <span class="line-key">🔑 bottom = 底部 · highest = 最高的</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'from the bottom of the sea to the highest mountain.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">– from the bottom of the sea to the highest mountain.</div>
+        <div class="line-cn">——从海底到最高的山顶。 <span class="speak-btn-sm" onclick="speakCnText(this,'从海底到最高的山顶。')">🔊</span></div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'What plants grow near you?')">
-      <div class="line-en">🔊 What plants grow near you?</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'你家附近长什么植物？')">你家附近长什么植物？</div>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'What plants grow near you?')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">What plants grow near you?</div>
+        <div class="line-cn">你家附近长什么植物？ <span class="speak-btn-sm" onclick="speakCnText(this,'你家附近长什么植物？')">🔊</span></div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'Most plants make food using sunlight.')">
-      <div class="line-en">🔊 Most plants make food using sunlight.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'大多数植物用阳光制造食物。')">大多数植物用阳光制造食物。</div>
-      <span class="line-key">🔑 sunlight = 阳光</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Most plants make food using sunlight.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Most plants make food using sunlight.</div>
+        <div class="line-cn">大多数植物用阳光制造食物。 <span class="speak-btn-sm" onclick="speakCnText(this,'大多数植物用阳光制造食物。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="sunlight" data-zh="阳光" data-phonetic="/ˈsʌnlaɪt/" onclick="speakKeyword(this)">sunlight <span class="phonetic">/ˈsʌnlaɪt/</span></span> = 阳光</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'They also need water to survive, just like us!')">
-      <div class="line-en">🔊 They also need water to survive, just like us!</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'它们也需要水才能活下来，就像我们一样！')">它们也需要水才能活下来，就像我们一样！</div>
-      <span class="line-key">🔑 survive = 存活</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'They also need water to survive, just like us!')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">They also need water to survive, just like us!</div>
+        <div class="line-cn">它们也需要水才能活下来，就像我们一样！ <span class="speak-btn-sm" onclick="speakCnText(this,'它们也需要水才能活下来，就像我们一样！')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="survive" data-zh="存活" data-phonetic="/sərˈvaɪv/" onclick="speakKeyword(this)">survive <span class="phonetic">/sərˈvaɪv/</span></span> = 存活</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'Plants usually have three parts to them: roots, a stem and leaves.')">
-      <div class="line-en">🔊 Plants usually have three parts to them: roots, a stem and leaves.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'植物通常有三个部分：根、茎和叶子。')">植物通常有三个部分：根、茎和叶子。</div>
-      <span class="line-key">🔑 roots = 根 · stem = 茎 · leaves = 叶子</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Plants usually have three parts to them: roots, a stem and leaves.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Plants usually have three parts to them: roots, a stem and leaves.</div>
+        <div class="line-cn">植物通常有三个部分：根、茎和叶子。 <span class="speak-btn-sm" onclick="speakCnText(this,'植物通常有三个部分：根、茎和叶子。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="roots" data-zh="根" data-phonetic="/ruːts/" onclick="speakKeyword(this)">roots <span class="phonetic">/ruːts/</span></span> = 根 · <span class="keyword" data-en="stem" data-zh="茎" data-phonetic="/stem/" onclick="speakKeyword(this)">stem <span class="phonetic">/stem/</span></span> = 茎 · <span class="keyword" data-en="leaves" data-zh="叶子" data-phonetic="/liːvz/" onclick="speakKeyword(this)">leaves <span class="phonetic">/liːvz/</span></span> = 叶子</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'The roots take up water from the ground')">
-      <div class="line-en">🔊 The roots take up water from the ground</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'根从地里吸收水分')">根从地里吸收水分</div>
-      <span class="line-key">🔑 take up = 吸收 · ground = 地面</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'The roots take up water from the ground')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">The roots take up water from the ground</div>
+        <div class="line-cn">根从地里吸收水分 <span class="speak-btn-sm" onclick="speakCnText(this,'根从地里吸收水分')">🔊</span></div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'and the leaves take in sunlight and air around them for food.')">
-      <div class="line-en">🔊 and the leaves take in sunlight and air around them for food.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'叶子吸收周围的阳光和空气来制造食物。')">叶子吸收周围的阳光和空气来制造食物。</div>
-      <span class="line-key">🔑 take in = 吸收</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'and the leaves take in sunlight and air around them for food.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">and the leaves take in sunlight and air around them for food.</div>
+        <div class="line-cn">叶子吸收周围的阳光和空气来制造食物。 <span class="speak-btn-sm" onclick="speakCnText(this,'叶子吸收周围的阳光和空气来制造食物。')">🔊</span></div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'Some plants also have flowers or fruit.')">
-      <div class="line-en">🔊 Some plants also have flowers or fruit.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'有些植物还有花或果实。')">有些植物还有花或果实。</div>
-      <span class="line-key">🔑 flowers = 花 · fruit = 果实</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Some plants also have flowers or fruit.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Some plants also have flowers or fruit.</div>
+        <div class="line-cn">有些植物还有花或果实。 <span class="speak-btn-sm" onclick="speakCnText(this,'有些植物还有花或果实。')">🔊</span></div>
+      </div>
     </div>
   </div>
 
   <div class="section-title">🌿 植物结构图</div>
   <div class="card">
     <div class="plant-diagram">
-      <div class="part" onclick="speakEn(this,'flower')" style="color:#e91e63"><span class="emoji">🌸</span> <strong>flower</strong> 花</div>
-      <div class="part" onclick="speakEn(this,'fruit')" style="color:#f44336"><span class="emoji">🍅</span> <strong>fruit</strong> 果实</div>
-      <div class="part" onclick="speakEn(this,'leaves')" style="color:#4caf50"><span class="emoji">🍃</span> <strong>leaves</strong> 叶子</div>
+      <div class="part" onclick="speakEnText(this,'flower')" style="color:#e91e63"><span class="emoji">🌸</span> <strong>flower</strong> 花</div>
+      <div class="part" onclick="speakEnText(this,'fruit')" style="color:#f44336"><span class="emoji">🍅</span> <strong>fruit</strong> 果实</div>
+      <div class="part" onclick="speakEnText(this,'leaves')" style="color:#4caf50"><span class="emoji">🍃</span> <strong>leaves</strong> 叶子</div>
       <div style="width:6px;height:40px;background:linear-gradient(#8bc34a,#795548);border-radius:3px;margin:4px auto"></div>
-      <div class="part" onclick="speakEn(this,'stem')" style="color:#795548"><span class="emoji">🟫</span> <strong>stem</strong> 茎</div>
+      <div class="part" onclick="speakEnText(this,'stem')" style="color:#795548"><span class="emoji">🟫</span> <strong>stem</strong> 茎</div>
       <div style="width:80px;height:3px;background:#795548;margin:2px auto"></div>
-      <div class="part" onclick="speakEn(this,'roots')" style="color:#5d4037"><span class="emoji">🟤</span> <strong>roots</strong> 根</div>
+      <div class="part" onclick="speakEnText(this,'roots')" style="color:#5d4037"><span class="emoji">🟤</span> <strong>roots</strong> 根</div>
     </div>
   </div>
 
@@ -402,64 +528,103 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="panel" id="panel3">
   <div class="section-title">🪴 Culture: Carnivorous Plants 食虫植物</div>
 
+  <div class="goal-card">🎯 <strong>预习小目标：</strong>知道捕蝇草和茅膏菜是什么、怎么抓虫子的</div>
+
   <div class="card">
     <h3>🌍 什么是食虫植物？</h3>
-    <div class="line-item" onclick="speakEn(this,'Like most other plants, carnivorous plants need sun, air and water to make their own food.')">
-      <div class="line-en">🔊 Like most other plants, carnivorous plants need sun, air and water to make their own food.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'和大多数植物一样，食虫植物需要阳光、空气和水来制造食物。')">和大多数植物一样，食虫植物需要阳光、空气和水来制造食物。</div>
-      <span class="line-key">🔑 carnivorous = 食肉的/食虫的</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Like most other plants, carnivorous plants need sun, air and water to make their own food.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Like most other plants, carnivorous plants need sun, air and water to make their own food.</div>
+        <div class="line-cn">和大多数植物一样，食虫植物需要阳光、空气和水来制造食物。 <span class="speak-btn-sm" onclick="speakCnText(this,'和大多数植物一样，食虫植物需要阳光、空气和水来制造食物。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="carnivorous" data-zh="食肉的/食虫的" data-phonetic="/kɑːrˈnɪvərəs/" onclick="speakKeyword(this)">carnivorous <span class="phonetic">/kɑːrˈnɪvərəs/</span></span> = 食虫的</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'But they also get extra nutrients by eating small animals!')">
-      <div class="line-en">🔊 But they also get extra nutrients by eating small animals!</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'但它们还通过吃小动物来获取额外的营养！')">但它们还通过吃小动物来获取额外的营养！</div>
-      <span class="line-key">🔑 nutrients = 营养 · extra = 额外的</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'But they also get extra nutrients by eating small animals!')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">But they also get extra nutrients by eating small animals!</div>
+        <div class="line-cn">但它们还通过吃小动物来获取额外的营养！ <span class="speak-btn-sm" onclick="speakCnText(this,'但它们还通过吃小动物来获取额外的营养！')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="nutrients" data-zh="营养" data-phonetic="/ˈnuːtriənts/" onclick="speakKeyword(this)">nutrients <span class="phonetic">/ˈnuːtriənts/</span></span> = 营养</div>
+      </div>
     </div>
   </div>
 
   <div class="card">
     <h3>🪤 Venus Flytrap 捕蝇草</h3>
-    <div class="line-item" onclick="speakEn(this,'Venus flytraps grow naturally in the USA but are used as house plants all over the world.')">
-      <div class="line-en">🔊 Venus flytraps grow naturally in the USA but are used as house plants all over the world.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'捕蝇草自然生长在美国，但世界各地都有人当盆栽养。')">捕蝇草自然生长在美国，但世界各地都有人当盆栽养。</div>
-      <span class="line-key">🔑 naturally = 自然地 · house plants = 盆栽</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Venus flytraps grow naturally in the USA but are used as house plants all over the world.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Venus flytraps grow naturally in the USA but are used as house plants all over the world.</div>
+        <div class="line-cn">捕蝇草自然生长在美国，但世界各地都有人当盆栽养。 <span class="speak-btn-sm" onclick="speakCnText(this,'捕蝇草自然生长在美国，但世界各地都有人当盆栽养。')">🔊</span></div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'They use their leaves to catch insects, like flies.')">
-      <div class="line-en">🔊 They use their leaves to catch insects, like flies.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'它们用叶子抓虫子，比如苍蝇。')">它们用叶子抓虫子，比如苍蝇。</div>
-      <span class="line-key">🔑 insects = 昆虫 · flies = 苍蝇</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'They use their leaves to catch insects, like flies.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">They use their leaves to catch insects, like flies.</div>
+        <div class="line-cn">它们用叶子抓虫子，比如苍蝇。 <span class="speak-btn-sm" onclick="speakCnText(this,'它们用叶子抓虫子，比如苍蝇。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="insects" data-zh="昆虫" data-phonetic="/ˈɪnsekts/" onclick="speakKeyword(this)">insects <span class="phonetic">/ˈɪnsekts/</span></span> = 昆虫</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'The leaves close when an insect touches the tiny hairs that grow on them.')">
-      <div class="line-en">🔊 The leaves close when an insect touches the tiny hairs that grow on them.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'当虫子碰到叶子上的小毛毛时，叶子就会合上。')">当虫子碰到叶子上的小毛毛时，叶子就会合上。</div>
-      <span class="line-key">🔑 tiny hairs = 小毛毛 · close = 合上</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'The leaves close when an insect touches the tiny hairs that grow on them.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">The leaves close when an insect touches the tiny hairs that grow on them.</div>
+        <div class="line-cn">当虫子碰到叶子上的小毛毛时，叶子就会合上。 <span class="speak-btn-sm" onclick="speakCnText(this,'当虫子碰到叶子上的小毛毛时，叶子就会合上。')">🔊</span></div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'The plant can then slowly eat the insect.')">
-      <div class="line-en">🔊 The plant can then slowly eat the insect.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'然后植物就会慢慢把虫子吃掉。')">然后植物就会慢慢把虫子吃掉。</div>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'The plant can then slowly eat the insect.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">The plant can then slowly eat the insect.</div>
+        <div class="line-cn">然后植物就会慢慢把虫子吃掉。 <span class="speak-btn-sm" onclick="speakCnText(this,'然后植物就会慢慢把虫子吃掉。')">🔊</span></div>
+      </div>
     </div>
   </div>
 
   <div class="card">
     <h3>🌿 Sundew Plant 茅膏菜</h3>
-    <div class="line-item" onclick="speakEn(this,'Sundew plants are found in the Indian rainforests.')">
-      <div class="line-en">🔊 Sundew plants are found in the Indian rainforests.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'茅膏菜生长在印度的热带雨林里。')">茅膏菜生长在印度的热带雨林里。</div>
-      <span class="line-key">🔑 rainforests = 热带雨林</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Sundew plants are found in the Indian rainforests.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Sundew plants are found in the Indian rainforests.</div>
+        <div class="line-cn">茅膏菜生长在印度的热带雨林里。 <span class="speak-btn-sm" onclick="speakCnText(this,'茅膏菜生长在印度的热带雨林里。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="rainforests" data-zh="热带雨林" data-phonetic="/ˈreɪnfɒrɪsts/" onclick="speakKeyword(this)">rainforests <span class="phonetic">/ˈreɪnfɒrɪsts/</span></span> = 热带雨林</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'Their leaves have sticky hairs')">
-      <div class="line-en">🔊 Their leaves have sticky hairs</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'它们的叶子上有粘粘的毛')">它们的叶子上有粘粘的毛</div>
-      <span class="line-key">🔑 sticky = 粘粘的</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Their leaves have sticky hairs')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Their leaves have sticky hairs</div>
+        <div class="line-cn">它们的叶子上有粘粘的毛 <span class="speak-btn-sm" onclick="speakCnText(this,'它们的叶子上有粘粘的毛')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="sticky" data-zh="粘粘的" data-phonetic="/ˈstɪki/" onclick="speakKeyword(this)">sticky <span class="phonetic">/ˈstɪki/</span></span> = 粘粘的</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'and when an insect lands on the leaves, the sticky hairs trap them.')">
-      <div class="line-en">🔊 and when an insect lands on the leaves, the sticky hairs trap them.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'当虫子落在叶子上，粘毛就把它们困住了。')">当虫子落在叶子上，粘毛就把它们困住了。</div>
-      <span class="line-key">🔑 trap = 困住/陷阱</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'and when an insect lands on the leaves, the sticky hairs trap them.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">and when an insect lands on the leaves, the sticky hairs trap them.</div>
+        <div class="line-cn">当虫子落在叶子上，粘毛就把它们困住了。 <span class="speak-btn-sm" onclick="speakCnText(this,'当虫子落在叶子上，粘毛就把它们困住了。')">🔊</span></div>
+        <div class="line-key"><span class="keyword" data-en="trap" data-zh="困住/陷阱" data-phonetic="/træp/" onclick="speakKeyword(this)">trap <span class="phonetic">/træp/</span></span> = 困住</div>
+      </div>
     </div>
-    <div class="line-item" onclick="speakEn(this,'Large sundew plants can trap and eat spiders.')">
-      <div class="line-en">🔊 Large sundew plants can trap and eat spiders.</div>
-      <div class="line-cn" onclick="event.stopPropagation();speakCn(this,'大的茅膏菜甚至能困住蜘蛛吃掉！')">大的茅膏菜甚至能困住蜘蛛吃掉！</div>
-      <span class="line-key">🔑 spiders = 蜘蛛</span>
+
+    <div class="line-row">
+      <span class="speak-btn" onclick="speakEnText(this,'Large sundew plants can trap and eat spiders.')">🔊</span>
+      <div class="line-content">
+        <div class="line-en">Large sundew plants can trap and eat spiders.</div>
+        <div class="line-cn">大的茅膏菜甚至能困住蜘蛛吃掉！ <span class="speak-btn-sm" onclick="speakCnText(this,'大的茅膏菜甚至能困住蜘蛛吃掉！')">🔊</span></div>
+      </div>
     </div>
   </div>
 
@@ -505,24 +670,56 @@ function switchTab(i){
   document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',j===i));
 }
 
-// TTS
-function speakEn(el,text){
+// TTS helpers
+function speakEnText(el,text){
   speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(text);
   u.lang='en-US';u.rate=0.85;
   speechSynthesis.speak(u);
-  flash(el);
+  // pulse animation
+  if(el.classList.contains('speak-btn')){
+    el.classList.remove('speaking');
+    void el.offsetWidth;
+    el.classList.add('speaking');
+  }
+  // highlight row
+  const row=el.closest('.line-row')||el.closest('.line-item')||el.closest('.vocab-chip')||el.closest('.part');
+  if(row){row.style.background='#ede7f6';setTimeout(()=>row.style.background='',800);}
 }
-function speakCn(el,text){
+
+function speakCnText(el,text){
+  event.stopPropagation();
   speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(text);
   u.lang='zh-CN';u.rate=0.9;
   speechSynthesis.speak(u);
-  flash(el);
+  if(el.classList.contains('speak-btn-sm')){
+    el.style.background='#bdbdbd';
+    setTimeout(()=>el.style.background='',400);
+  }
 }
-function flash(el){
-  el.style.background='#ede7f6';
-  setTimeout(()=>el.style.background='',600);
+
+// 改进1: 关键词点击朗读（英文+中文）
+function speakKeyword(el){
+  event.stopPropagation();
+  speechSynthesis.cancel();
+  const en=el.dataset.en;
+  const zh=el.dataset.zh;
+  // animate
+  el.style.transform='scale(1.1)';
+  setTimeout(()=>el.style.transform='',200);
+  // speak English
+  const uEn=new SpeechSynthesisUtterance(en);
+  uEn.lang='en-US';uEn.rate=0.8;
+  uEn.onend=()=>{
+    // 1s delay then speak Chinese
+    setTimeout(()=>{
+      const uZh=new SpeechSynthesisUtterance(zh);
+      uZh.lang='zh-CN';uZh.rate=0.9;
+      speechSynthesis.speak(uZh);
+    },800);
+  };
+  speechSynthesis.speak(uEn);
 }
 
 // Quiz
@@ -539,7 +736,6 @@ function checkQuiz(qid,el,correct){
     el.classList.add('wrong');
     fb.textContent='❌ 再想想哦～';
     fb.style.color='#ef5350';
-    // Show correct
     setTimeout(()=>{
       opts.forEach(o=>{o.classList.remove('disabled')});
       el.classList.remove('wrong');
@@ -553,18 +749,19 @@ function checkQuiz(qid,el,correct){
 function playAllLines(panelIdx){
   speechSynthesis.cancel();
   const panel=document.getElementById('panel'+panelIdx);
-  const items=panel.querySelectorAll('.line-en');
+  const rows=panel.querySelectorAll('.line-row');
   let i=0;
   function next(){
-    if(i>=items.length)return;
-    const text=items[i].textContent.replace('🔊 ','').replace('🔊','').trim();
+    if(i>=rows.length)return;
+    const enEl=rows[i].querySelector('.line-en');
+    if(!enEl){i++;next();return;}
+    const text=enEl.textContent.trim();
     const u=new SpeechSynthesisUtterance(text);
     u.lang='en-US';u.rate=0.85;
     u.onend=()=>{i++;setTimeout(next,400)};
-    items[i].closest('.line-item').style.background='#ede7f6';
-    setTimeout(()=>{if(items[i-1])items[i-1].closest('.line-item').style.background=''},2000);
+    rows[i].style.background='#ede7f6';
+    if(i>0)rows[i-1].style.background='';
     speechSynthesis.speak(u);
-    i===0||flash(items[i].closest('.line-item'));
   }
   next();
 }
