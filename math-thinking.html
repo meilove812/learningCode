@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧠 数学思维训练 - Coco Learning Park</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'PingFang SC', sans-serif; background: #FFF8F0; min-height: 100vh; padding-bottom: 60px; }
+
+.header { text-align: center; padding: 20px 16px 10px; background: linear-gradient(135deg, #FF9A9E, #FECFEF, #A8EDEA); }
+.header h1 { font-size: 24px; color: #5B2C6F; text-shadow: 1px 1px 0 #fff; }
+.header .sub { font-size: 14px; color: #7D3C98; margin-top: 4px; }
+
+.tabs { display: flex; gap: 8px; padding: 12px 16px; justify-content: center; flex-wrap: wrap; }
+.tab { padding: 10px 16px; border-radius: 20px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: all .2s; }
+.tab[data-q="0"] { background: #D6EAF8; color: #2471A3; }
+.tab[data-q="1"] { background: #D5F5E3; color: #1E8449; }
+.tab[data-q="2"] { background: #FDEBD0; color: #CA6F1E; }
+.tab.active[data-q="0"] { background: #2E86C1; color: #fff; box-shadow: 0 3px 10px #2E86C188; }
+.tab.active[data-q="1"] { background: #27AE60; color: #fff; box-shadow: 0 3px 10px #27AE6088; }
+.tab.active[data-q="2"] { background: #E67E22; color: #fff; box-shadow: 0 3px 10px #E67E2288; }
+
+.question { display: none; padding: 0 16px; max-width: 500px; margin: 0 auto; }
+.question.active { display: block; }
+
+.card { border-radius: 20px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,.08); }
+.q0 .card { background: #EBF5FB; border: 2px solid #AED6F1; }
+.q1 .card { background: #EAFAF1; border: 2px solid #ABEBC6; }
+.q2 .card { background: #FEF5E7; border: 2px solid #F9CB9C; }
+
+.stars { font-size: 20px; margin-bottom: 8px; }
+.q-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.q-text { font-size: 16px; line-height: 1.8; color: #333; }
+.q-text .blank { display: inline-block; width: 50px; border-bottom: 2px solid #E74C3C; text-align: center; color: #E74C3C; font-weight: 700; }
+
+.speak-btn { background: none; border: none; font-size: 22px; cursor: pointer; vertical-align: middle; }
+
+/* Animation area */
+.anim-area { position: relative; height: 200px; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+.q0 .anim-area { background: linear-gradient(to bottom, #85C1E9 60%, #7DCEA0 60%); }
+.q1 .anim-area { background: linear-gradient(to bottom, #A3E4D7 30%, #D5F5E3 30%); }
+.q2 .anim-area { background: linear-gradient(to bottom, #ABEBC6 50%, #82E0AA 50%); }
+
+/* Bus scene */
+.bus { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 60px; transition: all .5s; }
+.person { position: absolute; font-size: 24px; transition: all 1s ease-in-out; opacity: 1; }
+.person.gone { opacity: 0; transform: translateY(-40px); }
+.person.arrive { opacity: 1; }
+.bus-counter { position: absolute; top: 8px; right: 12px; background: #fff; border-radius: 12px; padding: 4px 12px; font-size: 14px; font-weight: 700; color: #2C3E50; }
+
+/* Bucket scene */
+.bucket-wrap { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 100px; height: 140px; }
+.bucket-body { width: 100px; height: 120px; background: #AAB7B8; border-radius: 0 0 15px 15px; position: relative; overflow: hidden; border: 3px solid #7F8C8D; }
+.water { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to bottom, #5DADE2, #2E86C1); transition: height 1s ease-in-out; }
+.bucket-label { text-align: center; font-size: 14px; font-weight: 700; color: #1A5276; margin-top: 4px; }
+.pour-anim { position: absolute; font-size: 28px; opacity: 0; transition: all .8s; }
+
+/* Bird scene */
+.tree-row { display: flex; justify-content: space-around; position: absolute; bottom: 0; left: 0; right: 0; height: 100%; align-items: flex-end; padding: 0 10px; }
+.tree-col { text-align: center; width: 22%; position: relative; }
+.tree-emoji { font-size: 50px; }
+.tree-label { font-size: 12px; font-weight: 700; color: #1E8449; background: #ffffffcc; border-radius: 8px; padding: 1px 6px; }
+.bird { position: absolute; font-size: 18px; transition: all 1.2s ease-in-out; }
+
+/* Steps */
+.steps-area { min-height: 40px; }
+.step { display: none; padding: 12px; border-radius: 12px; margin-bottom: 8px; font-size: 15px; line-height: 1.7; animation: fadeIn .4s; }
+.step.visible { display: block; }
+.q0 .step { background: #D4E6F1; }
+.q1 .step { background: #D0ECE7; }
+.q2 .step { background: #FAE5CD; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+.next-btn { display: inline-block; padding: 10px 24px; border-radius: 25px; border: none; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer; margin-top: 8px; transition: transform .15s; }
+.next-btn:active { transform: scale(.95); }
+.q0 .next-btn { background: linear-gradient(135deg, #3498DB, #2E86C1); }
+.q1 .next-btn { background: linear-gradient(135deg, #2ECC71, #27AE60); }
+.q2 .next-btn { background: linear-gradient(135deg, #F39C12, #E67E22); }
+.next-btn:disabled { opacity: .4; cursor: default; }
+
+.reset-btn { background: none; border: 1px dashed #aaa; color: #888; padding: 6px 16px; border-radius: 15px; font-size: 13px; cursor: pointer; margin-left: 8px; }
+
+/* Practice */
+.practice { border-radius: 20px; padding: 20px; margin-top: 16px; }
+.q0 .practice { background: #D6EAF8; border: 2px dashed #5DADE2; }
+.q1 .practice { background: #D5F5E3; border: 2px dashed #58D68D; }
+.q2 .practice { background: #FDEBD0; border: 2px dashed #F0B27A; }
+.practice h3 { font-size: 16px; margin-bottom: 10px; }
+.practice .p-text { font-size: 15px; line-height: 1.8; margin-bottom: 12px; }
+.practice input { width: 80px; padding: 8px 12px; border-radius: 12px; border: 2px solid #BDC3C7; font-size: 18px; text-align: center; font-weight: 700; }
+.practice input:focus { outline: none; border-color: #8E44AD; }
+.check-btn { padding: 8px 20px; border-radius: 15px; border: none; background: #8E44AD; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; margin-left: 8px; }
+.feedback { font-size: 16px; margin-top: 10px; min-height: 24px; font-weight: 600; }
+.feedback.correct { color: #27AE60; }
+.feedback.wrong { color: #E74C3C; }
+
+/* Celebration */
+.celebrate { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 999; }
+.celebrate.show { display: block; }
+.confetti { position: absolute; font-size: 28px; animation: confettiFall 2s ease-in forwards; }
+@keyframes confettiFall { 0% { opacity: 1; transform: translateY(-20px) rotate(0deg); } 100% { opacity: 0; transform: translateY(100vh) rotate(720deg); } }
+
+.footer { text-align: center; padding: 20px; font-size: 13px; color: #AAB7B8; margin-top: 30px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🧠 数学思维训练</h1>
+  <div class="sub">逆推法 · 从后往前想 💡</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-q="0" onclick="switchQ(0)">🚌 公交车 ⭐⭐⭐</button>
+  <button class="tab" data-q="1" onclick="switchQ(1)">🪣 倒水 ⭐⭐⭐⭐</button>
+  <button class="tab" data-q="2" onclick="switchQ(2)">🐦 小鸟 ⭐⭐⭐⭐⭐</button>
+</div>
+
+<!-- Q0: Bus -->
+<div class="question q0 active" id="q0">
+  <div class="card">
+    <div class="stars">⭐⭐⭐</div>
+    <div class="q-title">🚌 公交车上下客 <button class="speak-btn" onclick="speak(q0Text)">🔊</button></div>
+    <div class="q-text" id="q0text">一辆公共汽车，到第一站下车10人。到第二站下车的人数比第一站少5人。到第三站上来8人后，车上现有13人。这辆公共汽车上原来有（<span class="blank">？</span>）人。</div>
+  </div>
+
+  <div class="card">
+    <div class="q-title">🎬 动画讲解 <button class="speak-btn" onclick="speak('看动画，一步一步想！')">🔊</button></div>
+    <div class="anim-area" id="bus-scene">
+      <div class="bus" id="bus">🚌</div>
+      <div class="bus-counter" id="bus-counter">车上：？人</div>
+    </div>
+    <div class="steps-area" id="steps0">
+      <div class="step" data-step="0">🤔 <b>先想想：</b>第三站上来8人后有13人，那上来之前有几人呢？<br>13 - 8 = <b>5人</b> <button class="speak-btn" onclick="speak('先想想，第三站上来8人后有13人，那上来之前有几人呢？13减8等于5人')">🔊</button></div>
+      <div class="step" data-step="1">👆 <b>对啦！</b>第二站下车比第一站少5人，第一站下了10人，所以第二站下了 10-5=<b>5人</b> <button class="speak-btn" onclick="speak('对啦！第二站下车比第一站少5人，第一站下了10人，所以第二站下了5人')">🔊</button></div>
+      <div class="step" data-step="2">🎉 <b>接下来：</b>往回加！5 + 5 + 10 = <b>20人！</b>原来车上有20个人！ <button class="speak-btn" onclick="speak('接下来，往回加！5加5加10等于20人！原来车上有20个人！')">🔊</button></div>
+    </div>
+    <button class="next-btn" id="nextBtn0" onclick="nextStep(0)">👉 下一步</button>
+    <button class="reset-btn" onclick="resetQ(0)">🔄 重来</button>
+  </div>
+
+  <div class="card practice">
+    <h3>✏️ 练一练</h3>
+    <div class="p-text">一辆公共汽车，到第一站下车8人。到第二站下车的人数比第一站少3人。到第三站上来6人后，车上现有15人。原来有（ ）人。</div>
+    <div><input type="number" id="ans0" placeholder="?"><button class="check-btn" onclick="checkAns(0)">✅ 提交</button></div>
+    <div class="feedback" id="fb0"></div>
+  </div>
+</div>
+
+<!-- Q1: Water -->
+<div class="question q1" id="q1">
+  <div class="card">
+    <div class="stars">⭐⭐⭐⭐</div>
+    <div class="q-title">🪣 倒水问题 <button class="speak-btn" onclick="speak(q1Text)">🔊</button></div>
+    <div class="q-text">一桶水，第一次倒出一半，第二次又倒出剩下的一半，第三次又倒出5千克，桶里还剩2千克，原来桶里有水（<span class="blank">？</span>）千克。</div>
+  </div>
+
+  <div class="card">
+    <div class="q-title">🎬 动画讲解 <button class="speak-btn" onclick="speak('我们从最后剩的水开始，倒着想！')">🔊</button></div>
+    <div class="anim-area" id="water-scene">
+      <div class="bucket-wrap">
+        <div class="bucket-body"><div class="water" id="water" style="height:14%"></div></div>
+        <div class="bucket-label" id="water-label">剩 2千克</div>
+      </div>
+    </div>
+    <div class="steps-area" id="steps1">
+      <div class="step" data-step="0">🤔 <b>从最后想：</b>第三次倒出5千克后剩2千克，那倒之前有 2+5=<b>7千克</b> <button class="speak-btn" onclick="speak('从最后想，第三次倒出5千克后剩2千克，那倒之前有2加5等于7千克')">🔊</button></div>
+      <div class="step" data-step="1">👆 <b>继续往前：</b>第二次倒出一半后剩7千克，那倒之前有 7×2=<b>14千克</b> <button class="speak-btn" onclick="speak('继续往前想，第二次倒出一半后剩7千克，那倒之前有7乘2等于14千克')">🔊</button></div>
+      <div class="step" data-step="2">🎉 <b>再往前：</b>第一次倒出一半后剩14千克，那原来有 14×2=<b>28千克！</b> <button class="speak-btn" onclick="speak('再往前想，第一次倒出一半后剩14千克，那原来有14乘2等于28千克！')">🔊</button></div>
+    </div>
+    <button class="next-btn" id="nextBtn1" onclick="nextStep(1)">👉 下一步</button>
+    <button class="reset-btn" onclick="resetQ(1)">🔄 重来</button>
+  </div>
+
+  <div class="card practice">
+    <h3>✏️ 练一练</h3>
+    <div class="p-text">一桶水，第一次倒出一半，第二次又倒出剩下的一半，第三次又倒出3千克，桶里还剩1千克，原来有水（ ）千克。</div>
+    <div><input type="number" id="ans1" placeholder="?"><button class="check-btn" onclick="checkAns(1)">✅ 提交</button></div>
+    <div class="feedback" id="fb1"></div>
+  </div>
+</div>
+
+<!-- Q2: Birds -->
+<div class="question q2" id="q2">
+  <div class="card">
+    <div class="stars">⭐⭐⭐⭐⭐</div>
+    <div class="q-title">🐦 小鸟转移 <button class="speak-btn" onclick="speak(q2Text)">🔊</button></div>
+    <div class="q-text">四棵树上共有40只鸟，若第一棵树上有3只鸟飞到第二棵树，第二棵树上有4只鸟飞到第三棵树，第三棵树上有5只鸟飞到第四棵树，这样四棵树上的鸟就一样多了，第三棵树上原来有（<span class="blank">？</span>）只鸟。</div>
+  </div>
+
+  <div class="card">
+    <div class="q-title">🎬 动画讲解 <button class="speak-btn" onclick="speak('四棵树，鸟飞来飞去，最后一样多！')">🔊</button></div>
+    <div class="anim-area" id="bird-scene">
+      <div class="tree-row">
+        <div class="tree-col" id="tree0"><div class="tree-label" id="tl0">?只</div><div class="tree-emoji">🌳</div></div>
+        <div class="tree-col" id="tree1"><div class="tree-label" id="tl1">?只</div><div class="tree-emoji">🌲</div></div>
+        <div class="tree-col" id="tree2"><div class="tree-label" id="tl2">?只</div><div class="tree-emoji">🌳</div></div>
+        <div class="tree-col" id="tree3"><div class="tree-label" id="tl3">?只</div><div class="tree-emoji">🌲</div></div>
+      </div>
+    </div>
+    <div class="steps-area" id="steps2">
+      <div class="step" data-step="0">🤔 <b>先想：</b>最后每棵树一样多，40÷4=<b>每棵10只</b> <button class="speak-btn" onclick="speak('先想，最后每棵树一样多，40除以4等于每棵10只')">🔊</button></div>
+      <div class="step" data-step="1">👆 <b>第三棵树：</b>它飞走了5只到第四棵，又从第二棵飞来了4只 <button class="speak-btn" onclick="speak('看第三棵树，它飞走了5只到第四棵树，又从第二棵树飞来了4只')">🔊</button></div>
+      <div class="step" data-step="2">🎉 <b>所以：</b>原来 = 10 + 5（飞走的）- 4（飞来的）= <b>11只！</b> <button class="speak-btn" onclick="speak('所以原来等于10加5减4等于11只鸟！')">🔊</button></div>
+    </div>
+    <button class="next-btn" id="nextBtn2" onclick="nextStep(2)">👉 下一步</button>
+    <button class="reset-btn" onclick="resetQ(2)">🔄 重来</button>
+  </div>
+
+  <div class="card practice">
+    <h3>✏️ 练一练</h3>
+    <div class="p-text">四棵树上共有36只鸟，若第一棵树上有2只鸟飞到第二棵树，第二棵树上有3只鸟飞到第三棵树，第三棵树上有4只鸟飞到第四棵树，这样四棵树上的鸟就一样多了，第三棵树上原来有（ ）只鸟。</div>
+    <div><input type="number" id="ans2" placeholder="?"><button class="check-btn" onclick="checkAns(2)">✅ 提交</button></div>
+    <div class="feedback" id="fb2"></div>
+  </div>
+</div>
+
+<div class="celebrate" id="celebrate"></div>
+
+<div class="footer">🦎 Coco Learning Park · 数学思维训练</div>
+
+<script>
+const q0Text = '一辆公共汽车，到第一站下车10人。到第二站下车的人数比第一站少5人。到第三站上来8人后，车上现有13人。这辆公共汽车上原来有多少人？';
+const q1Text = '一桶水，第一次倒出一半，第二次又倒出剩下的一半，第三次又倒出5千克，桶里还剩2千克，原来桶里有水多少千克？';
+const q2Text = '四棵树上共有40只鸟，若第一棵树上有3只鸟飞到第二棵树，第二棵树上有4只鸟飞到第三棵树，第三棵树上有5只鸟飞到第四棵树，这样四棵树上的鸟就一样多了，第三棵树上原来有多少只鸟？';
+
+const answers = [22, 16, 10]; // practice answers
+// Q0 practice: 下8人，下8-3=5人，上6人后15人 → 15-6=9, 9+5+8=22
+// Q1 practice: 剩1+倒3=4, 4*2=8, 8*2=16
+// Q2 practice: 36/4=9 each, tree3 orig = 9+4-3=10
+
+let currentStep = [0, 0, 0];
+const maxSteps = 3;
+
+function switchQ(n) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.question').forEach(q => q.classList.remove('active'));
+  document.querySelector(`.tab[data-q="${n}"]`).classList.add('active');
+  document.getElementById('q' + n).classList.add('active');
+}
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-CN'; u.rate = 0.85;
+  speechSynthesis.speak(u);
+}
+
+function nextStep(q) {
+  const s = currentStep[q];
+  if (s >= maxSteps) return;
+  const step = document.querySelector(`#steps${q} .step[data-step="${s}"]`);
+  step.classList.add('visible');
+  currentStep[q]++;
+  // Animate
+  if (q === 0) animBus(s);
+  if (q === 1) animWater(s);
+  if (q === 2) animBird(s);
+  if (currentStep[q] >= maxSteps) {
+    document.getElementById('nextBtn' + q).disabled = true;
+    document.getElementById('nextBtn' + q).textContent = '✅ 讲完啦！';
+  }
+}
+
+function resetQ(q) {
+  currentStep[q] = 0;
+  document.querySelectorAll(`#steps${q} .step`).forEach(s => s.classList.remove('visible'));
+  const btn = document.getElementById('nextBtn' + q);
+  btn.disabled = false; btn.textContent = '👉 下一步';
+  if (q === 0) { document.getElementById('bus-counter').textContent = '车上：？人'; }
+  if (q === 1) { document.getElementById('water').style.height = '14%'; document.getElementById('water-label').textContent = '剩 2千克'; }
+  if (q === 2) { ['tl0','tl1','tl2','tl3'].forEach(id => document.getElementById(id).textContent = '?只'); }
+}
+
+// Bus animation
+function animBus(step) {
+  const c = document.getElementById('bus-counter');
+  if (step === 0) c.textContent = '车上：5人（第三站前）';
+  if (step === 1) c.textContent = '车上：5+5=10人（第二站前）';
+  if (step === 2) c.textContent = '车上：10+10=20人 🎉';
+}
+
+// Water animation
+function animWater(step) {
+  const w = document.getElementById('water');
+  const l = document.getElementById('water-label');
+  if (step === 0) { w.style.height = '25%'; l.textContent = '7千克（倒第三次前）'; }
+  if (step === 1) { w.style.height = '50%'; l.textContent = '14千克（倒第二次前）'; }
+  if (step === 2) { w.style.height = '100%'; l.textContent = '28千克 🎉 原来这么多！'; }
+}
+
+// Bird animation
+function animBird(step) {
+  const tl = [document.getElementById('tl0'), document.getElementById('tl1'), document.getElementById('tl2'), document.getElementById('tl3')];
+  if (step === 0) { tl.forEach(t => t.textContent = '10只'); }
+  if (step === 1) { tl[2].textContent = '10只 → 飞走5，来4'; }
+  if (step === 2) {
+    tl[0].textContent = '13只'; tl[1].textContent = '9只';
+    tl[2].textContent = '11只 🎉'; tl[3].textContent = '7只';
+  }
+}
+
+// Check answers
+function checkAns(q) {
+  const input = document.getElementById('ans' + q);
+  const fb = document.getElementById('fb' + q);
+  const val = parseInt(input.value);
+  if (isNaN(val)) { fb.textContent = '请输入数字哦 😊'; fb.className = 'feedback wrong'; return; }
+  if (val === answers[q]) {
+    fb.textContent = '⭐ 太棒了，答对啦！🎉🎉🎉';
+    fb.className = 'feedback correct';
+    celebrate();
+  } else {
+    fb.textContent = '再想想哦 💪 从最后往前推！';
+    fb.className = 'feedback wrong';
+  }
+}
+
+function celebrate() {
+  const el = document.getElementById('celebrate');
+  el.innerHTML = '';
+  el.classList.add('show');
+  const emojis = ['⭐','🎉','🌟','💫','🎊','✨','🥳','🏆'];
+  for (let i = 0; i < 30; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    c.style.left = Math.random() * 100 + '%';
+    c.style.animationDelay = Math.random() * 0.8 + 's';
+    el.appendChild(c);
+  }
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
