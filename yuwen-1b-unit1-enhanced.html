@@ -263,13 +263,13 @@ function openModal(ch,mode){
   hw=HanziWriter.create(target,ch,{width:bw,height:bw,padding:8,showOutline:true,strokeAnimationSpeed:1,delayBetweenStrokes:300,
     charDataLoader:function(c,onLoad){fetch('https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/'+c+'.json').then(function(r){return r.json()}).then(onLoad)}
   });
-  if(mode==='stroke')setTimeout(function(){hw.animateCharacter()},400);
+  if(mode==='stroke')setTimeout(function(){playStrokeWithVoice(ch)},400);
   else if(mode==='quiz')setTimeout(function(){startQuiz()},400);
 }
 function doAnimate(){
   if(hw){
     document.getElementById('modeHint').textContent='👀 看老师写';
-    hw.hideCharacter();hw.animateCharacter();
+    playStrokeWithVoice(currentChar);
   }
 }
 function doQuiz(){
@@ -288,7 +288,46 @@ function showReward(){
   document.body.appendChild(d);
   setTimeout(function(){d.remove()},1500);
 }
+var strokeAnimStop=false;
+function speakCN(text){
+  return new Promise(function(resolve){
+    var u=new SpeechSynthesisUtterance(text);
+    u.lang='zh-CN';u.rate=0.85;
+    u.onend=resolve;u.onerror=resolve;
+    speechSynthesis.speak(u);
+  });
+}
+function delay(ms){return new Promise(function(r){setTimeout(r,ms)})}
+var STROKE_NUM=['一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十'];
+async function playStrokeWithVoice(ch){
+  if(!hw)return;
+  strokeAnimStop=false;
+  // Get total strokes by loading char data
+  var resp=await fetch('https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/'+ch+'.json');
+  var data=await resp.json();
+  var total=data.strokes.length;
+  // Step 1: announce
+  speechSynthesis.cancel();
+  await speakCN(ch+'，一共'+total+'笔');
+  if(strokeAnimStop)return;
+  await delay(400);
+  // Step 2-3: stroke by stroke
+  hw.hideCharacter();
+  for(var i=0;i<total;i++){
+    if(strokeAnimStop)return;
+    speakCN('第'+STROKE_NUM[i]+'笔');
+    hw.showStroke(i);
+    await delay(700);
+    if(strokeAnimStop)return;
+  }
+  // Step 4: done
+  if(strokeAnimStop)return;
+  await delay(300);
+  await speakCN(ch+'，写完了！真棒！');
+}
 function closeModal(){
+  strokeAnimStop=true;
+  speechSynthesis.cancel();
   document.getElementById('modalOverlay').classList.remove('show');
   if(hw){hw=null}
   document.getElementById('hw-target').innerHTML='';
