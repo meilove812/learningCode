@@ -207,6 +207,8 @@ function typewrite(element, text, speed) {
     element.classList.add('tw-cursor');
     let i = 0;
     let skipped = false;
+    let textDone = false;
+    let ttsDone = false;
 
     // Strip emoji for cleaner TTS
     const ttsText = text.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '').trim();
@@ -223,19 +225,28 @@ function typewrite(element, text, speed) {
       charDelay = Math.max(estimatedDuration / text.length, 60);
     }
     
+    function checkAllDone() {
+      if (textDone && ttsDone) resolve();
+    }
+
     // Start TTS
     if ('speechSynthesis' in window && ttsText && audioUnlocked) {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(ttsText);
       u.lang = 'zh-CN'; u.rate = 1.0;
+      u.onend = function(){ ttsDone = true; checkAllDone(); };
+      u.onerror = function(){ ttsDone = true; checkAllDone(); };
       speechSynthesis.speak(u);
+    } else {
+      ttsDone = true; // no TTS, mark done
     }
 
     function finish() {
       element.textContent = text;
       element.classList.remove('tw-cursor');
       twActive = null;
-      resolve();
+      textDone = true;
+      checkAllDone();
     }
 
     // Click to skip
@@ -243,6 +254,8 @@ function typewrite(element, text, speed) {
       if (!skipped) {
         skipped = true;
         clearInterval(timer);
+        speechSynthesis.cancel();
+        ttsDone = true;
         finish();
         element.removeEventListener('click', skipHandler);
       }
@@ -258,7 +271,8 @@ function typewrite(element, text, speed) {
         element.classList.remove('tw-cursor');
         element.removeEventListener('click', skipHandler);
         twActive = null;
-        resolve();
+        textDone = true;
+        checkAllDone();
       }
     }, charDelay);
 
