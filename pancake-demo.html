@@ -124,11 +124,11 @@ h1 { font-size: 26px; color: #5d4037; margin: 10px 0; text-align: center; }
 }
 .done-item {
   width: 90px; height: 30px; border-radius: 15px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: bold; color: #fff; opacity: 0;
-  transition: all 0.5s ease; transform: scale(0.5);
+  display: none; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: bold; color: #fff;
+  transition: all 0.5s ease; transform: scale(0.5); opacity: 0;
 }
-.done-item.show { opacity: 1; transform: scale(1); }
+.done-item.show { display: flex; opacity: 1; transform: scale(1); }
 .done-item.c1 { background: #c62828; }
 .done-item.c2 { background: #1565c0; }
 .done-item.c3 { background: #2e7d32; }
@@ -579,7 +579,13 @@ function animateStep(step,narrIdx) {
     const el=document.getElementById('w'+i);
     if(el) el.style.display=step.wait&&step.wait.includes(i)?'flex':'none';
   }
-  if(step.done) step.done.forEach(i=>{ const el=document.getElementById('d'+i); if(el)el.classList.add('show'); });
+  // done area: show only items in step.done (cumulative from step data)
+  for(let i=0;i<p.count;i++){
+    const el=document.getElementById('d'+i);
+    if(el){
+      if(step.done&&step.done.includes(i)) el.classList.add('show');
+    }
+  }
   if(narrIdx>=0&&narrIdx<d.narration.length) { highlightN(narrIdx); speak(d.narration[narrIdx].text); }
 }
 
