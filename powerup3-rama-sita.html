@@ -108,13 +108,46 @@ footer { text-align:center; padding:24px 16px 80px; color:#aaa; font-size:13px; 
     </div>
 
     <div style="background:#fff;border-radius:12px;padding:14px;">
-      <div style="font-weight:700;color:#6c5ce7;font-size:1.05em;margin-bottom:8px;cursor:pointer" onclick="speak('How do you think the characters feel in these parts of the story?','en-US',0.75)">🔊 Q3: How do the characters feel? 角色的感受</div>
-      <div style="color:#636e72;font-size:.9em;margin-bottom:10px">在故事的这些部分，你觉得角色们有什么感受？</div>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <div style="background:#fab1a0;border-radius:10px;padding:10px;cursor:pointer" onclick="speak('When the King tells Rama to leave, Rama feels sad but he respects his father.','en-US',0.75,()=>{setTimeout(()=>speak('国王让罗摩离开时，罗摩很伤心，但他尊重父亲','zh-CN',0.8),800)})">😢 <b>King tells Rama to leave</b><br><span style="font-size:.85em">国王让罗摩离开 → Rama feels <b>sad</b> 伤心</span></div>
-        <div style="background:#fab1a0;border-radius:10px;padding:10px;cursor:pointer" onclick="speak('When Ravana takes Sita, Rama feels worried and angry.','en-US',0.75,()=>{setTimeout(()=>speak('罗波那拐走悉多时，罗摩又担心又生气','zh-CN',0.8),800)})">😡 <b>Ravana takes Sita</b><br><span style="font-size:.85em">罗波那拐走悉多 → Rama feels <b>worried and angry</b> 担心和生气</span></div>
-        <div style="background:#55efc4;border-radius:10px;padding:10px;cursor:pointer" onclick="speak('When Hanuman finds Sita, Rama feels happy and hopeful.','en-US',0.75,()=>{setTimeout(()=>speak('哈努曼找到悉多时，罗摩很高兴，充满希望','zh-CN',0.8),800)})">😊 <b>Hanuman finds Sita</b><br><span style="font-size:.85em">哈努曼找到悉多 → Rama feels <b>happy and hopeful</b> 高兴和希望</span></div>
-        <div style="background:#55efc4;border-radius:10px;padding:10px;cursor:pointer" onclick="speak('When Rama and Sita return home, everyone feels excited and joyful.','en-US',0.75,()=>{setTimeout(()=>speak('罗摩和悉多回家时，所有人都很兴奋和喜悦','zh-CN',0.8),800)})">🎉 <b>Rama and Sita return</b><br><span style="font-size:.85em">罗摩和悉多回家 → Everyone feels <b>excited and joyful</b> 兴奋和喜悦</span></div>
+      <div style="font-weight:700;color:#6c5ce7;font-size:1.05em;margin-bottom:6px;cursor:pointer" onclick="speak('How do you think the characters feel in these parts of the story?','en-US',0.75)">🔊 3. How do you think the characters feel in these parts of the story?</div>
+      <div style="color:#636e72;font-size:.9em;margin-bottom:12px">你觉得在故事的这些部分，角色们有什么感受？</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+
+        <div style="background:#ffeaa7;border-radius:10px;padding:12px;">
+          <div style="cursor:pointer;font-weight:600" onclick="speak('When the King tells Rama and Sita to leave Ayodhya.','en-US',0.75,()=>{setTimeout(()=>speak('当国王告诉罗摩和悉多离开阿约提亚的时候','zh-CN',0.8),800)})">🔊 When the King tells Rama and Sita to leave Ayodhya.</div>
+          <div style="color:#636e72;font-size:.85em;margin:4px 0">当国王告诉罗摩和悉多离开阿约提亚的时候。</div>
+          <div style="font-size:.8em;color:#999;margin-top:4px">💡 想一想：Rama 和 Sita 会有什么感受？国王呢？</div>
+          <details style="margin-top:6px"><summary style="font-size:.85em;color:#6c5ce7;cursor:pointer">👁 点击看参考答案</summary>
+            <div style="margin-top:6px;padding:8px;background:#fff9db;border-radius:8px;font-size:.9em;cursor:pointer" onclick="speak('Rama feels sad but he respects his father. Sita feels sad too. The King feels sorry.','en-US',0.75,()=>{setTimeout(()=>speak('罗摩很伤心但他尊重父亲。悉多也很伤心。国王觉得很抱歉。','zh-CN',0.8),800)})">Rama feels <b>sad</b> but he respects his father. Sita feels <b>sad</b> too. The King feels <b>sorry</b>.<br>罗摩很<b>伤心</b>但尊重父亲。悉多也很<b>伤心</b>。国王觉得很<b>抱歉</b>。</div>
+          </details>
+        </div>
+
+        <div style="background:#fab1a0;border-radius:10px;padding:12px;">
+          <div style="cursor:pointer;font-weight:600" onclick="speak('When Ravana takes Sita.','en-US',0.75,()=>{setTimeout(()=>speak('当罗波那拐走悉多的时候','zh-CN',0.8),800)})">🔊 When Ravana takes Sita.</div>
+          <div style="color:#636e72;font-size:.85em;margin:4px 0">当罗波那拐走悉多的时候。</div>
+          <div style="font-size:.8em;color:#999;margin-top:4px">💡 想一想：Rama 回来发现 Sita 不见了，他会怎样？Sita 呢？</div>
+          <details style="margin-top:6px"><summary style="font-size:.85em;color:#6c5ce7;cursor:pointer">👁 点击看参考答案</summary>
+            <div style="margin-top:6px;padding:8px;background:#fff9db;border-radius:8px;font-size:.9em;cursor:pointer" onclick="speak('Rama feels worried and angry. Sita feels scared and alone.','en-US',0.75,()=>{setTimeout(()=>speak('罗摩又担心又生气。悉多感到害怕和孤独。','zh-CN',0.8),800)})">Rama feels <b>worried</b> and <b>angry</b>. Sita feels <b>scared</b> and <b>alone</b>.<br>罗摩又<b>担心</b>又<b>生气</b>。悉多感到<b>害怕</b>和<b>孤独</b>。</div>
+          </details>
+        </div>
+
+        <div style="background:#81ecec;border-radius:10px;padding:12px;">
+          <div style="cursor:pointer;font-weight:600" onclick="speak('When Hanuman tells Rama he found Sita.','en-US',0.75,()=>{setTimeout(()=>speak('当哈努曼告诉罗摩他找到了悉多','zh-CN',0.8),800)})">🔊 When Hanuman tells Rama he found Sita.</div>
+          <div style="color:#636e72;font-size:.85em;margin:4px 0">当哈努曼告诉罗摩他找到了悉多。</div>
+          <div style="font-size:.8em;color:#999;margin-top:4px">💡 想一想：Rama 听到这个消息会怎样？</div>
+          <details style="margin-top:6px"><summary style="font-size:.85em;color:#6c5ce7;cursor:pointer">👁 点击看参考答案</summary>
+            <div style="margin-top:6px;padding:8px;background:#fff9db;border-radius:8px;font-size:.9em;cursor:pointer" onclick="speak('Rama feels happy and hopeful. He wants to rescue Sita right away.','en-US',0.75,()=>{setTimeout(()=>speak('罗摩很高兴，充满希望。他想马上去救悉多。','zh-CN',0.8),800)})">Rama feels <b>happy</b> and <b>hopeful</b>. He wants to rescue Sita right away.<br>罗摩很<b>高兴</b>，充满<b>希望</b>。他想马上去救悉多。</div>
+          </details>
+        </div>
+
+        <div style="background:#55efc4;border-radius:10px;padding:12px;">
+          <div style="cursor:pointer;font-weight:600" onclick="speak('When Rama and Sita return to Ayodhya.','en-US',0.75,()=>{setTimeout(()=>speak('当罗摩和悉多回到阿约提亚','zh-CN',0.8),800)})">🔊 When Rama and Sita return to Ayodhya.</div>
+          <div style="color:#636e72;font-size:.85em;margin:4px 0">当罗摩和悉多回到阿约提亚。</div>
+          <div style="font-size:.8em;color:#999;margin-top:4px">💡 想一想：所有人会有什么感受？</div>
+          <details style="margin-top:6px"><summary style="font-size:.85em;color:#6c5ce7;cursor:pointer">👁 点击看参考答案</summary>
+            <div style="margin-top:6px;padding:8px;background:#fff9db;border-radius:8px;font-size:.9em;cursor:pointer" onclick="speak('Everyone feels excited and joyful. There are flowers and lanterns in the streets. The people cheer loudly.','en-US',0.75,()=>{setTimeout(()=>speak('所有人都很兴奋和喜悦。街上有鲜花和灯笼。人们大声欢呼。','zh-CN',0.8),800)})">Everyone feels <b>excited</b> and <b>joyful</b>. There are flowers and lanterns in the streets. The people cheer loudly.<br>所有人都很<b>兴奋</b>和<b>喜悦</b>。街上有鲜花和灯笼。人们大声欢呼。</div>
+          </details>
+        </div>
+
       </div>
     </div>
   </div>
