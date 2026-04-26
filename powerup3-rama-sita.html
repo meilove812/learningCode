@@ -93,6 +93,32 @@ footer { text-align:center; padding:24px 16px 80px; color:#aaa; font-size:13px; 
 
   <div id="story"></div>
 
+  <div class="discuss-section" style="background:linear-gradient(135deg,#ffeaa7,#fdcb6e);border-radius:16px;padding:20px;margin:28px 0;">
+    <h2 style="text-align:center;font-size:1.15em;color:#2d3436;margin-bottom:16px">💬 Think & Discuss 讨论理解</h2>
+
+    <div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:14px;">
+      <div style="font-weight:700;color:#6c5ce7;font-size:1.05em;margin-bottom:8px;cursor:pointer" onclick="speak('Who do you think is brave, clever, unkind, or helpful in the story?','en-US',0.75)">🔊 Q2: Who do you think is brave / clever / unkind / helpful?</div>
+      <div style="color:#636e72;font-size:.9em;margin-bottom:10px">你觉得故事里谁是勇敢的？谁是聪明的？谁不善良？谁乐于助人？</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:#dfe6fd;border-radius:10px;padding:10px;text-align:center;cursor:pointer" onclick="speak('Rama is brave. He fought to save Sita.','en-US',0.75,()=>{setTimeout(()=>speak('罗摩很勇敢，他战斗救回了悉多','zh-CN',0.8),800)})">🪶 <b>Rama</b><br><span style="font-size:.8em">brave 勇敢</span></div>
+        <div style="background:#dfe6fd;border-radius:10px;padding:10px;text-align:center;cursor:pointer" onclick="speak('Hanuman is helpful. He found Sita and organised the army.','en-US',0.75,()=>{setTimeout(()=>speak('哈努曼乐于助人，他找到悉多并组织了军队','zh-CN',0.8),800)})">🐵 <b>Hanuman</b><br><span style="font-size:.8em">helpful 乐于助人</span></div>
+        <div style="background:#dfe6fd;border-radius:10px;padding:10px;text-align:center;cursor:pointer" onclick="speak('Sita is clever. She dropped her jewellery to show the way.','en-US',0.75,()=>{setTimeout(()=>speak('悉多很聪明，她丢下珠宝指引方向','zh-CN',0.8),800)})">👸 <b>Sita</b><br><span style="font-size:.8em">clever 聪明</span></div>
+        <div style="background:#ffeaa7;border-radius:10px;padding:10px;text-align:center;cursor:pointer" onclick="speak('Ravana is unkind. He tricked Rama and took Sita.','en-US',0.75,()=>{setTimeout(()=>speak('罗波那不善良，他欺骗罗摩拐走了悉多','zh-CN',0.8),800)})">👹 <b>Ravana</b><br><span style="font-size:.8em">unkind 不善良</span></div>
+      </div>
+    </div>
+
+    <div style="background:#fff;border-radius:12px;padding:14px;">
+      <div style="font-weight:700;color:#6c5ce7;font-size:1.05em;margin-bottom:8px;cursor:pointer" onclick="speak('How do you think the characters feel in these parts of the story?','en-US',0.75)">🔊 Q3: How do the characters feel? 角色的感受</div>
+      <div style="color:#636e72;font-size:.9em;margin-bottom:10px">在故事的这些部分，你觉得角色们有什么感受？</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="background:#fab1a0;border-radius:10px;padding:10px;cursor:pointer" onclick="speak('When the King tells Rama to leave, Rama feels sad but he respects his father.','en-US',0.75,()=>{setTimeout(()=>speak('国王让罗摩离开时，罗摩很伤心，但他尊重父亲','zh-CN',0.8),800)})">😢 <b>King tells Rama to leave</b><br><span style="font-size:.85em">国王让罗摩离开 → Rama feels <b>sad</b> 伤心</span></div>
+        <div style="background:#fab1a0;border-radius:10px;padding:10px;cursor:pointer" onclick="speak('When Ravana takes Sita, Rama feels worried and angry.','en-US',0.75,()=>{setTimeout(()=>speak('罗波那拐走悉多时，罗摩又担心又生气','zh-CN',0.8),800)})">😡 <b>Ravana takes Sita</b><br><span style="font-size:.85em">罗波那拐走悉多 → Rama feels <b>worried and angry</b> 担心和生气</span></div>
+        <div style="background:#55efc4;border-radius:10px;padding:10px;cursor:pointer" onclick="speak('When Hanuman finds Sita, Rama feels happy and hopeful.','en-US',0.75,()=>{setTimeout(()=>speak('哈努曼找到悉多时，罗摩很高兴，充满希望','zh-CN',0.8),800)})">😊 <b>Hanuman finds Sita</b><br><span style="font-size:.85em">哈努曼找到悉多 → Rama feels <b>happy and hopeful</b> 高兴和希望</span></div>
+        <div style="background:#55efc4;border-radius:10px;padding:10px;cursor:pointer" onclick="speak('When Rama and Sita return home, everyone feels excited and joyful.','en-US',0.75,()=>{setTimeout(()=>speak('罗摩和悉多回家时，所有人都很兴奋和喜悦','zh-CN',0.8),800)})">🎉 <b>Rama and Sita return</b><br><span style="font-size:.85em">罗摩和悉多回家 → Everyone feels <b>excited and joyful</b> 兴奋和喜悦</span></div>
+      </div>
+    </div>
+  </div>
+
   <div class="quiz-section">
     <h2>📝 Quiz Time!</h2>
     <div id="quiz"></div>
