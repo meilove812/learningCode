@@ -333,7 +333,7 @@ function renderStory() {
     html += `<div class="sentence-card" id="sc-${idx}">
       <div class="en-line" onclick="speakEnSentence(${idx})"><span class="speak-icon">🔊</span>${s.en}</div>
       <div class="hints-line">💡 ${s.hints}</div>
-      <details class="zh-fold"><summary>📖 看中文</summary><div class="zh-text" onclick="speakZh(this.textContent)" style="cursor:pointer">🔊 ${s.cn}</div></details>
+      <details class="zh-fold"><summary>📖 看中文</summary><div class="zh-text" onclick="speakZh(this.textContent)" style="cursor:pointer">${s.cn}</div></details>
     </div>`;
     idx++;
   });
