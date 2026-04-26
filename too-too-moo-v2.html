@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐉 Too-too-moo · Teaching Edition</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(180deg,#e8f5e9 0%,#fff8e1 100%);min-height:100vh;padding:0}
+
+/* Welcome Screen */
+.welcome-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#2e7d32,#66bb6a);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;cursor:pointer}
+.welcome-screen h1{font-size:42px;margin-bottom:10px}
+.welcome-screen h2{font-size:24px;font-weight:400;opacity:0.9}
+.welcome-screen .tap-hint{margin-top:30px;font-size:18px;opacity:0.7;animation:pulse 1.5s infinite}
+.welcome-screen.hidden{display:none}
+
+/* Main content */
+.main-content{display:none;padding:20px;padding-bottom:80px;max-width:800px;margin:0 auto}
+.main-content.visible{display:block}
+
+/* Goal card */
+.goal-card{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-radius:16px;padding:20px;margin:15px 0;text-align:center;cursor:pointer}
+.goal-card .en{font-size:18px;color:#1565c0;font-weight:600}
+.goal-card .cn{font-size:15px;color:#5c6bc0;margin-top:6px}
+
+/* Vocab grid */
+.vocab-section h2{text-align:center;font-size:20px;color:#2e7d32;margin:25px 0 15px}
+.vocab-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.vocab-card{background:#fff;border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.06);transition:all 0.2s;border:2px solid transparent}
+.vocab-card:hover{border-color:#66bb6a;transform:translateY(-2px)}
+.vocab-card:active{transform:scale(0.96)}
+.vocab-card .vw{font-size:17px;font-weight:700;color:#2e7d32}
+.vocab-card .vp{font-size:11px;color:#999;margin:2px 0}
+.vocab-card .vc{font-size:13px;color:#666}
+
+/* Listen story button */
+.listen-story-btn{display:block;width:100%;max-width:400px;margin:25px auto;padding:16px;border:none;border-radius:25px;background:linear-gradient(135deg,#42a5f5,#1e88e5);color:#fff;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(30,136,229,0.3);transition:all 0.2s}
+.listen-story-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(30,136,229,0.4)}
+.listen-story-btn:active{transform:scale(0.98)}
+.listen-story-btn.stop{background:linear-gradient(135deg,#ef5350,#e53935)}
+
+/* Scene title */
+.scene-title{font-size:20px;font-weight:800;color:#5d4037;text-align:center;margin:30px 0 15px;padding:10px;background:#efebe9;border-radius:12px}
+
+/* Sentence card */
+.sentence-card{background:#fff;border-radius:14px;padding:16px 18px;margin:10px 0;box-shadow:0 2px 8px rgba(0,0,0,0.06);border-left:4px solid #42a5f5}
+.sentence-card.playing{border-left-color:#ff9800;background:#fff8e1}
+.sentence-card .en-line{font-size:17px;color:#1565c0;font-weight:600;line-height:1.6;cursor:pointer}
+.sentence-card .en-line:hover{text-decoration:underline}
+.sentence-card .speak-icon{cursor:pointer;font-size:16px;margin-right:6px}
+.sentence-card .hints-line{font-size:13px;color:#888;margin-top:6px;line-height:1.6}
+.sentence-card .zh-fold{margin-top:6px}
+.sentence-card .zh-fold summary{font-size:13px;color:#999;cursor:pointer}
+.sentence-card .zh-fold .zh-text{font-size:15px;color:#555;margin-top:4px}
+
+/* Teacher card */
+.teacher-card{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-left:5px solid #43a047;border-radius:14px;padding:18px 20px;margin:16px 0;font-size:15px;color:#2e7d32;line-height:1.8;cursor:pointer}
+.teacher-card .teacher-label{font-weight:700;font-size:16px;margin-bottom:6px}
+.teacher-card b{background:#fff9c4;padding:1px 4px;border-radius:4px}
+
+/* Quiz inline */
+.quiz-inline{background:#fff;border-radius:14px;padding:18px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,0.06);border-left:4px solid #ff9800}
+.quiz-inline .qi-q{font-size:16px;color:#e65100;font-weight:600;margin-bottom:12px}
+.quiz-inline .qi-opts{display:flex;flex-wrap:wrap;gap:8px}
+.quiz-inline .qi-opt{padding:8px 16px;border:2px solid #e0e0e0;border-radius:12px;cursor:pointer;font-size:14px;transition:all 0.2s;background:#fff}
+.quiz-inline .qi-opt:hover{border-color:#ff9800;background:#fff3e0}
+.quiz-inline .qi-opt.correct{border-color:#43a047;background:#e8f5e9;color:#2e7d32}
+.quiz-inline .qi-opt.wrong{border-color:#e53935;background:#ffebee;color:#c62828}
+.quiz-inline .qi-feedback{margin-top:10px;font-size:14px;font-weight:600}
+
+/* Discussion */
+.discuss-section{margin:30px 0}
+.discuss-section h2{text-align:center;font-size:20px;color:#5d4037;margin-bottom:15px}
+.discuss-card{background:#fff;border-radius:14px;padding:18px;margin:10px 0;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.discuss-card .dq{font-size:16px;color:#1565c0;font-weight:600;margin-bottom:8px}
+.discuss-card details summary{font-size:13px;color:#999;cursor:pointer}
+.discuss-card details .ans{font-size:14px;color:#555;margin-top:6px;line-height:1.6}
+
+/* Final quiz */
+.final-quiz{margin:30px 0}
+.final-quiz h2{text-align:center;font-size:20px;color:#e65100;margin-bottom:15px}
+.fq-card{background:#fff;border-radius:14px;padding:16px 18px;margin:10px 0;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.fq-card .fq-q{font-size:15px;color:#333;font-weight:600;margin-bottom:10px}
+.fq-card .fq-opts{display:flex;flex-wrap:wrap;gap:8px}
+.fq-card .fq-opt{padding:8px 14px;border:2px solid #e0e0e0;border-radius:12px;cursor:pointer;font-size:14px;transition:all 0.2s;background:#fff}
+.fq-card .fq-opt:hover{border-color:#42a5f5;background:#e3f2fd}
+.fq-card .fq-opt.correct{border-color:#43a047;background:#e8f5e9}
+.fq-card .fq-opt.wrong{border-color:#e53935;background:#ffebee}
+.fq-score{text-align:center;font-size:20px;color:#ff6f00;font-weight:700;margin:20px 0;display:none}
+
+/* Teaching play bar */
+.teach-play-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:12px 20px;box-shadow:0 -3px 15px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;gap:12px;z-index:100}
+.tp-btn{padding:12px 28px;border:none;border-radius:25px;font-size:16px;font-weight:700;cursor:pointer;color:#fff;transition:all 0.2s}
+.tp-btn.primary{background:linear-gradient(135deg,#43a047,#66bb6a)}
+.tp-btn.stop{background:linear-gradient(135deg,#ef5350,#e53935)}
+.tp-progress{font-size:14px;color:#666;min-width:80px;text-align:center}
+
+/* Footer */
+.footer{text-align:center;padding:30px 20px 20px;font-size:12px;color:#aaa}
+
+@keyframes pulse{0%,100%{opacity:0.7}50%{opacity:1}}
+@media(max-width:500px){
+  .vocab-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+  .vocab-card{padding:10px 6px}
+  .vocab-card .vw{font-size:15px}
+  .sentence-card .en-line{font-size:15px}
+  .welcome-screen h1{font-size:32px}
+  .welcome-screen h2{font-size:18px}
+}
+</style>
+</head>
+<body>
+
+<!-- Welcome Screen -->
+<div class="welcome-screen" id="welcomeScreen" onclick="startLesson()">
+  <h1>🐉 Too-too-moo</h1>
+  <h2>开始学习 🎯</h2>
+  <div class="tap-hint">👆 点击开始</div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="mainContent">
+
+  <!-- Goal -->
+  <div class="goal-card" id="goalCard" onclick="speakGoal()">
+    <div class="en">🎯 Today we'll read a story about a girl and a dragon</div>
+    <div class="cn">今天我们读一个女孩和龙的故事</div>
+  </div>
+
+  <!-- Vocab -->
+  <div class="vocab-section">
+    <h2>📖 生词卡片</h2>
+    <div class="vocab-grid" id="vocabGrid"></div>
+  </div>
+
+  <!-- Listen Story -->
+  <button class="listen-story-btn" id="listenStoryBtn" onclick="toggleListenStory()">🎧 先听一遍故事</button>
+
+  <!-- Story with teaching -->
+  <div id="storyArea"></div>
+
+  <!-- Discussion -->
+  <div class="discuss-section">
+    <h2>💬 讨论题</h2>
+    <div class="discuss-card">
+      <div class="dq">Q: Do you think the dragon is greedy or hungry? Why?</div>
+      <details><summary>📖 参考答案</summary><div class="ans">The dragon is hungry, not greedy. He only comes when he has a stomach-ache and is hungry. When there is porridge, he takes it and leaves. He doesn't take more than he needs.</div></details>
+    </div>
+    <div class="discuss-card">
+      <div class="dq">Q: Is Too-too-moo a good friend? Why?</div>
+      <details><summary>📖 参考答案</summary><div class="ans">Yes, Too-too-moo is a good friend. Even when the dragon was angry and pushed her, she still understood that the dragon was hungry, not greedy. She leaves porridge in the forest for the dragon, showing she still cares.</div></details>
+    </div>
+  </div>
+
+  <!-- Final Quiz -->
+  <div class="final-quiz">
+    <h2>✏️ 最终测验</h2>
+    <div id="finalQuizArea"></div>
+    <div class="fq-score" id="fqScore"></div>
+  </div>
+
+  <!-- Teaching Play -->
+  <div class="teach-play-bar">
+    <button class="tp-btn primary" id="teachPlayBtn" onclick="toggleTeachPlay()">▶️ 教学模式播放</button>
+    <div class="tp-progress" id="teachProgress"></div>
+  </div>
+
+  <div class="footer">🦎 Coco Learning Park · Power Up 3 · Too-too-moo (Teaching Edition)</div>
+</div>
+
+<script>
+// ===== Data =====
+const story = [
+  { en: "Too-too-moo and her mother were poor.", cn: "Too-too-moo 和她的妈妈很穷。", hints: "🏠 poor = 穷", scene: 1 },
+  { en: "They ate rice every day.", cn: "她们每天吃米饭。", hints: "🍚 rice = 米饭", scene: 1 },
+  { en: "Her mother made porridge for the Komodo dragon every morning.", cn: "她妈妈每天早上给科莫多龙做粥。", hints: "🥣 porridge = 粥 · every morning = 每天早上", scene: 1 },
+  { en: "The dragon ate all the porridge.", cn: "龙把粥全吃光了。", hints: "🐉 all = 全部", scene: 1 },
+  { en: "\"The dragon is my friend,\" said Too-too-moo.", cn: "\"龙是我的朋友,\" Too-too-moo 说。", hints: "💚 friend = 朋友", scene: 1 },
+  { en: "\"He is the biggest dragon in the world!\"", cn: "\"他是世界上最大的龙！\"", hints: "🌍 biggest = 最大的 · world = 世界", scene: 1 },
+  { en: "\"Be careful!\" said her mother. \"He is a wild animal.\"", cn: "\"小心！\" 妈妈说，\"他是一种野生动物。\"", hints: "⚠️ careful = 小心 · wild = 野生的", scene: 1 },
+  { en: "Her mother went to get firewood to sell at the market.", cn: "妈妈去捡柴火到市场上卖。", hints: "🪵 firewood = 柴火 · 🏪 market = 市场", scene: 1 },
+
+  { en: "Knock, knock, knock! Someone was at the door.", cn: "咚咚咚！有人在敲门。", hints: "🚪 knock = 敲门", scene: 2 },
+  { en: "It was the dragon!", cn: "是那条龙！", hints: "🐉", scene: 2 },
+  { en: "\"I want my porridge!\" roared the dragon.", cn: "\"我要我的粥！\" 龙吼叫道。", hints: "🔊 roared = 吼叫", scene: 2 },
+  { en: "Too-too-moo gave the porridge to the dragon.", cn: "Too-too-moo 把粥给了龙。", hints: "🤲 gave = 给了 (give的过去式)", scene: 2 },
+  { en: "The dragon roared and went away with the porridge.", cn: "龙吼了一声，带着粥走了。", hints: "👋 went away = 走了", scene: 2 },
+
+  { en: "The weather got very hot.", cn: "天气变得非常热。", hints: "🌡️ weather = 天气 · hot = 热", scene: 3 },
+  { en: "Nobody wanted to buy firewood.", cn: "没人想买柴火了。", hints: "🚫 nobody = 没有人", scene: 3 },
+  { en: "The family got poorer and poorer.", cn: "这家人越来越穷。", hints: "📉 poorer and poorer = 越来越穷", scene: 3 },
+  { en: "There was no food.", cn: "没有食物了。", hints: "😢 no food = 没有食物", scene: 3 },
+  { en: "But the dragon came back. He had a stomach-ache. He was hungry.", cn: "但龙又回来了。它肚子疼。它很饿。", hints: "🤢 stomach-ache = 肚子疼 · 😫 hungry = 饿", scene: 3 },
+  { en: "\"There isn't any porridge,\" said Too-too-moo.", cn: "\"没有粥了,\" Too-too-moo 说。", hints: "🥣 isn't any = 没有任何", scene: 3 },
+  { en: "The dragon was angry! He pushed Too-too-moo.", cn: "龙生气了！它推了 Too-too-moo。", hints: "😡 angry = 生气 · pushed = 推了", scene: 3 },
+  { en: "He showed his terrible teeth and roared.", cn: "它露出可怕的牙齿，大声吼叫。", hints: "😱 terrible = 可怕的 · 🦷 teeth = 牙齿", scene: 3 },
+  { en: "\"Too-too-moo, you aren't my friend any more!\"", cn: "\"Too-too-moo，你不再是我的朋友了！\"", hints: "💔 not...any more = 不再", scene: 3 },
+
+  { en: "The weather got cold again.", cn: "天气又变冷了。", hints: "❄️ cold = 冷 · again = 又", scene: 4 },
+  { en: "People came to buy firewood.", cn: "人们来买柴火了。", hints: "👥 people = 人们", scene: 4 },
+  { en: "Her mother brought home rice and porridge.", cn: "妈妈带回了米和粥。", hints: "🏠 brought = 带回 (bring的过去式)", scene: 4 },
+  { en: "\"That greedy dragon isn't coming back. Good!\" said her mother.", cn: "\"那条贪吃的龙不来了。太好了！\" 妈妈说。", hints: "🐷 greedy = 贪吃的", scene: 4 },
+  { en: "\"He wasn't greedy. He was hungry,\" said Too-too-moo.", cn: "\"它不是贪吃。它是饿了,\" Too-too-moo 说。", hints: "💡 wasn't = 不是 (过去式)", scene: 4 },
+  { en: "\"He is a dangerous wild animal. He should stay in the forest,\" said her mother.", cn: "\"它是危险的野生动物。它应该待在森林里,\" 妈妈说。", hints: "⚠️ dangerous = 危险的 · 🌲 forest = 森林", scene: 4 },
+  { en: "The dragon never came back.", cn: "龙再也没有回来。", hints: "😢 never = 从不；再也不", scene: 4 },
+  { en: "But Too-too-moo often left a bowl of porridge in the forest for the dragon.", cn: "但 Too-too-moo 经常在森林里放一碗粥给龙吃。", hints: "🥣 often = 经常 · 🥣 bowl = 碗", scene: 4 },
+];
+
+const vocab = [
+  { w:'poor', p:'/pʊə/', c:'穷' },
+  { w:'porridge', p:'/ˈpɒrɪdʒ/', c:'粥' },
+  { w:'dragon', p:'/ˈdræɡən/', c:'龙' },
+  { w:'careful', p:'/ˈkeəfl/', c:'小心' },
+  { w:'firewood', p:'/ˈfaɪəwʊd/', c:'柴火' },
+  { w:'market', p:'/ˈmɑːkɪt/', c:'市场' },
+  { w:'roared', p:'/rɔːd/', c:'吼叫' },
+  { w:'weather', p:'/ˈweðə/', c:'天气' },
+  { w:'hungry', p:'/ˈhʌŋɡri/', c:'饿' },
+  { w:'angry', p:'/ˈæŋɡri/', c:'生气' },
+  { w:'terrible', p:'/ˈterəbl/', c:'可怕的' },
+  { w:'greedy', p:'/ˈɡriːdi/', c:'贪吃的' },
+  { w:'dangerous', p:'/ˈdeɪndʒərəs/', c:'危险的' },
+  { w:'forest', p:'/ˈfɒrɪst/', c:'森林' },
+  { w:'bowl', p:'/bəʊl/', c:'碗' },
+];
+
+const sceneNames = {
+  1: '🎬 SCENE ONE · 第一幕',
+  2: '🎬 SCENE TWO · 第二幕',
+  3: '🎬 SCENE THREE · 第三幕',
+  4: '🎬 SCENE FOUR · 第四幕',
+};
+
+const teacherSays = {
+  1: '💬 老师说：Too-too-moo 和妈妈很 <b>poor</b>（穷），每天吃 <b>rice</b>（米饭）。妈妈每天还要给一条大 <b>dragon</b>（龙）做 <b>porridge</b>（粥）！这条龙是 Too-too-moo 的 <b>friend</b>（朋友），但妈妈说要 <b>careful</b>（小心），因为龙是 <b>wild animal</b>（野生动物）。妈妈出门去卖 <b>firewood</b>（柴火）了...',
+  2: '💬 老师说：咚咚咚！龙来了！它 <b>roared</b>（吼叫）说要粥！Too-too-moo 把粥给了龙，龙就带着粥走了。你觉得龙是好的还是坏的？',
+  3: '💬 老师说：天气变 <b>hot</b>（热）了，没人买 firewood 了，家里越来越 <b>poor</b>，没有 <b>food</b> 了！但龙又来了，它 <b>hungry</b>（饿）还 <b>stomach-ache</b>（肚子疼）。可是没有 porridge 了！龙 <b>angry</b>（生气）了，推了 Too-too-moo，露出 <b>terrible teeth</b>（可怕的牙齿）说："你不再是我的朋友了！" 好可怕...',
+  4: '💬 老师说：天气变 <b>cold</b>（冷）了，人们又来买柴火了。妈妈带回了 rice 和 porridge。妈妈说那条 <b>greedy</b>（贪吃的）龙不来了，太好了！但 Too-too-moo 说："它不是 greedy，它是 <b>hungry</b>。" 龙再也没回来...但 Too-too-moo <b>often</b>（经常）在 <b>forest</b>（森林）里放一 <b>bowl</b>（碗）粥给龙。好感人对不对？',
+};
+
+const teacherSaysText = {
+  1: 'Too-too-moo 和妈妈很 poor 穷，每天吃 rice 米饭。妈妈每天还要给一条大 dragon 龙做 porridge 粥！这条龙是 Too-too-moo 的 friend 朋友，但妈妈说要 careful 小心，因为龙是 wild animal 野生动物。妈妈出门去卖 firewood 柴火了。',
+  2: '咚咚咚！龙来了！它 roared 吼叫说要粥！Too-too-moo 把粥给了龙，龙就带着粥走了。你觉得龙是好的还是坏的？',
+  3: '天气变 hot 热了，没人买 firewood 了，家里越来越 poor，没有 food 了！但龙又来了，它 hungry 饿还 stomach-ache 肚子疼。可是没有 porridge 了！龙 angry 生气了，推了 Too-too-moo，露出 terrible teeth 可怕的牙齿说：你不再是我的朋友了！好可怕。',
+  4: '天气变 cold 冷了，人们又来买柴火了。妈妈带回了 rice 和 porridge。妈妈说那条 greedy 贪吃的龙不来了，太好了！但 Too-too-moo 说：它不是 greedy，它是 hungry。龙再也没回来。但 Too-too-moo often 经常在 forest 森林里放一 bowl 碗粥给龙。好感人对不对？',
+};
+
+const sceneQuizzes = {
+  1: { q: "❓ Who is Too-too-moo's friend?", opts: ["the dragon","her mother","the market man"], ans: 0 },
+  2: { q: "❓ What did the dragon want?", opts: ["rice","porridge","firewood"], ans: 1 },
+  3: { q: "❓ Why was the dragon angry?", opts: ["no friend","no porridge","no forest"], ans: 1 },
+  4: { q: "❓ What did Too-too-moo leave in the forest?", opts: ["rice","a bowl of porridge","firewood"], ans: 1 },
+};
+
+const finalQuizzes = [
+  { q: "What did Too-too-moo's family eat every day?", opts: ["porridge","rice","firewood"], ans: 1 },
+  { q: "What did the mother sell at the market?", opts: ["rice","porridge","firewood"], ans: 2 },
+  { q: "Why did nobody buy firewood?", opts: ["The weather was cold","The weather was hot","The dragon ate it"], ans: 1 },
+  { q: "What did the dragon show when he was angry?", opts: ["his terrible teeth","his big tail","his red eyes"], ans: 0 },
+  { q: "What did Too-too-moo leave in the forest?", opts: ["rice","firewood","a bowl of porridge"], ans: 2 },
+];
+
+// ===== Speech =====
+function speak(text, lang, rate, cb) {
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang || 'en-US';
+  u.rate = rate || 0.75;
+  u.pitch = 1.0;
+  if (cb) u.onend = cb;
+  u.onerror = () => { if (cb) cb(); };
+  window.speechSynthesis.speak(u);
+}
+
+function speakEn(text, cb) { speak(text, 'en-US', 0.75, cb); }
+function speakZh(text, cb) { speak(text, 'zh-CN', 0.8, cb); }
+function speakWord(text) { speak(text, 'en-US', 0.7); }
+
+// ===== Welcome =====
+function startLesson() {
+  document.getElementById('welcomeScreen').classList.add('hidden');
+  document.getElementById('mainContent').classList.add('visible');
+  // Auto-speak goal
+  setTimeout(() => speakEn("Today we'll read a story about a girl and a dragon"), 500);
+}
+
+function speakGoal() {
+  speakEn("Today we'll read a story about a girl and a dragon", () => {
+    setTimeout(() => speakZh("今天我们读一个女孩和龙的故事"), 500);
+  });
+}
+
+// ===== Render Vocab =====
+function renderVocab() {
+  document.getElementById('vocabGrid').innerHTML = vocab.map(v =>
+    `<div class="vocab-card" onclick="speakWord('${v.w}')">
+      <div class="vw">${v.w}</div>
+      <div class="vp">${v.p}</div>
+      <div class="vc">${v.c}</div>
+    </div>`
+  ).join('');
+}
+
+// ===== Render Story =====
+function renderStory() {
+  const area = document.getElementById('storyArea');
+  let html = '';
+  let currentScene = 0;
+  let idx = 0;
+
+  story.forEach((s, i) => {
+    if (s.scene !== currentScene) {
+      // Close previous scene with teacher + quiz
+      if (currentScene > 0) {
+        html += `<div class="teacher-card" onclick="speakZh(teacherSaysText[${currentScene}])">
+          <div class="teacher-label">💬 老师说</div>
+          ${teacherSays[currentScene]}
+        </div>`;
+        const q = sceneQuizzes[currentScene];
+        html += `<div class="quiz-inline" id="sq-${currentScene}">
+          <div class="qi-q">${q.q}</div>
+          <div class="qi-opts">
+            ${q.opts.map((o,oi) => `<div class="qi-opt" onclick="checkSceneQuiz(${currentScene},${oi})">${o}</div>`).join('')}
+          </div>
+          <div class="qi-feedback"></div>
+        </div>`;
+      }
+      currentScene = s.scene;
+      html += `<div class="scene-title">${sceneNames[s.scene]}</div>`;
+    }
+
+    html += `<div class="sentence-card" id="sc-${idx}">
+      <div class="en-line" onclick="speakEnSentence(${idx})"><span class="speak-icon">🔊</span>${s.en}</div>
+      <div class="hints-line">💡 ${s.hints}</div>
+      <details class="zh-fold"><summary>📖 看中文</summary><div class="zh-text">${s.cn}</div></details>
+    </div>`;
+    idx++;
+  });
+
+  // Last scene teacher + quiz
+  if (currentScene > 0) {
+    html += `<div class="teacher-card" onclick="speakZh(teacherSaysText[${currentScene}])">
+      <div class="teacher-label">💬 老师说</div>
+      ${teacherSays[currentScene]}
+    </div>`;
+    const q = sceneQuizzes[currentScene];
+    html += `<div class="quiz-inline" id="sq-${currentScene}">
+      <div class="qi-q">${q.q}</div>
+      <div class="qi-opts">
+        ${q.opts.map((o,oi) => `<div class="qi-opt" onclick="checkSceneQuiz(${currentScene},${oi})">${o}</div>`).join('')}
+      </div>
+      <div class="qi-feedback"></div>
+    </div>`;
+  }
+
+  area.innerHTML = html;
+}
+
+function speakEnSentence(idx) {
+  document.querySelectorAll('.sentence-card').forEach(c => c.classList.remove('playing'));
+  document.getElementById('sc-'+idx).classList.add('playing');
+  speakEn(story[idx].en, () => {
+    document.getElementById('sc-'+idx).classList.remove('playing');
+  });
+}
+
+function checkSceneQuiz(scene, chosen) {
+  const q = sceneQuizzes[scene];
+  const container = document.getElementById('sq-'+scene);
+  const opts = container.querySelectorAll('.qi-opt');
+  opts.forEach((o,i) => {
+    o.style.pointerEvents = 'none';
+    if (i === q.ans) o.classList.add('correct');
+    else if (i === chosen && chosen !== q.ans) o.classList.add('wrong');
+  });
+  const fb = container.querySelector('.qi-feedback');
+  fb.textContent = chosen === q.ans ? '⭐ Correct!' : '❌ The answer is: ' + q.opts[q.ans];
+  fb.style.color = chosen === q.ans ? '#2e7d32' : '#c62828';
+}
+
+// ===== Final Quiz =====
+let fqCorrect = 0;
+let fqAnswered = 0;
+
+function renderFinalQuiz() {
+  document.getElementById('finalQuizArea').innerHTML = finalQuizzes.map((q,qi) =>
+    `<div class="fq-card" id="fq-${qi}">
+      <div class="fq-q">${qi+1}. ${q.q}</div>
+      <div class="fq-opts">
+        ${q.opts.map((o,oi) => `<div class="fq-opt" onclick="checkFinal(${qi},${oi})">${o}</div>`).join('')}
+      </div>
+    </div>`
+  ).join('');
+}
+
+function checkFinal(qi, chosen) {
+  const q = finalQuizzes[qi];
+  const card = document.getElementById('fq-'+qi);
+  const opts = card.querySelectorAll('.fq-opt');
+  opts.forEach((o,i) => {
+    o.style.pointerEvents = 'none';
+    if (i === q.ans) o.classList.add('correct');
+    else if (i === chosen && chosen !== q.ans) o.classList.add('wrong');
+  });
+  fqAnswered++;
+  if (chosen === q.ans) fqCorrect++;
+  if (fqAnswered === finalQuizzes.length) {
+    const el = document.getElementById('fqScore');
+    el.textContent = `🎉 得分：${fqCorrect} / ${finalQuizzes.length}`;
+    el.style.display = 'block';
+  }
+}
+
+// ===== Listen Story (English only) =====
+let listeningStory = false;
+let listenIdx = 0;
+
+function toggleListenStory() {
+  if (listeningStory) { stopListenStory(); return; }
+  listeningStory = true; listenIdx = 0;
+  document.getElementById('listenStoryBtn').textContent = '⏹ 停止播放';
+  document.getElementById('listenStoryBtn').classList.add('stop');
+  listenNext();
+}
+
+function listenNext() {
+  if (!listeningStory || listenIdx >= story.length) { stopListenStory(); return; }
+  const s = story[listenIdx];
+  document.querySelectorAll('.sentence-card').forEach(c => c.classList.remove('playing'));
+  const card = document.getElementById('sc-'+listenIdx);
+  if (card) { card.classList.add('playing'); card.scrollIntoView({behavior:'smooth',block:'center'}); }
+  speakEn(s.en, () => {
+    if (card) card.classList.remove('playing');
+    listenIdx++;
+    if (listeningStory) setTimeout(listenNext, 300);
+  });
+}
+
+function stopListenStory() {
+  listeningStory = false;
+  window.speechSynthesis.cancel();
+  document.querySelectorAll('.sentence-card').forEach(c => c.classList.remove('playing'));
+  document.getElementById('listenStoryBtn').textContent = '🎧 先听一遍故事';
+  document.getElementById('listenStoryBtn').classList.remove('stop');
+}
+
+// ===== Teaching Mode Play =====
+let teachPlaying = false;
+let teachIdx = 0;
+let teachCurrentScene = 0;
+
+function toggleTeachPlay() {
+  if (teachPlaying) { stopTeachPlay(); return; }
+  teachPlaying = true; teachIdx = 0; teachCurrentScene = 1;
+  document.getElementById('teachPlayBtn').textContent = '⏹ 停止';
+  document.getElementById('teachPlayBtn').classList.remove('primary');
+  document.getElementById('teachPlayBtn').classList.add('stop');
+  teachNext();
+}
+
+function teachNext() {
+  if (!teachPlaying || teachIdx >= story.length) { stopTeachPlay(); return; }
+  const s = story[teachIdx];
+  document.getElementById('teachProgress').textContent = `${teachIdx+1} / ${story.length}`;
+
+  // Check if scene changed → read teacher says
+  if (teachIdx > 0 && s.scene !== teachCurrentScene) {
+    const prevScene = teachCurrentScene;
+    teachCurrentScene = s.scene;
+    speakZh(teacherSaysText[prevScene], () => {
+      if (teachPlaying) setTimeout(teachNext, 800);
+    });
+    return;
+  }
+  teachCurrentScene = s.scene;
+
+  document.querySelectorAll('.sentence-card').forEach(c => c.classList.remove('playing'));
+  const card = document.getElementById('sc-'+teachIdx);
+  if (card) { card.classList.add('playing'); card.scrollIntoView({behavior:'smooth',block:'center'}); }
+
+  speakEn(s.en, () => {
+    if (card) card.classList.remove('playing');
+    teachIdx++;
+    // If this was the last sentence, speak last teacher says
+    if (teachIdx >= story.length) {
+      speakZh(teacherSaysText[teachCurrentScene], () => stopTeachPlay());
+      return;
+    }
+    if (teachPlaying) setTimeout(teachNext, 1000);
+  });
+}
+
+function stopTeachPlay() {
+  teachPlaying = false;
+  window.speechSynthesis.cancel();
+  document.querySelectorAll('.sentence-card').forEach(c => c.classList.remove('playing'));
+  document.getElementById('teachPlayBtn').textContent = '▶️ 教学模式播放';
+  document.getElementById('teachPlayBtn').classList.add('primary');
+  document.getElementById('teachPlayBtn').classList.remove('stop');
+  document.getElementById('teachProgress').textContent = '';
+}
+
+// ===== Init =====
+renderVocab();
+renderStory();
+renderFinalQuiz();
+</script>
+</body>
+</html>
