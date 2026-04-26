@@ -30,12 +30,10 @@ body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #
 .chapter .ch-emoji { font-size:28px; }
 .chapter .ch-title { font-size:15px; font-weight:700; color:#555; }
 
-/* Paragraph Card */
-.para-card { background:#fff; border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 2px 10px rgba(0,0,0,.06); }
-.para-num { display:inline-block; width:28px; height:28px; line-height:28px; text-align:center; background:linear-gradient(135deg,#ff9a56,#ff6b6b); color:#fff; border-radius:50%; font-size:13px; font-weight:700; margin-bottom:8px; }
-.para-en { font-size:17px; color:#222; margin-bottom:6px; line-height:1.7; }
-.para-zh { font-size:14px; color:#999; margin-bottom:4px; line-height:1.6; }
-.speak-btn { background:none; border:none; font-size:18px; cursor:pointer; padding:2px 4px; vertical-align:middle; }
+/* Sentence Card */
+.sentence-card { background:#fff; border-radius:14px; padding:14px 16px; margin-bottom:10px; box-shadow:0 2px 8px rgba(0,0,0,.06); transition: background .3s; }
+.sent-en { font-size:17px; color:#222; line-height:1.7; margin-bottom:4px; cursor:pointer; }
+.sent-zh { font-size:14px; color:#999; line-height:1.6; cursor:pointer; }
 
 /* Highlight word */
 .hw { background:#fff3b0; padding:1px 4px; border-radius:4px; cursor:pointer; position:relative; font-weight:600; }
@@ -100,10 +98,10 @@ footer { text-align:center; padding:24px 16px 80px; color:#aaa; font-size:13px; 
       <div style="font-weight:700;color:#6c5ce7;font-size:1.05em;margin-bottom:8px;cursor:pointer" onclick="speak('Who do you think is brave, clever, unkind, or helpful in the story?','en-US',0.75)">🔊 Q2: Who do you think is brave / clever / unkind / helpful?</div>
       <div style="color:#636e72;font-size:.9em;margin-bottom:10px">你觉得故事里谁是勇敢的？谁是聪明的？谁不善良？谁乐于助人？</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <div style="background:#dfe6fd;border-radius:10px;padding:10px;text-align:center;cursor:pointer" onclick="speak('Rama is brave. He fought to save Sita.','en-US',0.75,()=>{setTimeout(()=>speak('罗摩很勇敢，他战斗救回了悉多','zh-CN',0.8),800)})">🪶 <b>Rama</b><br><span style="font-size:.8em">brave 勇敢</span></div>
-        <div style="background:#dfe6fd;border-radius:10px;padding:10px;text-align:center;cursor:pointer" onclick="speak('Hanuman is helpful. He found Sita and organised the army.','en-US',0.75,()=>{setTimeout(()=>speak('哈努曼乐于助人，他找到悉多并组织了军队','zh-CN',0.8),800)})">🐵 <b>Hanuman</b><br><span style="font-size:.8em">helpful 乐于助人</span></div>
-        <div style="background:#dfe6fd;border-radius:10px;padding:10px;text-align:center;cursor:pointer" onclick="speak('Sita is clever. She dropped her jewellery to show the way.','en-US',0.75,()=>{setTimeout(()=>speak('悉多很聪明，她丢下珠宝指引方向','zh-CN',0.8),800)})">👸 <b>Sita</b><br><span style="font-size:.8em">clever 聪明</span></div>
-        <div style="background:#ffeaa7;border-radius:10px;padding:10px;text-align:center;cursor:pointer" onclick="speak('Ravana is unkind. He tricked Rama and took Sita.','en-US',0.75,()=>{setTimeout(()=>speak('罗波那不善良，他欺骗罗摩拐走了悉多','zh-CN',0.8),800)})">👹 <b>Ravana</b><br><span style="font-size:.8em">unkind 不善良</span></div>
+        <div style="background:#dfe6fd;border-radius:10px;padding:10px;text-align:center;cursor:pointer" onclick="speak('Rama is brave. He fought to save Sita.','en-US',0.75,function(){setTimeout(function(){speak('罗摩很勇敢，他战斗救回了悉多','zh-CN',0.8)},800)})">🪶 <b>Rama</b><br><span style="font-size:.8em">brave 勇敢</span></div>
+        <div style="background:#dfe6fd;border-radius:10px;padding:10px;text-align:center;cursor:pointer" onclick="speak('Hanuman is helpful. He found Sita and organised the army.','en-US',0.75,function(){setTimeout(function(){speak('哈努曼乐于助人，他找到悉多并组织了军队','zh-CN',0.8)},800)})">🐵 <b>Hanuman</b><br><span style="font-size:.8em">helpful 乐于助人</span></div>
+        <div style="background:#dfe6fd;border-radius:10px;padding:10px;text-align:center;cursor:pointer" onclick="speak('Sita is clever. She dropped her jewellery to show the way.','en-US',0.75,function(){setTimeout(function(){speak('悉多很聪明，她丢下珠宝指引方向','zh-CN',0.8)},800)})">👸 <b>Sita</b><br><span style="font-size:.8em">clever 聪明</span></div>
+        <div style="background:#ffeaa7;border-radius:10px;padding:10px;text-align:center;cursor:pointer" onclick="speak('Ravana is unkind. He tricked Rama and took Sita.','en-US',0.75,function(){setTimeout(function(){speak('罗波那不善良，他欺骗罗摩拐走了悉多','zh-CN',0.8)},800)})">👹 <b>Ravana</b><br><span style="font-size:.8em">unkind 不善良</span></div>
       </div>
     </div>
 
@@ -113,38 +111,38 @@ footer { text-align:center; padding:24px 16px 80px; color:#aaa; font-size:13px; 
       <div style="display:flex;flex-direction:column;gap:12px;">
 
         <div style="background:#ffeaa7;border-radius:10px;padding:12px;">
-          <div style="cursor:pointer;font-weight:600" onclick="speak('When the King tells Rama and Sita to leave Ayodhya.','en-US',0.75,()=>{setTimeout(()=>speak('当国王告诉罗摩和悉多离开阿约提亚的时候','zh-CN',0.8),800)})">🔊 When the King tells Rama and Sita to leave Ayodhya.</div>
+          <div style="cursor:pointer;font-weight:600" onclick="speak('When the King tells Rama and Sita to leave Ayodhya.','en-US',0.75,function(){setTimeout(function(){speak('当国王告诉罗摩和悉多离开阿约提亚的时候','zh-CN',0.8)},800)})">🔊 When the King tells Rama and Sita to leave Ayodhya.</div>
           <div style="color:#636e72;font-size:.85em;margin:4px 0">当国王告诉罗摩和悉多离开阿约提亚的时候。</div>
           <div style="font-size:.8em;color:#999;margin-top:4px">💡 想一想：Rama 和 Sita 会有什么感受？国王呢？</div>
           <details style="margin-top:6px"><summary style="font-size:.85em;color:#6c5ce7;cursor:pointer">👁 点击看参考答案</summary>
-            <div style="margin-top:6px;padding:8px;background:#fff9db;border-radius:8px;font-size:.9em;cursor:pointer" onclick="speak('Rama feels sad but he respects his father. Sita feels sad too. The King feels sorry.','en-US',0.75,()=>{setTimeout(()=>speak('罗摩很伤心但他尊重父亲。悉多也很伤心。国王觉得很抱歉。','zh-CN',0.8),800)})">Rama feels <b>sad</b> but he respects his father. Sita feels <b>sad</b> too. The King feels <b>sorry</b>.<br>罗摩很<b>伤心</b>但尊重父亲。悉多也很<b>伤心</b>。国王觉得很<b>抱歉</b>。</div>
+            <div style="margin-top:6px;padding:8px;background:#fff9db;border-radius:8px;font-size:.9em;cursor:pointer" onclick="speak('Rama feels sad but he respects his father. Sita feels sad too. The King feels sorry.','en-US',0.75,function(){setTimeout(function(){speak('罗摩很伤心但他尊重父亲。悉多也很伤心。国王觉得很抱歉。','zh-CN',0.8)},800)})">Rama feels <b>sad</b> but he respects his father. Sita feels <b>sad</b> too. The King feels <b>sorry</b>.<br>罗摩很<b>伤心</b>但尊重父亲。悉多也很<b>伤心</b>。国王觉得很<b>抱歉</b>。</div>
           </details>
         </div>
 
         <div style="background:#fab1a0;border-radius:10px;padding:12px;">
-          <div style="cursor:pointer;font-weight:600" onclick="speak('When Ravana takes Sita.','en-US',0.75,()=>{setTimeout(()=>speak('当罗波那拐走悉多的时候','zh-CN',0.8),800)})">🔊 When Ravana takes Sita.</div>
+          <div style="cursor:pointer;font-weight:600" onclick="speak('When Ravana takes Sita.','en-US',0.75,function(){setTimeout(function(){speak('当罗波那拐走悉多的时候','zh-CN',0.8)},800)})">🔊 When Ravana takes Sita.</div>
           <div style="color:#636e72;font-size:.85em;margin:4px 0">当罗波那拐走悉多的时候。</div>
           <div style="font-size:.8em;color:#999;margin-top:4px">💡 想一想：Rama 回来发现 Sita 不见了，他会怎样？Sita 呢？</div>
           <details style="margin-top:6px"><summary style="font-size:.85em;color:#6c5ce7;cursor:pointer">👁 点击看参考答案</summary>
-            <div style="margin-top:6px;padding:8px;background:#fff9db;border-radius:8px;font-size:.9em;cursor:pointer" onclick="speak('Rama feels worried and angry. Sita feels scared and alone.','en-US',0.75,()=>{setTimeout(()=>speak('罗摩又担心又生气。悉多感到害怕和孤独。','zh-CN',0.8),800)})">Rama feels <b>worried</b> and <b>angry</b>. Sita feels <b>scared</b> and <b>alone</b>.<br>罗摩又<b>担心</b>又<b>生气</b>。悉多感到<b>害怕</b>和<b>孤独</b>。</div>
+            <div style="margin-top:6px;padding:8px;background:#fff9db;border-radius:8px;font-size:.9em;cursor:pointer" onclick="speak('Rama feels worried and angry. Sita feels scared and alone.','en-US',0.75,function(){setTimeout(function(){speak('罗摩又担心又生气。悉多感到害怕和孤独。','zh-CN',0.8)},800)})">Rama feels <b>worried</b> and <b>angry</b>. Sita feels <b>scared</b> and <b>alone</b>.<br>罗摩又<b>担心</b>又<b>生气</b>。悉多感到<b>害怕</b>和<b>孤独</b>。</div>
           </details>
         </div>
 
         <div style="background:#81ecec;border-radius:10px;padding:12px;">
-          <div style="cursor:pointer;font-weight:600" onclick="speak('When Hanuman tells Rama he found Sita.','en-US',0.75,()=>{setTimeout(()=>speak('当哈努曼告诉罗摩他找到了悉多','zh-CN',0.8),800)})">🔊 When Hanuman tells Rama he found Sita.</div>
+          <div style="cursor:pointer;font-weight:600" onclick="speak('When Hanuman tells Rama he found Sita.','en-US',0.75,function(){setTimeout(function(){speak('当哈努曼告诉罗摩他找到了悉多','zh-CN',0.8)},800)})">🔊 When Hanuman tells Rama he found Sita.</div>
           <div style="color:#636e72;font-size:.85em;margin:4px 0">当哈努曼告诉罗摩他找到了悉多。</div>
           <div style="font-size:.8em;color:#999;margin-top:4px">💡 想一想：Rama 听到这个消息会怎样？</div>
           <details style="margin-top:6px"><summary style="font-size:.85em;color:#6c5ce7;cursor:pointer">👁 点击看参考答案</summary>
-            <div style="margin-top:6px;padding:8px;background:#fff9db;border-radius:8px;font-size:.9em;cursor:pointer" onclick="speak('Rama feels happy and hopeful. He wants to rescue Sita right away.','en-US',0.75,()=>{setTimeout(()=>speak('罗摩很高兴，充满希望。他想马上去救悉多。','zh-CN',0.8),800)})">Rama feels <b>happy</b> and <b>hopeful</b>. He wants to rescue Sita right away.<br>罗摩很<b>高兴</b>，充满<b>希望</b>。他想马上去救悉多。</div>
+            <div style="margin-top:6px;padding:8px;background:#fff9db;border-radius:8px;font-size:.9em;cursor:pointer" onclick="speak('Rama feels happy and hopeful. He wants to rescue Sita right away.','en-US',0.75,function(){setTimeout(function(){speak('罗摩很高兴，充满希望。他想马上去救悉多。','zh-CN',0.8)},800)})">Rama feels <b>happy</b> and <b>hopeful</b>. He wants to rescue Sita right away.<br>罗摩很<b>高兴</b>，充满<b>希望</b>。他想马上去救悉多。</div>
           </details>
         </div>
 
         <div style="background:#55efc4;border-radius:10px;padding:12px;">
-          <div style="cursor:pointer;font-weight:600" onclick="speak('When Rama and Sita return to Ayodhya.','en-US',0.75,()=>{setTimeout(()=>speak('当罗摩和悉多回到阿约提亚','zh-CN',0.8),800)})">🔊 When Rama and Sita return to Ayodhya.</div>
+          <div style="cursor:pointer;font-weight:600" onclick="speak('When Rama and Sita return to Ayodhya.','en-US',0.75,function(){setTimeout(function(){speak('当罗摩和悉多回到阿约提亚','zh-CN',0.8)},800)})">🔊 When Rama and Sita return to Ayodhya.</div>
           <div style="color:#636e72;font-size:.85em;margin:4px 0">当罗摩和悉多回到阿约提亚。</div>
           <div style="font-size:.8em;color:#999;margin-top:4px">💡 想一想：所有人会有什么感受？</div>
           <details style="margin-top:6px"><summary style="font-size:.85em;color:#6c5ce7;cursor:pointer">👁 点击看参考答案</summary>
-            <div style="margin-top:6px;padding:8px;background:#fff9db;border-radius:8px;font-size:.9em;cursor:pointer" onclick="speak('Everyone feels excited and joyful. There are flowers and lanterns in the streets. The people cheer loudly.','en-US',0.75,()=>{setTimeout(()=>speak('所有人都很兴奋和喜悦。街上有鲜花和灯笼。人们大声欢呼。','zh-CN',0.8),800)})">Everyone feels <b>excited</b> and <b>joyful</b>. There are flowers and lanterns in the streets. The people cheer loudly.<br>所有人都很<b>兴奋</b>和<b>喜悦</b>。街上有鲜花和灯笼。人们大声欢呼。</div>
+            <div style="margin-top:6px;padding:8px;background:#fff9db;border-radius:8px;font-size:.9em;cursor:pointer" onclick="speak('Everyone feels excited and joyful. There are flowers and lanterns in the streets. The people cheer loudly.','en-US',0.75,function(){setTimeout(function(){speak('所有人都很兴奋和喜悦。街上有鲜花和灯笼。人们大声欢呼。','zh-CN',0.8)},800)})">Everyone feels <b>excited</b> and <b>joyful</b>. There are flowers and lanterns in the streets. The people cheer loudly.<br>所有人都很<b>兴奋</b>和<b>喜悦</b>。街上有鲜花和灯笼。人们大声欢呼。</div>
           </details>
         </div>
 
@@ -160,53 +158,66 @@ footer { text-align:center; padding:24px 16px 80px; color:#aaa; font-size:13px; 
 </div>
 
 <div class="play-all-bar" id="playbar" style="display:none;">
-  <button class="play-all-btn" id="playAllBtn" onclick="togglePlayAll()">▶️ 连续播放全文</button>
+  <button class="play-all-btn" id="playAllBtn" onclick="togglePlayAll()">▶️ 逐句播放全文</button>
 </div>
 
 <footer>🦎 Coco Learning Park · Power Up 3 · The Story of Rama and Sita</footer>
 
 <script>
-const chapters = [
-  { emoji:'👑', title:'国王的决定 The King\'s Decision', paras:[1,2,3,4] },
-  { emoji:'🌲', title:'森林生活 Life in the Forest', paras:[5,6,7] },
-  { emoji:'🦌', title:'金鹿陷阱 The Golden Deer Trap', paras:[8,9] },
-  { emoji:'🐒', title:'Hanuman出手 Hanuman to the Rescue', paras:[10,11] },
-  { emoji:'⚔️', title:'大战救人 The Great Battle', paras:[12] },
-  { emoji:'🎉', title:'回家庆祝 Going Home', paras:[13,14] }
+var chapters = [
+  { emoji:'\u{1F451}', title:'国王的决定 The King\'s Decision' },
+  { emoji:'\u{1F332}', title:'森林生活 Life in the Forest' },
+  { emoji:'\u{1F98C}', title:'金鹿陷阱 The Golden Deer Trap' },
+  { emoji:'\u{1F412}', title:'Hanuman出手 Hanuman to the Rescue' },
+  { emoji:'⚔️', title:'大战救人 The Great Battle' },
+  { emoji:'\u{1F389}', title:'回家庆祝 Going Home' }
 ];
 
-const paragraphs = [
-  { n:1, en:"Long ago a king lived in the town of <hw>Ayodhya<ipa>/əˈjɒdjə/</ipa></hw>. He had four sons.",
-         zh:"很久以前，一位国王住在阿约提亚城。他有四个儿子。" },
-  { n:2, en:"One day he said, 'I am getting very old now and I want my oldest son Rama to be king.'",
-         zh:"一天他说：'我现在老了，我想让大儿子罗摩当国王。'" },
-  { n:3, en:"'No!' Rama's <hw>stepmother<ipa>/ˈstepmʌðə/</ipa></hw> cried. 'My son must be king!'",
-         zh:"'不行！'罗摩的继母喊道，'我的儿子才应该当国王！'" },
-  { n:4, en:"The King listened to his wife, and he sadly told his oldest son to leave. Rama couldn't return to <hw>Ayodhya<ipa>/əˈjɒdjə/</ipa></hw> for 14 years.",
-         zh:"国王听了妻子的话，伤心地让大儿子离开。罗摩14年不能回阿约提亚。" },
-  { n:5, en:"Rama and his wife, Sita, left <hw>Ayodhya<ipa>/əˈjɒdjə/</ipa></hw>. They travelled for many days until they came to a <hw>forest<ipa>/ˈfɒrɪst/</ipa></hw>.",
-         zh:"罗摩和妻子悉多离开了阿约提亚。他们走了很多天，来到一片森林。" },
-  { n:6, en:"'This looks like the perfect place to live,' said Rama. For many years, they lived happily in the <hw>forest<ipa>/ˈfɒrɪst/</ipa></hw>.",
-         zh:"'这里看起来是个完美的住处，'罗摩说。他们在森林里幸福地生活了很多年。" },
-  { n:7, en:"But there was a <hw>terrible<ipa>/ˈterəbl/</ipa></hw> man called <hw>Ravana<ipa>/ˈrɑːvənə/</ipa></hw> in the <hw>forest<ipa>/ˈfɒrɪst/</ipa></hw>. He saw Sita one day and he wanted to take her. He had a plan.",
-         zh:"但森林里有一个可怕的人叫罗波那。他有一天看到了悉多，想要把她抢走。他有一个计划。" },
-  { n:8, en:"One day, Sita saw a beautiful <hw>golden<ipa>/ˈɡəʊldən/</ipa></hw> <hw>deer<ipa>/dɪə/</ipa></hw>. 'Rama, catch it for me,' she said.",
-         zh:"一天，悉多看到一只漂亮的金色鹿。'罗摩，帮我抓住它，'她说。" },
-  { n:9, en:"When Rama left to catch the <hw>deer<ipa>/dɪə/</ipa></hw>, <hw>Ravana<ipa>/ˈrɑːvənə/</ipa></hw> came to the house dressed in a <hw>costume<ipa>/ˈkɒstjuːm/</ipa></hw>. He caught Sita and took her back to his <hw>palace<ipa>/ˈpælɪs/</ipa></hw>.",
-         zh:"当罗摩去追鹿时，罗波那穿着伪装来到他们家。他抓走了悉多，带回了自己的宫殿。" },
-  { n:10, en:"When Rama returned and saw that Sita wasn't there, he searched but he couldn't find her. He decided to ask <hw>Hanuman<ipa>/ˈhʌnʊmɑːn/</ipa></hw> for help. <hw>Hanuman<ipa>/ˈhʌnʊmɑːn/</ipa></hw> was the great leader of the <hw>monkeys<ipa>/ˈmʌŋkiz/</ipa></hw>. He could fly over mountains, change size and he was very strong. 'Don't worry. I can find her quickly,' he said to Rama.",
-         zh:"罗摩回来发现悉多不见了，他到处找但找不到。他决定向哈努曼求助。哈努曼是伟大的猴子首领，能飞越高山、变大变小，而且非常强壮。'别担心，我能很快找到她，'他对罗摩说。" },
-  { n:11, en:"On her way to <hw>Ravana<ipa>/ˈrɑːvənə/</ipa></hw>'s <hw>palace<ipa>/ˈpælɪs/</ipa></hw>, Sita carefully dropped her <hw>jewellery<ipa>/ˈdʒuːəlri/</ipa></hw>. As <hw>Hanuman<ipa>/ˈhʌnʊmɑːn/</ipa></hw> flew in the sky, the pieces of <hw>jewellery<ipa>/ˈdʒuːəlri/</ipa></hw> were like little lights showing him the way. Soon he found Sita. She was in the garden of <hw>Ravana<ipa>/ˈrɑːvənə/</ipa></hw>'s <hw>palace<ipa>/ˈpælɪs/</ipa></hw>.",
-         zh:"在去罗波那宫殿的路上，悉多小心地丢下了自己的珠宝。当哈努曼飞在天上时，那些珠宝就像小灯一样为他指路。很快他找到了悉多，她在罗波那宫殿的花园里。" },
-  { n:12, en:"<hw>Hanuman<ipa>/ˈhʌnʊmɑːn/</ipa></hw> quickly told Rama where Sita was. He <hw>organised<ipa>/ˈɔːɡənaɪzd/</ipa></hw> a great <hw>army<ipa>/ˈɑːmi/</ipa></hw> of <hw>monkeys<ipa>/ˈmʌŋkiz/</ipa></hw> and bears. Together, they <hw>rescued<ipa>/ˈreskjuːd/</ipa></hw> her from <hw>Ravana<ipa>/ˈrɑːvənə/</ipa></hw>.",
-         zh:"哈努曼很快告诉罗摩悉多在哪里。他组织了一支猴子和熊的大军。他们一起从罗波那手中救出了悉多。" },
-  { n:13, en:"Rama and Sita were happy again, and finally, after 14 years, they went back to <hw>Ayodhya<ipa>/əˈjɒdjə/</ipa></hw>. There were flowers and <hw>lanterns<ipa>/ˈlæntənz/</ipa></hw> in the streets. The people <hw>cheered<ipa>/tʃɪəd/</ipa></hw> loudly and were very happy to see their real king.",
-         zh:"罗摩和悉多又幸福了，终于在14年后，他们回到了阿约提亚。街上到处是鲜花和灯笼。人们大声欢呼，非常高兴看到他们真正的国王回来。" },
-  { n:14, en:"In some parts of the world today, people still <hw>celebrate<ipa>/ˈselɪbreɪt/</ipa></hw> Rama going home.",
-         zh:"在今天世界上的一些地方，人们仍然庆祝罗摩回家。" }
+var sentences = [
+  // 👑 国王的决定
+  {ch:0, en:'Long ago a king lived in the town of <hw>Ayodhya<ipa>/\u0259\u02C8j\u0252dj\u0259/</ipa></hw>.', zh:'很久以前，一位国王住在阿约提亚城。'},
+  {ch:0, en:'He had four sons.', zh:'他有四个儿子。'},
+  {ch:0, en:'One day he said, \u2018I am getting very old now and I want my oldest son Rama to be king.\u2019', zh:'一天他说：\u201C我已经很老了，我想让我的大儿子罗摩当国王。\u201D'},
+  {ch:0, en:'\u2018No!\u2019 Rama\u2019s <hw>stepmother<ipa>/\u02C8stepm\u028C\u00F0\u0259/</ipa></hw> cried.', zh:'\u201C不行！\u201D罗摩的继母大喊。'},
+  {ch:0, en:'\u2018My son must be king!\u2019', zh:'\u201C我的儿子必须当国王！\u201D'},
+  {ch:0, en:'The King listened to his wife, and he sadly told his oldest son to leave.', zh:'国王听了妻子的话，伤心地让大儿子离开。'},
+  {ch:0, en:'Rama couldn\u2019t return to <hw>Ayodhya<ipa>/\u0259\u02C8j\u0252dj\u0259/</ipa></hw> for 14 years.', zh:'罗摩14年不能回阿约提亚。'},
+  // 🌲 森林生活
+  {ch:1, en:'Rama and his wife, Sita, left <hw>Ayodhya<ipa>/\u0259\u02C8j\u0252dj\u0259/</ipa></hw>.', zh:'罗摩和他的妻子悉多离开了阿约提亚。'},
+  {ch:1, en:'They travelled for many days until they came to a <hw>forest<ipa>/\u02C8f\u0252r\u026Ast/</ipa></hw>.', zh:'他们走了很多天，直到来到一片森林。'},
+  {ch:1, en:'\u2018This looks like the perfect place to live,\u2019 said Rama.', zh:'\u201C这里看起来是住下来的完美地方，\u201D罗摩说。'},
+  {ch:1, en:'For many years, they lived happily in the <hw>forest<ipa>/\u02C8f\u0252r\u026Ast/</ipa></hw>.', zh:'很多年来，他们在森林里快乐地生活。'},
+  {ch:1, en:'But there was a <hw>terrible<ipa>/\u02C8ter\u0259bl/</ipa></hw> man called <hw>Ravana<ipa>/\u02C8r\u0251\u02D0v\u0259n\u0259/</ipa></hw> in the <hw>forest<ipa>/\u02C8f\u0252r\u026Ast/</ipa></hw>.', zh:'但是森林里有一个可怕的人叫罗波那。'},
+  {ch:1, en:'He saw Sita one day and he wanted to take her.', zh:'有一天他看到了悉多，想要抓走她。'},
+  {ch:1, en:'He had a plan.', zh:'他有一个计划。'},
+  // 🦌 金鹿陷阱
+  {ch:2, en:'One day, Sita saw a beautiful <hw>golden<ipa>/\u02C8\u0261\u0259\u028Ald\u0259n/</ipa></hw> <hw>deer<ipa>/d\u026A\u0259/</ipa></hw>.', zh:'一天，悉多看到一只美丽的金色鹿。'},
+  {ch:2, en:'\u2018Rama, catch it for me,\u2019 she said.', zh:'\u201C罗摩，帮我抓住它，\u201D她说。'},
+  {ch:2, en:'When Rama left to catch the <hw>deer<ipa>/d\u026A\u0259/</ipa></hw>, <hw>Ravana<ipa>/\u02C8r\u0251\u02D0v\u0259n\u0259/</ipa></hw> came to the house dressed in a <hw>costume<ipa>/\u02C8k\u0252stju\u02D0m/</ipa></hw>.', zh:'当罗摩去抓鹿的时候，罗波那穿着伪装来到了房子。'},
+  {ch:2, en:'He caught Sita and took her back to his <hw>palace<ipa>/\u02C8p\u00E6l\u026As/</ipa></hw>.', zh:'他抓住了悉多，带她回了他的宫殿。'},
+  // 🐒 猴神出手
+  {ch:3, en:'When Rama returned and saw that Sita wasn\u2019t there, he searched but he couldn\u2019t find her.', zh:'当罗摩回来发现悉多不在了，他到处找但找不到她。'},
+  {ch:3, en:'He decided to ask <hw>Hanuman<ipa>/\u02C8h\u028Cn\u028Am\u0251\u02D0n/</ipa></hw> for help.', zh:'他决定向哈努曼求助。'},
+  {ch:3, en:'<hw>Hanuman<ipa>/\u02C8h\u028Cn\u028Am\u0251\u02D0n/</ipa></hw> was the great leader of the <hw>monkeys<ipa>/\u02C8m\u028C\u014Bkiz/</ipa></hw>.', zh:'哈努曼是猴子们的伟大首领。'},
+  {ch:3, en:'He could fly over mountains, change size and he was very strong.', zh:'他能飞越山脉、变换大小，而且力大无穷。'},
+  {ch:3, en:'\u2018Don\u2019t worry. I can find her quickly,\u2019 he said to Rama.', zh:'\u201C别担心，我能很快找到她，\u201D他对罗摩说。'},
+  {ch:3, en:'On her way to <hw>Ravana<ipa>/\u02C8r\u0251\u02D0v\u0259n\u0259/</ipa></hw>\u2019s <hw>palace<ipa>/\u02C8p\u00E6l\u026As/</ipa></hw>, Sita carefully dropped her <hw>jewellery<ipa>/\u02C8d\u0292u\u02D0\u0259lri/</ipa></hw>.', zh:'在去罗波那宫殿的路上，悉多小心地丢下了她的珠宝。'},
+  {ch:3, en:'As <hw>Hanuman<ipa>/\u02C8h\u028Cn\u028Am\u0251\u02D0n/</ipa></hw> flew in the sky, the pieces of <hw>jewellery<ipa>/\u02C8d\u0292u\u02D0\u0259lri/</ipa></hw> were like little lights showing him the way.', zh:'当哈努曼在天空中飞翔时，珠宝碎片就像小灯一样给他指路。'},
+  {ch:3, en:'Soon he found Sita.', zh:'很快他找到了悉多。'},
+  {ch:3, en:'She was in the garden of <hw>Ravana<ipa>/\u02C8r\u0251\u02D0v\u0259n\u0259/</ipa></hw>\u2019s <hw>palace<ipa>/\u02C8p\u00E6l\u026As/</ipa></hw>.', zh:'她在罗波那宫殿的花园里。'},
+  // ⚔️ 大战救人
+  {ch:4, en:'<hw>Hanuman<ipa>/\u02C8h\u028Cn\u028Am\u0251\u02D0n/</ipa></hw> quickly told Rama where Sita was.', zh:'哈努曼赶紧告诉罗摩悉多在哪里。'},
+  {ch:4, en:'He <hw>organised<ipa>/\u02C8\u0254\u02D0\u0261\u0259na\u026Azd/</ipa></hw> a great <hw>army<ipa>/\u02C8\u0251\u02D0mi/</ipa></hw> of <hw>monkeys<ipa>/\u02C8m\u028C\u014Bkiz/</ipa></hw> and bears.', zh:'他组织了一支庞大的猴子和熊的军队。'},
+  {ch:4, en:'Together, they <hw>rescued<ipa>/\u02C8reskju\u02D0d/</ipa></hw> her from <hw>Ravana<ipa>/\u02C8r\u0251\u02D0v\u0259n\u0259/</ipa></hw>.', zh:'他们一起从罗波那手中救出了她。'},
+  // 🎉 回家庆祝
+  {ch:5, en:'Rama and Sita were happy again.', zh:'罗摩和悉多又幸福了。'},
+  {ch:5, en:'Finally, after 14 years, they went back to <hw>Ayodhya<ipa>/\u0259\u02C8j\u0252dj\u0259/</ipa></hw>.', zh:'终于，14年后，他们回到了阿约提亚。'},
+  {ch:5, en:'There were flowers and <hw>lanterns<ipa>/\u02C8l\u00E6nt\u0259nz/</ipa></hw> in the streets.', zh:'街上到处是鲜花和灯笼。'},
+  {ch:5, en:'The people <hw>cheered<ipa>/t\u0283\u026A\u0259d/</ipa></hw> loudly and were very happy to see their real king.', zh:'人们大声欢呼，非常高兴看到他们真正的国王回来了。'},
+  {ch:5, en:'In some parts of the world today, people still <hw>celebrate<ipa>/\u02C8sel\u026Abre\u026At/</ipa></hw> Rama going home.', zh:'在今天世界的一些地方，人们仍然庆祝罗摩回家。'}
 ];
 
-const quizData = [
+var quizData = [
   { q:"How many sons did the King have?", choices:["two","three","four","five"], ans:2 },
   { q:"Who wanted her son to be king?", choices:["Sita","Rama's stepmother","Hanuman","Ravana"], ans:1 },
   { q:"What animal did Sita see?", choices:["a golden bird","a golden deer","a golden monkey","a golden fish"], ans:1 },
@@ -215,12 +226,12 @@ const quizData = [
 ];
 
 // ---- TTS ----
-let synth = window.speechSynthesis;
-let isPlayingAll = false, playAllIdx = 0, playAllPhase = 0;
+var synth = window.speechSynthesis;
+var isPlayingAll = false, playAllIdx = 0, playAllPhase = 0;
 
 function speak(text, lang, rate, cb) {
   synth.cancel();
-  const u = new SpeechSynthesisUtterance(text);
+  var u = new SpeechSynthesisUtterance(text);
   u.lang = lang; u.rate = rate || 1;
   if(cb) u.onend = cb;
   synth.speak(u);
@@ -231,76 +242,78 @@ function speakZh(text) { speak(text, 'zh-CN', 0.8); }
 function speakWord(w) { speak(w, 'en-US', 0.7); }
 
 function speakGoal() {
-  speak("Today we'll read an Indian myth about Rama and Sita", 'en-US', 0.75, ()=>{
-    setTimeout(()=> speak("今天我们读一个印度神话：罗摩和悉多的故事", 'zh-CN', 0.8), 1000);
+  speak("Today we'll read an Indian myth about Rama and Sita", 'en-US', 0.75, function(){
+    setTimeout(function(){ speak("今天我们读一个印度神话：罗摩和悉多的故事", 'zh-CN', 0.8); }, 1000);
   });
 }
 
 // ---- Render ----
 function stripHw(html) { return html.replace(/<hw>(.*?)<ipa>.*?<\/ipa><\/hw>/g, '$1'); }
 
-const vocabList = [
-  {w:'stepmother',ipa:'/\u02C8stepm\u028C\u00F0\u0259/',zh:'\u7EE7\u6BCD'},
-  {w:'forest',ipa:'/\u02C8f\u0252r\u026Ast/',zh:'\u68EE\u6797'},
-  {w:'terrible',ipa:'/\u02C8ter\u0259bl/',zh:'\u53EF\u6015\u7684'},
-  {w:'golden',ipa:'/\u02C8\u0261\u0259\u028Ald\u0259n/',zh:'\u91D1\u8272\u7684'},
-  {w:'deer',ipa:'/d\u026A\u0259/',zh:'\u9E7F'},
-  {w:'costume',ipa:'/\u02C8k\u0252stju\u02D0m/',zh:'\u4F2A\u88C5'},
-  {w:'palace',ipa:'/\u02C8p\u00E6l\u026As/',zh:'\u5BAB\u6BBF'},
-  {w:'monkeys',ipa:'/\u02C8m\u028C\u014Bkiz/',zh:'\u7334\u5B50'},
-  {w:'jewellery',ipa:'/\u02C8d\u0292u\u02D0\u0259lri/',zh:'\u73E0\u5B9D'},
-  {w:'army',ipa:'/\u02C8\u0251\u02D0mi/',zh:'\u519B\u961F'},
-  {w:'rescued',ipa:'/\u02C8reskju\u02D0d/',zh:'\u8425\u6551'},
-  {w:'lanterns',ipa:'/\u02C8l\u00E6nt\u0259nz/',zh:'\u706F\u7B3C'},
-  {w:'cheered',ipa:'/t\u0283\u026A\u0259d/',zh:'\u6B22\u547C'},
-  {w:'celebrate',ipa:'/\u02C8sel\u026Abre\u026At/',zh:'\u5E86\u795D'},
-  {w:'organised',ipa:'/\u02C8\u0254\u02D0\u0261\u0259na\u026Azd/',zh:'\u7EC4\u7EC7'}
+var vocabList = [
+  {w:'stepmother',ipa:'/ˈstepmʌðə/',zh:'继母'},
+  {w:'forest',ipa:'/ˈfɒrɪst/',zh:'森林'},
+  {w:'terrible',ipa:'/ˈterəbl/',zh:'可怕的'},
+  {w:'golden',ipa:'/ˈɡəʊldən/',zh:'金色的'},
+  {w:'deer',ipa:'/dɪə/',zh:'鹿'},
+  {w:'costume',ipa:'/ˈkɒstjuːm/',zh:'伪装'},
+  {w:'palace',ipa:'/ˈpælɪs/',zh:'宫殿'},
+  {w:'monkeys',ipa:'/ˈmʌŋkiz/',zh:'猴子'},
+  {w:'jewellery',ipa:'/ˈdʒuːəlri/',zh:'珠宝'},
+  {w:'army',ipa:'/ˈɑːmi/',zh:'军队'},
+  {w:'rescued',ipa:'/ˈreskjuːd/',zh:'营救'},
+  {w:'lanterns',ipa:'/ˈlæntənz/',zh:'灯笼'},
+  {w:'cheered',ipa:'/tʃɪəd/',zh:'欢呼'},
+  {w:'celebrate',ipa:'/ˈselɪbreɪt/',zh:'庆祝'},
+  {w:'organised',ipa:'/ˈɔːɡənaɪzd/',zh:'组织'}
 ];
 
 function renderVocab() {
-  const g = document.getElementById('vocabGrid');
-  g.innerHTML = vocabList.map(v =>
-    `<div class="vocab-card" onclick="speakWord('${v.w}')">
-      <div class="word">${v.w}</div>
-      <div class="ipa">${v.ipa}</div>
-      <div class="mean">${v.zh}</div>
-    </div>`
-  ).join('');
+  var g = document.getElementById('vocabGrid');
+  var html = '';
+  vocabList.forEach(function(v) {
+    html += '<div class="vocab-card" onclick="speakWord(\'' + v.w + '\')">' +
+      '<div class="word">' + v.w + '</div>' +
+      '<div class="ipa">' + v.ipa + '</div>' +
+      '<div class="mean">' + v.zh + '</div></div>';
+  });
+  g.innerHTML = html;
 }
 
 function renderStory() {
-  const container = document.getElementById('story');
-  let html = '';
-  const paraMap = {};
-  paragraphs.forEach(p => paraMap[p.n] = p);
+  var container = document.getElementById('story');
+  var html = '';
+  var lastCh = -1;
 
-  chapters.forEach(ch => {
-    html += `<div class="chapter"><span class="ch-emoji">${ch.emoji}</span><span class="ch-title">${ch.title}</span></div>`;
-    ch.paras.forEach(n => {
-      const p = paraMap[n];
-      const circled = String.fromCodePoint(0x245F + n);
-      // Convert <hw> tags to clickable spans
-      const enHtml = p.en.replace(/<hw>(.*?)<ipa>(.*?)<\/ipa><\/hw>/g,
-        (_, word, ipa) => `<span class="hw" onclick="event.stopPropagation();speakWord('${word.replace(/'/g,"\\'")}')">${word}<span class="ipa">${ipa}</span></span>`
-      );
-      const plainEn = stripHw(p.en);
-      html += `<div class="para-card" id="p${n}">
-        <div class="para-num">${n}</div>
-        <div class="para-en">${enHtml} <button class="speak-btn" onclick="speakEn('${plainEn.replace(/'/g,"\\'")}')">🔊</button></div>
-        <div class="para-zh">${p.zh} <button class="speak-btn" onclick="speakZh('${p.zh.replace(/'/g,"\\'")}')">🔊</button></div>
-      </div>`;
-    });
+  sentences.forEach(function(s, i) {
+    if(s.ch !== lastCh) {
+      var ch = chapters[s.ch];
+      html += '<div class="chapter"><span class="ch-emoji">' + ch.emoji + '</span><span class="ch-title">' + ch.title + '</span></div>';
+      lastCh = s.ch;
+    }
+    var enHtml = s.en.replace(/<hw>(.*?)<ipa>(.*?)<\/ipa><\/hw>/g,
+      function(_, word, ipa) {
+        return '<span class="hw" onclick="event.stopPropagation();speakWord(\'' + word.replace(/'/g, "\\'") + '\')">' + word + '<span class="ipa">' + ipa + '</span></span>';
+      }
+    );
+    var plainEn = stripHw(s.en);
+    var safeEn = plainEn.replace(/'/g, "\\'").replace(/\u2018/g, "\\'").replace(/\u2019/g, "\\'");
+    var safeZh = s.zh.replace(/'/g, "\\'").replace(/\u201C/g, "\\'").replace(/\u201D/g, "\\'");
+    html += '<div class="sentence-card" id="s' + i + '">' +
+      '<div class="sent-en" onclick="speakEn(\'' + safeEn + '\')">🔊 ' + enHtml + '</div>' +
+      '<div class="sent-zh" onclick="speakZh(\'' + safeZh + '\')">　 ' + s.zh + '</div>' +
+      '</div>';
   });
   container.innerHTML = html;
 }
 
 function renderQuiz() {
-  const container = document.getElementById('quiz');
-  let html = '';
-  quizData.forEach((q, qi) => {
-    html += `<div class="quiz-q"><div class="q-text">Q${qi+1}: ${q.q}</div><div class="choices">`;
-    q.choices.forEach((c, ci) => {
-      html += `<div class="choice" onclick="checkAnswer(this,${qi},${ci})">${c}</div>`;
+  var container = document.getElementById('quiz');
+  var html = '';
+  quizData.forEach(function(q, qi) {
+    html += '<div class="quiz-q"><div class="q-text">Q' + (qi+1) + ': ' + q.q + '</div><div class="choices">';
+    q.choices.forEach(function(c, ci) {
+      html += '<div class="choice" onclick="checkAnswer(this,' + qi + ',' + ci + ')">' + c + '</div>';
     });
     html += '</div></div>';
   });
@@ -313,7 +326,7 @@ function checkAnswer(el, qi, ci) {
   else { el.classList.add('wrong'); }
 }
 
-// ---- Play All ----
+// ---- Play All (sentence by sentence) ----
 function togglePlayAll() {
   if(isPlayingAll) { stopPlayAll(); return; }
   isPlayingAll = true; playAllIdx = 0; playAllPhase = 0;
@@ -323,19 +336,23 @@ function togglePlayAll() {
 }
 function stopPlayAll() {
   isPlayingAll = false; synth.cancel();
-  document.getElementById('playAllBtn').textContent = '▶️ 连续播放全文';
+  document.getElementById('playAllBtn').textContent = '▶️ 逐句播放全文';
   document.getElementById('playAllBtn').classList.remove('playing');
 }
 function playNext() {
-  if(!isPlayingAll || playAllIdx >= paragraphs.length) { stopPlayAll(); return; }
-  const p = paragraphs[playAllIdx];
-  const el = document.getElementById('p' + p.n);
-  if(el) el.scrollIntoView({ behavior:'smooth', block:'center' });
+  if(!isPlayingAll || playAllIdx >= sentences.length) { stopPlayAll(); return; }
+  var s = sentences[playAllIdx];
+  var el = document.getElementById('s' + playAllIdx);
+  if(el) {
+    el.scrollIntoView({ behavior:'smooth', block:'center' });
+    el.style.background = '#fff9db';
+    (function(e){ setTimeout(function(){ e.style.background='#fff'; }, 3000); })(el);
+  }
   if(playAllPhase === 0) {
-    const plainEn = stripHw(p.en);
-    speak(plainEn, 'en-US', 0.75, ()=>{ setTimeout(()=>{ playAllPhase=1; playNext(); }, 800); });
+    var plainEn = stripHw(s.en);
+    speak(plainEn, 'en-US', 0.75, function(){ setTimeout(function(){ playAllPhase=1; playNext(); }, 800); });
   } else {
-    speak(p.zh, 'zh-CN', 0.8, ()=>{ setTimeout(()=>{ playAllPhase=0; playAllIdx++; playNext(); }, 1200); });
+    speak(s.zh, 'zh-CN', 0.8, function(){ setTimeout(function(){ playAllPhase=0; playAllIdx++; playNext(); }, 1000); });
   }
 }
 
