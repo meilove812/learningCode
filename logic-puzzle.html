@@ -184,7 +184,7 @@ footer{text-align:center;padding:20px;color:#999;font-size:.85em}
     <div id="p0s4Visual"></div>
     <div class="summary-card">
       <h3>⭐ 方法总结：矛盾法</h3>
-      <p>找到互相矛盾的两句话 ⚡<br>真话一定在这两句里面！<br>其他人说的都是假话。<br>假话的反面就是真话！</p>
+      <p>找到"吵架"的两个人 ⚡（一个说是，一个说不是）<br>真话一定在吵架的两个人里面！<br>其他人说的都是假话。<br>假话的反面就是真话！</p>
     </div>
     <div style="text-align:center;margin-top:10px">
       <button class="confirm-btn" onclick="p0ShowPractice()">📝 来做练习题！</button>
@@ -422,7 +422,7 @@ async function initPuzzle0(){
     const card=document.createElement('div');
     card.className='animal-card';
     card.id='acard-'+a.id;
-    card.innerHTML=`<div class="emoji">${a.emoji}</div><div class="speech-bubble">${a.name}说："${a.says}"</div>`;
+    card.innerHTML=`<div class="emoji">${a.emoji}</div><div class="speech-bubble"><div style="font-size:.75em;color:#999;margin-bottom:2px">🪧 ${a.name}举牌说：</div>"${a.says}"</div><div class="verdict" id="v-${a.id}" style="display:none;font-size:1.5em;text-align:center;margin-top:4px"></div>`;
     container.appendChild(card);
     await speak(`${a.name}说：${a.says}`,'zh-CN',1.0);
     await new Promise(r=>setTimeout(r,300));
@@ -494,29 +494,34 @@ async function p0GoStep2(){
   // Add ⚡
   const vis=document.getElementById('p0s2Visual');
   vis.innerHTML=`
-    <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin:10px 0">
-      <span style="font-size:2em">🐯</span>
-      <span style="font-size:2em;color:#ff9800">⚡</span>
-      <span style="font-size:2em">🐺</span>
-      <span style="margin-left:10px;color:#666">← 矛盾！真话在这里面</span>
+    <div style="background:#fff3e0;border-radius:12px;padding:14px;margin:10px 0;text-align:center">
+      <div style="font-size:1.1em;font-weight:700;color:#e65100;margin-bottom:8px">🤬 他们两个"吵起来了"！</div>
+      <div style="display:flex;justify-content:center;align-items:center;gap:12px">
+        <div style="text-align:center"><span style="font-size:2.5em">🐯</span><br><span style="font-size:.85em">是狼偷的！</span></div>
+        <span style="font-size:2.5em;color:#ff9800;animation:pulse 1s infinite">⚡</span>
+        <div style="text-align:center"><span style="font-size:2.5em">🐺</span><br><span style="font-size:.85em">不是我偷的！</span></div>
+      </div>
+      <div style="color:#666;font-size:.9em;margin-top:6px">一个说"是"，一个说"不是" → 真话就在这里面！</div>
     </div>
-    <div style="display:flex;justify-content:center;gap:20px;margin:10px 0">
-      <span style="font-size:2em">🦊 ❌</span>
-      <span style="font-size:2em">🦁 ❌</span>
-      <span style="margin-left:10px;color:#666">← 说的都是假话</span>
+    <div style="background:#ffebee;border-radius:12px;padding:14px;margin:10px 0;text-align:center">
+      <div style="font-size:1.1em;font-weight:700;color:#c62828;margin-bottom:8px">❌ 没吵架的 = 说假话！</div>
+      <div style="display:flex;justify-content:center;gap:30px">
+        <div style="text-align:center"><span style="font-size:2.5em">🦊</span><br><span style="font-size:.85em;color:#c62828">❌ 假话</span></div>
+        <div style="text-align:center"><span style="font-size:2.5em">🦁</span><br><span style="font-size:.85em;color:#c62828">❌ 假话</span></div>
+      </div>
     </div>`;
   // Mark liars
   const fox=document.getElementById('acard-fox');
   const lion=document.getElementById('acard-lion');
   if(fox) fox.classList.add('liar');
   if(lion) lion.classList.add('liar');
-  await typeAndSpeak(document.getElementById('p0s2Text'),'真话就在老虎和狼之间！那狐狸和狮子说的都是假话。❌');
+  await typeAndSpeak(document.getElementById('p0s2Text'),'老虎和狼吵起来了！真话就在他们两个里面。只有一个人说真话，那没吵架的狐狸和狮子呢？他们说的都是假话！❌');
 }
 
 async function p0GoStep3(){
   showStep(0,3);
   resetStop();
-  await typeAndSpeak(document.getElementById('p0s3Text'),'狐狸说"不是我偷的"——这是假话！假话的反面是什么？那胡萝卜到底是谁偷的？');
+  await typeAndSpeak(document.getElementById('p0s3Text'),'狐狸说"不是我偷的"——可这是假话呀！假话反过来是什么？"是我偷的"！那胡萝卜到底是谁偷的？选一个吧！');
 }
 
 async function p0Final(btn,ans){
@@ -528,6 +533,11 @@ async function p0Final(btn,ans){
     return;
   }
   btn.classList.add('correct');
+  // Show verdict marks on animal cards
+  ['fox','tiger','lion','wolf'].forEach(id=>{
+    const vd=document.getElementById('v-'+id);
+    if(vd){vd.style.display='block';vd.textContent=id==='fox'?'🥕犯人！':'✅无辜';}
+  });
   await speak('答对啦！是狐狸偷的！','zh-CN',1.0);
   setTimeout(()=>{
     showStep(0,4);
