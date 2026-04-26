@@ -110,7 +110,7 @@ footer{text-align:center;padding:20px;color:#999;font-size:.85em}
 <!-- Welcome Screen -->
 <div id="welcome" onclick="startApp()">
   <h1>🧩 逻辑推理训练</h1>
-  <p>两道经典推理题<br>跟着老师一步步来！</p>
+  <p>两道经典推理题<br>跟着老师一步步来!</p>
   <div class="tap">👆 点击开始</div>
 </div>
 
@@ -135,7 +135,7 @@ footer{text-align:center;padding:20px;color:#999;font-size:.85em}
       <span class="icon">📌</span> <span id="p0ruleText"></span>
     </div>
     <div style="text-align:center;margin-top:12px">
-      <button class="confirm-btn" id="p0nextBtn" style="display:none" onclick="p0GoStep1()">好的，开始推理！ 👉</button>
+      <button class="confirm-btn" id="p0nextBtn" style="display:none" onclick="p0GoStep1()">好的,开始推理! 👉</button>
     </div>
   </div>
 
@@ -150,7 +150,7 @@ footer{text-align:center;padding:20px;color:#999;font-size:.85em}
       <div class="animal-select" data-a="lion" onclick="p0Pick(this)">🦁 狮子</div>
       <div class="animal-select" data-a="wolf" onclick="p0Pick(this)">🐺 狼</div>
     </div>
-    <button class="confirm-btn" id="p0confirmPick" style="display:none" onclick="p0CheckContra()">确定！</button>
+    <button class="confirm-btn" id="p0confirmPick" style="display:none" onclick="p0CheckContra()">确定!</button>
     <div id="p0pickFeedback"></div>
   </div>
 
@@ -180,28 +180,43 @@ footer{text-align:center;padding:20px;color:#999;font-size:.85em}
 
   <!-- Step 4: Celebration -->
   <div class="step" id="p0s4">
-    <div class="celebration">🎉🥕 答对啦！</div>
+    <div class="celebration">🎉🥕 答对啦！是狐狸偷的！</div>
     <div id="p0s4Visual"></div>
+
+    <div style="background:#e8f5e9;border-radius:12px;padding:14px;margin:16px 0;border-left:4px solid #4caf50">
+      <div style="font-weight:700;color:#2e7d32;margin-bottom:10px">🔍 验证一下：如果狐狸偷的……</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:.95em">
+        <div style="background:#ffebee;border-radius:8px;padding:8px 12px">🦊 狐狸说“不是我偷的” → <b>假话 ❌</b>（就是你偷的！）</div>
+        <div style="background:#ffebee;border-radius:8px;padding:8px 12px">🐯 老虎说“是狼偷的” → <b>假话 ❌</b>（不是狼，是狐狸）</div>
+        <div style="background:#ffebee;border-radius:8px;padding:8px 12px">🦁 狮子说“是老虎偷的” → <b>假话 ❌</b>（不是老虎，是狐狸）</div>
+        <div style="background:#e8f5e9;border-radius:8px;padding:8px 12px">🐺 狼说“我没偷” → <b>真话 ✅</b>（狼确实没偷！）</div>
+      </div>
+      <div style="text-align:center;margin-top:10px;color:#2e7d32;font-weight:700">✅ 只有狼一个人说真话 — 完全符合题目！</div>
+    </div>
+
     <div class="summary-card">
-      <h3>⭐ 方法总结：矛盾法</h3>
-      <p>找到说的"对不上"的两个人 ⚡ 一个说是一个说不是，有人在说谎！<br>真话一定在他们两个里面！其他人说的都是假话！<br>其他人说的都是假话。<br>假话的反面就是真话！</p>
+      <h3>⭐ 方法总结</h3>
+      <p><b>① 找“对不上”的两个人</b> — 一个说是，一个说不是<br>
+      <b>② 真话在他们里面</b> — 其他人都说假话<br>
+      <b>③ 假话反过来 = 答案</b><br>
+      <b>④ 验证！</b> — 把答案代回去检查每个人说的是真话还是假话</p>
     </div>
     <div style="text-align:center;margin-top:10px">
-      <button class="confirm-btn" onclick="p0ShowPractice()">📝 来做练习题！</button>
+      <button class="confirm-btn" onclick="p0ShowPractice()">📝 来做练习题!</button>
     </div>
   </div>
 
   <!-- Step 5: Practice -->
   <div class="step" id="p0s5">
     <div class="practice-section">
-      <h3>📝 练习：谁做了好事？</h3>
+      <h3>📝 练习:谁做了好事?</h3>
       <div class="teacher-msg show" style="background:#f3e5f5;border-left-color:#7b1fa2">
         <span class="icon">📖</span>
         甲乙丙三人中有一人做了好事。<br>
-        🅰️ 甲说："是乙做的。"<br>
-        🅱️ 乙说："不是我做的。"<br>
-        🅲️ 丙说："不是我做的。"<br>
-        <strong>只有一人说了假话。</strong>谁做了好事？
+        🅰️ 甲说:"是乙做的。"<br>
+        🅱️ 乙说:"不是我做的。"<br>
+        🅲️ 丙说:"不是我做的。"<br>
+        <strong>只有一人说了假话。</strong>谁做了好事?
       </div>
       <div class="choices">
         <button class="choice-btn" onclick="p0Practice(this,'jia')">🅰️ 甲</button>
@@ -235,7 +250,7 @@ footer{text-align:center;padding:20px;color:#999;font-size:.85em}
     </div>
     <div id="p1conditions"></div>
     <div style="text-align:center;margin-top:12px">
-      <button class="confirm-btn" id="p1nextBtn" style="display:none" onclick="p1GoStep1()">好的，开始推理！ 👉</button>
+      <button class="confirm-btn" id="p1nextBtn" style="display:none" onclick="p1GoStep1()">好的,开始推理! 👉</button>
     </div>
   </div>
 
@@ -287,7 +302,7 @@ footer{text-align:center;padding:20px;color:#999;font-size:.85em}
 
   <!-- Step 5: Celebration -->
   <div class="step" id="p1s5">
-    <div class="celebration">🎉 全部答对！</div>
+    <div class="celebration">🎉 全部答对!</div>
     <div class="match-area">
       <div style="text-align:center">
         <div class="person-badge matched"><span class="big">👨</span>甲<br><small style="color:#4caf50">🔪 外科</small></div>
@@ -300,26 +315,26 @@ footer{text-align:center;padding:20px;color:#999;font-size:.85em}
       </div>
     </div>
     <div class="summary-card" style="background:linear-gradient(135deg,#bbdefb,#90caf9)">
-      <h3>⭐ 方法总结：排除法</h3>
-      <p>用已知条件一个一个排除！<br>不可能的划掉 ❌<br>剩下的就是答案 ✅</p>
+      <h3>⭐ 方法总结:排除法</h3>
+      <p>用已知条件一个一个排除!<br>不可能的划掉 ❌<br>剩下的就是答案 ✅</p>
     </div>
     <div style="text-align:center;margin-top:10px">
-      <button class="confirm-btn" onclick="p1ShowPractice()">📝 来做练习题！</button>
+      <button class="confirm-btn" onclick="p1ShowPractice()">📝 来做练习题!</button>
     </div>
   </div>
 
   <!-- Step 6: Practice -->
   <div class="step" id="p1s6">
     <div class="practice-section">
-      <h3>📝 练习：谁是班长？</h3>
+      <h3>📝 练习:谁是班长?</h3>
       <div class="teacher-msg show" style="background:#f3e5f5;border-left-color:#7b1fa2">
         <span class="icon">📖</span>
-        小红、小明、小华三人，一个是班长，一个是学习委员，一个是体育委员。<br>
-        ① 小红不是班长<br>
-        ② 小明不是学习委员<br>
-        ③ 班长不戴眼镜<br>
-        ④ 小华戴眼镜<br>
-        <strong>谁是班长？</strong>
+        小红、小明、小华三人,一个是班长,一个是学习委员,一个是体育委员。<br>
+        1 小红不是班长<br>
+        2 小明不是学习委员<br>
+        3 班长不戴眼镜<br>
+        4 小华戴眼镜<br>
+        <strong>谁是班长?</strong>
       </div>
       <div class="choices">
         <button class="choice-btn" onclick="p1Practice(this,'hong')">小红</button>
@@ -413,7 +428,7 @@ const animalData=[
 
 async function initPuzzle0(){
   resetStop();
-  const intro='兔子的胡萝卜丢了！去找黑猫警长报案。黑猫警长锁定了四只动物……';
+  const intro='兔子的胡萝卜丢了!去找黑猫警长报案。黑猫警长锁定了四只动物......';
   await typeAndSpeak(document.getElementById('p0introText'),intro);
   // Show animal cards one by one
   const container=document.getElementById('p0animals');
@@ -422,15 +437,15 @@ async function initPuzzle0(){
     const card=document.createElement('div');
     card.className='animal-card';
     card.id='acard-'+a.id;
-    card.innerHTML=`<div class="emoji">${a.emoji}</div><div class="speech-bubble"><div style="font-size:.75em;color:#999;margin-bottom:2px">🪧 ${a.name}举牌说：</div>"${a.says}"</div><div class="verdict" id="v-${a.id}" style="display:none;font-size:1.5em;text-align:center;margin-top:4px"></div>`;
+    card.innerHTML=`<div class="emoji">${a.emoji}</div><div class="speech-bubble"><div style="font-size:.75em;color:#999;margin-bottom:2px">🪧 ${a.name}举牌说:</div>"${a.says}"</div><div class="verdict" id="v-${a.id}" style="display:none;font-size:1.5em;text-align:center;margin-top:4px"></div>`;
     container.appendChild(card);
-    await speak(`${a.name}说：${a.says}`,'zh-CN',1.0);
+    await speak(`${a.name}说:${a.says}`,'zh-CN',1.0);
     await new Promise(r=>setTimeout(r,300));
   }
   // Show rule
   const ruleEl=document.getElementById('p0rule');
   ruleEl.classList.add('show');
-  const rule='四只动物中，只有一只说的是真话。请问：胡萝卜是谁偷的？';
+  const rule='四只动物中,只有一只说的是真话。请问:胡萝卜是谁偷的?';
   await typeAndSpeak(document.getElementById('p0ruleText'),rule);
   document.getElementById('p0nextBtn').style.display='inline-block';
 }
@@ -444,7 +459,7 @@ function showStep(puzzle,step){
 async function p0GoStep1(){
   showStep(0,1);
   resetStop();
-  await typeAndSpeak(document.getElementById('p0s1Text'),'先找找——谁和谁说的话互相矛盾？点选两只动物！');
+  await typeAndSpeak(document.getElementById('p0s1Text'),'先找找--谁和谁说的话互相矛盾?点选两只动物!');
 }
 
 let p0Picked=[];
@@ -465,8 +480,8 @@ async function p0CheckContra(){
   const correct=p0Picked.includes('tiger')&&p0Picked.includes('wolf');
   const fb=document.getElementById('p0pickFeedback');
   if(!correct){
-    fb.innerHTML='<div class="teacher-msg show" style="background:#ffebee;border-left-color:#f44336"><span class="icon">🤔</span> 再想想！谁说"是狼偷的"，谁说"我没偷"？他们的话是不是相反的？</div>';
-    await speak('再想想！谁说是狼偷的，谁说我没偷？','zh-CN',1.0);
+    fb.innerHTML='<div class="teacher-msg show" style="background:#ffebee;border-left-color:#f44336"><span class="icon">🤔</span> 再想想!谁说"是狼偷的",谁说"我没偷"?他们的话是不是相反的?</div>';
+    await speak('再想想!谁说是狼偷的,谁说我没偷?','zh-CN',1.0);
     // Reset picks
     document.querySelectorAll('#p0pick .animal-select').forEach(e=>e.classList.remove('picked'));
     p0Picked=[];
@@ -477,8 +492,8 @@ async function p0CheckContra(){
   document.querySelectorAll('#p0pick .animal-select').forEach(e=>{
     if(e.dataset.a==='tiger'||e.dataset.a==='wolf') e.classList.add('correct-pick');
   });
-  fb.innerHTML='<div class="teacher-msg show" style="background:#e8f5e9;border-left-color:#4caf50"><span class="icon">👏</span> 没错！老虎说"是狼偷的"，狼说"我没偷"——完全矛盾！</div>';
-  await speak('没错！老虎和狼说的完全矛盾！','zh-CN',1.0);
+  fb.innerHTML='<div class="teacher-msg show" style="background:#e8f5e9;border-left-color:#4caf50"><span class="icon">👏</span> 没错!老虎说"是狼偷的",狼说"我没偷"--完全矛盾!</div>';
+  await speak('没错!老虎和狼说的完全矛盾!','zh-CN',1.0);
   document.getElementById('p0confirmPick').style.display='none';
   setTimeout(()=>p0GoStep2(),1200);
 }
@@ -495,16 +510,16 @@ async function p0GoStep2(){
   const vis=document.getElementById('p0s2Visual');
   vis.innerHTML=`
     <div style="background:#fff3e0;border-radius:12px;padding:14px;margin:10px 0;text-align:center">
-      <div style="font-size:1.1em;font-weight:700;color:#e65100;margin-bottom:8px">🔍 他们两个说的对不上！有人在说谎！</div>
+      <div style="font-size:1.1em;font-weight:700;color:#e65100;margin-bottom:8px">🔍 他们两个说的对不上!有人在说谎!</div>
       <div style="display:flex;justify-content:center;align-items:center;gap:12px">
-        <div style="text-align:center"><span style="font-size:2.5em">🐯</span><br><span style="font-size:.85em">是狼偷的！</span></div>
+        <div style="text-align:center"><span style="font-size:2.5em">🐯</span><br><span style="font-size:.85em">是狼偷的!</span></div>
         <span style="font-size:2.5em;color:#ff9800;animation:pulse 1s infinite">⚡</span>
-        <div style="text-align:center"><span style="font-size:2.5em">🐺</span><br><span style="font-size:.85em">不是我偷的！</span></div>
+        <div style="text-align:center"><span style="font-size:2.5em">🐺</span><br><span style="font-size:.85em">不是我偷的!</span></div>
       </div>
-      <div style="color:#666;font-size:.9em;margin-top:6px">一个说"是"，一个说"不是" → 真话就在这里面！</div>
+      <div style="color:#666;font-size:.9em;margin-top:6px">一个说"是",一个说"不是" → 真话就在这里面!</div>
     </div>
     <div style="background:#ffebee;border-radius:12px;padding:14px;margin:10px 0;text-align:center">
-      <div style="font-size:1.1em;font-weight:700;color:#c62828;margin-bottom:8px">❌ 其他的 = 说假话！</div>
+      <div style="font-size:1.1em;font-weight:700;color:#c62828;margin-bottom:8px">❌ 其他的 = 说假话!</div>
       <div style="display:flex;justify-content:center;gap:30px">
         <div style="text-align:center"><span style="font-size:2.5em">🦊</span><br><span style="font-size:.85em;color:#c62828">❌ 假话</span></div>
         <div style="text-align:center"><span style="font-size:2.5em">🦁</span><br><span style="font-size:.85em;color:#c62828">❌ 假话</span></div>
@@ -515,20 +530,20 @@ async function p0GoStep2(){
   const lion=document.getElementById('acard-lion');
   if(fox) fox.classList.add('liar');
   if(lion) lion.classList.add('liar');
-  await typeAndSpeak(document.getElementById('p0s2Text'),'老虎和狼说的对不上！一个说"是狼"，一个说"不是我"——真话就在他们两个里面。只有一个人说真话，那其他的狐狸和狮子呢？他们说的都是假话！❌');
+  await typeAndSpeak(document.getElementById('p0s2Text'),'老虎和狼说的对不上!一个说"是狼",一个说"不是我"--真话就在他们两个里面。只有一个人说真话,那其他的狐狸和狮子呢?他们说的都是假话!❌');
 }
 
 async function p0GoStep3(){
   showStep(0,3);
   resetStop();
-  await typeAndSpeak(document.getElementById('p0s3Text'),'狐狸说"不是我偷的"——可这是假话呀！假话反过来是什么？"是我偷的"！那胡萝卜到底是谁偷的？选一个吧！');
+  await typeAndSpeak(document.getElementById('p0s3Text'),'狐狸说"不是我偷的"--可这是假话呀!假话反过来是什么?"是我偷的"!那胡萝卜到底是谁偷的?选一个吧!');
 }
 
 async function p0Final(btn,ans){
   if(btn.classList.contains('correct')||btn.classList.contains('wrong')) return;
   if(ans!=='fox'){
     btn.classList.add('wrong');
-    await speak('再想想！狐狸说了假话哦！','zh-CN',1.0);
+    await speak('再想想!狐狸说了假话哦!','zh-CN',1.0);
     setTimeout(()=>btn.classList.remove('wrong'),800);
     return;
   }
@@ -536,18 +551,18 @@ async function p0Final(btn,ans){
   // Show verdict marks on animal cards
   ['fox','tiger','lion','wolf'].forEach(id=>{
     const vd=document.getElementById('v-'+id);
-    if(vd){vd.style.display='block';vd.textContent=id==='fox'?'🥕犯人！':'✅无辜';}
+    if(vd){vd.style.display='block';vd.textContent=id==='fox'?'🥕犯人!':'✅无辜';}
   });
-  await speak('答对啦！是狐狸偷的！','zh-CN',1.0);
+  await speak('答对啦!是狐狸偷的!','zh-CN',1.0);
   setTimeout(()=>{
     showStep(0,4);
     // Show guilty fox
     const vis=document.getElementById('p0s4Visual');
     vis.innerHTML=`<div style="text-align:center;margin:10px 0">
       <div style="font-size:4em">🦊🥕</div>
-      <div style="font-size:1.2em;color:#f44336;font-weight:bold">就是你！狐狸偷了胡萝卜！</div>
+      <div style="font-size:1.2em;color:#f44336;font-weight:bold">就是你!狐狸偷了胡萝卜!</div>
     </div>`;
-    speak('狐狸说不是我偷的，这是假话，反过来就是我偷的！','zh-CN',1.0);
+    speak('狐狸说不是我偷的,这是假话,反过来就是我偷的!','zh-CN',1.0);
   },600);
 }
 
@@ -559,20 +574,20 @@ async function p0Practice(btn,ans){
   const fb=document.getElementById('p0practiceFb');
   if(ans!=='yi'){
     btn.classList.add('wrong');
-    fb.innerHTML='<div class="teacher-msg show" style="background:#ffebee;border-left-color:#f44336">🤔 再想想！甲说"是乙做的"，乙说"不是我做的"——他们矛盾！真话在甲和乙之间。丙说了假话……等等，只有一人说假话！</div>';
-    await speak('再想想！甲和乙矛盾，真话在他们之间！','zh-CN',1.0);
+    fb.innerHTML='<div class="teacher-msg show" style="background:#ffebee;border-left-color:#f44336">🤔 再想想!甲说"是乙做的",乙说"不是我做的"--他们矛盾!真话在甲和乙之间。丙说了假话......等等,只有一人说假话!</div>';
+    await speak('再想想!甲和乙矛盾,真话在他们之间!','zh-CN',1.0);
     setTimeout(()=>btn.classList.remove('wrong'),800);
     return;
   }
   p0PracticeDone=true;
   btn.classList.add('correct');
   fb.innerHTML=`<div class="teacher-msg show" style="background:#e8f5e9;border-left-color:#4caf50">
-    🎉 答对！<br>
-    甲说"是乙做的"，乙说"不是我做的"——矛盾！<br>
-    只有一人说假话。如果甲说真话（是乙做的），那乙说"不是我"就是假话（1人），丙说真话。符合！<br>
-    所以是<strong>乙</strong>做了好事！
+    🎉 答对!<br>
+    甲说"是乙做的",乙说"不是我做的"--矛盾!<br>
+    只有一人说假话。如果甲说真话(是乙做的),那乙说"不是我"就是假话(1人),丙说真话。符合!<br>
+    所以是<strong>乙</strong>做了好事!
   </div>`;
-  await speak('答对啦！甲和乙矛盾，只有一人说假话。甲说真话的话，好事就是乙做的！','zh-CN',1.0);
+  await speak('答对啦!甲和乙矛盾,只有一人说假话。甲说真话的话,好事就是乙做的!','zh-CN',1.0);
 }
 
 // ========== PUZZLE 1: Doctor ==========
@@ -580,7 +595,7 @@ let p1Inited=false;
 async function initPuzzle1(){
   p1Inited=true;
   resetStop();
-  const intro='甲、乙、丙三位医生正在谈话。一位是内科医生，一位是外科医生，一位是儿科医生。';
+  const intro='甲、乙、丙三位医生正在谈话。一位是内科医生,一位是外科医生,一位是儿科医生。';
   await typeAndSpeak(document.getElementById('p1introText'),intro);
   // Show conditions
   const conds=[
@@ -604,63 +619,63 @@ async function initPuzzle1(){
 async function p1GoStep1(){
   showStep(1,1);
   resetStop();
-  await typeAndSpeak(document.getElementById('p1s1Text'),'内科医生是男的！乙是"姐姐"——乙是男的还是女的？');
+  await typeAndSpeak(document.getElementById('p1s1Text'),'内科医生是男的!乙是"姐姐"--乙是男的还是女的?');
 }
 
 async function p1Step1(btn,ans){
   if(ans!=='f'){
     btn.classList.add('wrong');
-    await speak('姐姐是女的呀！','zh-CN',1.0);
+    await speak('姐姐是女的呀!','zh-CN',1.0);
     setTimeout(()=>btn.classList.remove('wrong'),800);
     return;
   }
   btn.classList.add('correct');
-  await speak('没错！乙是姐姐，是女的！','zh-CN',1.0);
+  await speak('没错!乙是姐姐,是女的!','zh-CN',1.0);
   setTimeout(()=>{showStep(1,2);resetStop();
-    typeAndSpeak(document.getElementById('p1s2Text'),'女的不能是男医生。所以乙不是内科。甲也不是内科（条件①）。那内科医生是谁？');
+    typeAndSpeak(document.getElementById('p1s2Text'),'女的不能是男医生。所以乙不是内科。甲也不是内科(条件1)。那内科医生是谁?');
   },800);
 }
 
 async function p1Step2(btn,ans){
   if(ans!=='bing'){
     btn.classList.add('wrong');
-    await speak('甲不是内科，乙也不是内科，那只能是？','zh-CN',1.0);
+    await speak('甲不是内科,乙也不是内科,那只能是?','zh-CN',1.0);
     setTimeout(()=>btn.classList.remove('wrong'),800);
     return;
   }
   btn.classList.add('correct');
-  await speak('对！丙是内科医生！','zh-CN',1.0);
+  await speak('对!丙是内科医生!','zh-CN',1.0);
   setTimeout(()=>{showStep(1,3);resetStop();
-    typeAndSpeak(document.getElementById('p1s3Text'),'乙是外科医生的姐姐。那姐姐和外科医生是同一个人吗？');
+    typeAndSpeak(document.getElementById('p1s3Text'),'乙是外科医生的姐姐。那姐姐和外科医生是同一个人吗?');
   },800);
 }
 
 async function p1Step3(btn,ans){
   if(ans!=='no'){
     btn.classList.add('wrong');
-    await speak('姐姐和外科医生是两个不同的人哦！','zh-CN',1.0);
+    await speak('姐姐和外科医生是两个不同的人哦!','zh-CN',1.0);
     setTimeout(()=>btn.classList.remove('wrong'),800);
     return;
   }
   btn.classList.add('correct');
-  await speak('对！所以乙不是外科医生！','zh-CN',1.0);
+  await speak('对!所以乙不是外科医生!','zh-CN',1.0);
   setTimeout(()=>{showStep(1,4);resetStop();
-    typeAndSpeak(document.getElementById('p1s4Text'),'丙是内科，乙不是外科。那外科医生是谁？');
+    typeAndSpeak(document.getElementById('p1s4Text'),'丙是内科,乙不是外科。那外科医生是谁?');
   },800);
 }
 
 async function p1Step4(btn,ans){
   if(ans!=='jia'){
     btn.classList.add('wrong');
-    await speak('丙已经是内科了，乙不是外科，那只剩？','zh-CN',1.0);
+    await speak('丙已经是内科了,乙不是外科,那只剩?','zh-CN',1.0);
     setTimeout(()=>btn.classList.remove('wrong'),800);
     return;
   }
   btn.classList.add('correct');
-  await speak('答对啦！甲是外科医生！','zh-CN',1.0);
+  await speak('答对啦!甲是外科医生!','zh-CN',1.0);
   setTimeout(()=>{
     showStep(1,5);
-    speak('甲是外科，乙是儿科，丙是内科。用排除法一个一个排除就行！','zh-CN',1.0);
+    speak('甲是外科,乙是儿科,丙是内科。用排除法一个一个排除就行!','zh-CN',1.0);
   },600);
 }
 
@@ -672,20 +687,20 @@ async function p1Practice(btn,ans){
   const fb=document.getElementById('p1practiceFb');
   if(ans!=='ming'){
     btn.classList.add('wrong');
-    fb.innerHTML='<div class="teacher-msg show" style="background:#ffebee;border-left-color:#f44336">🤔 用排除法！小华戴眼镜→班长不戴眼镜→小华不是班长。小红不是班长。那班长是？</div>';
-    await speak('用排除法！小华戴眼镜不能当班长，小红也不是，那只剩谁？','zh-CN',1.0);
+    fb.innerHTML='<div class="teacher-msg show" style="background:#ffebee;border-left-color:#f44336">🤔 用排除法!小华戴眼镜→班长不戴眼镜→小华不是班长。小红不是班长。那班长是?</div>';
+    await speak('用排除法!小华戴眼镜不能当班长,小红也不是,那只剩谁?','zh-CN',1.0);
     setTimeout(()=>btn.classList.remove('wrong'),800);
     return;
   }
   p1PracticeDone=true;
   btn.classList.add('correct');
   fb.innerHTML=`<div class="teacher-msg show" style="background:#e8f5e9;border-left-color:#4caf50">
-    🎉 答对！<br>
+    🎉 答对!<br>
     小华戴眼镜 → 班长不戴眼镜 → 小华不是班长 ❌<br>
     小红不是班长 ❌<br>
-    所以<strong>小明</strong>是班长！ ✅
+    所以<strong>小明</strong>是班长! ✅
   </div>`;
-  await speak('答对啦！小明是班长！排除法就是这么好用！','zh-CN',1.0);
+  await speak('答对啦!小明是班长!排除法就是这么好用!','zh-CN',1.0);
 }
 </script>
 </body>
