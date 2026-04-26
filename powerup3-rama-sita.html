@@ -60,6 +60,14 @@ body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #
 
 /* Footer */
 footer { text-align:center; padding:24px 16px 80px; color:#aaa; font-size:13px; }
+.vocab-preview{margin:16px 0;}
+.vocab-preview h2{font-size:1.15em;color:#6b21a8;text-align:center;margin-bottom:12px;}
+.vocab-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.vocab-card{background:#fff;border-radius:12px;padding:10px 8px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:pointer;transition:.2s;}
+.vocab-card:active{transform:scale(.95);}
+.vocab-card .word{font-size:1.1em;font-weight:700;color:#1565c0;}
+.vocab-card .ipa{font-size:.7em;color:#888;font-family:monospace;}
+.vocab-card .mean{font-size:.8em;color:#666;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -76,6 +84,11 @@ footer { text-align:center; padding:24px 16px 80px; color:#aaa; font-size:13px; 
     <div class="emoji">🎯</div>
     <div class="en">Today we'll read an Indian myth about Rama and Sita</div>
     <div class="zh">今天我们读一个印度神话：罗摩和悉多的故事</div>
+  </div>
+
+  <div class="vocab-preview">
+    <h2>📖 先学这些词 Key Words</h2>
+    <div class="vocab-grid" id="vocabGrid"></div>
   </div>
 
   <div id="story"></div>
@@ -154,18 +167,47 @@ function speak(text, lang, rate, cb) {
   synth.speak(u);
 }
 
-function speakEn(text) { speak(text, 'en-US', 0.9); }
-function speakZh(text) { speak(text, 'zh-CN', 0.85); }
-function speakWord(w) { speak(w, 'en-US', 0.8); }
+function speakEn(text) { speak(text, 'en-US', 0.75); }
+function speakZh(text) { speak(text, 'zh-CN', 0.8); }
+function speakWord(w) { speak(w, 'en-US', 0.7); }
 
 function speakGoal() {
-  speak("Today we'll read an Indian myth about Rama and Sita", 'en-US', 0.9, ()=>{
-    setTimeout(()=> speak("今天我们读一个印度神话：罗摩和悉多的故事", 'zh-CN', 0.85), 1000);
+  speak("Today we'll read an Indian myth about Rama and Sita", 'en-US', 0.75, ()=>{
+    setTimeout(()=> speak("今天我们读一个印度神话：罗摩和悉多的故事", 'zh-CN', 0.8), 1000);
   });
 }
 
 // ---- Render ----
 function stripHw(html) { return html.replace(/<hw>(.*?)<ipa>.*?<\/ipa><\/hw>/g, '$1'); }
+
+const vocabList = [
+  {w:'stepmother',ipa:'/\u02C8stepm\u028C\u00F0\u0259/',zh:'\u7EE7\u6BCD'},
+  {w:'forest',ipa:'/\u02C8f\u0252r\u026Ast/',zh:'\u68EE\u6797'},
+  {w:'terrible',ipa:'/\u02C8ter\u0259bl/',zh:'\u53EF\u6015\u7684'},
+  {w:'golden',ipa:'/\u02C8\u0261\u0259\u028Ald\u0259n/',zh:'\u91D1\u8272\u7684'},
+  {w:'deer',ipa:'/d\u026A\u0259/',zh:'\u9E7F'},
+  {w:'costume',ipa:'/\u02C8k\u0252stju\u02D0m/',zh:'\u4F2A\u88C5'},
+  {w:'palace',ipa:'/\u02C8p\u00E6l\u026As/',zh:'\u5BAB\u6BBF'},
+  {w:'monkeys',ipa:'/\u02C8m\u028C\u014Bkiz/',zh:'\u7334\u5B50'},
+  {w:'jewellery',ipa:'/\u02C8d\u0292u\u02D0\u0259lri/',zh:'\u73E0\u5B9D'},
+  {w:'army',ipa:'/\u02C8\u0251\u02D0mi/',zh:'\u519B\u961F'},
+  {w:'rescued',ipa:'/\u02C8reskju\u02D0d/',zh:'\u8425\u6551'},
+  {w:'lanterns',ipa:'/\u02C8l\u00E6nt\u0259nz/',zh:'\u706F\u7B3C'},
+  {w:'cheered',ipa:'/t\u0283\u026A\u0259d/',zh:'\u6B22\u547C'},
+  {w:'celebrate',ipa:'/\u02C8sel\u026Abre\u026At/',zh:'\u5E86\u795D'},
+  {w:'organised',ipa:'/\u02C8\u0254\u02D0\u0261\u0259na\u026Azd/',zh:'\u7EC4\u7EC7'}
+];
+
+function renderVocab() {
+  const g = document.getElementById('vocabGrid');
+  g.innerHTML = vocabList.map(v =>
+    `<div class="vocab-card" onclick="speakWord('${v.w}')">
+      <div class="word">${v.w}</div>
+      <div class="ipa">${v.ipa}</div>
+      <div class="mean">${v.zh}</div>
+    </div>`
+  ).join('');
+}
 
 function renderStory() {
   const container = document.getElementById('story');
@@ -232,9 +274,9 @@ function playNext() {
   if(el) el.scrollIntoView({ behavior:'smooth', block:'center' });
   if(playAllPhase === 0) {
     const plainEn = stripHw(p.en);
-    speak(plainEn, 'en-US', 0.9, ()=>{ setTimeout(()=>{ playAllPhase=1; playNext(); }, 800); });
+    speak(plainEn, 'en-US', 0.75, ()=>{ setTimeout(()=>{ playAllPhase=1; playNext(); }, 800); });
   } else {
-    speak(p.zh, 'zh-CN', 0.85, ()=>{ setTimeout(()=>{ playAllPhase=0; playAllIdx++; playNext(); }, 1200); });
+    speak(p.zh, 'zh-CN', 0.8, ()=>{ setTimeout(()=>{ playAllPhase=0; playAllIdx++; playNext(); }, 1200); });
   }
 }
 
@@ -246,6 +288,7 @@ function startLearning() {
   setTimeout(speakGoal, 600);
 }
 
+renderVocab();
 renderStory();
 renderQuiz();
 </script>
